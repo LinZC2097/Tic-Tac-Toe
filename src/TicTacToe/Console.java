@@ -19,7 +19,7 @@ public class Console {
 		
 		board.move(x, y);
 		board.show();
-		if(board.checkWin(x, y, State.O) || board.checkWin(x, y, State.X)) {
+		if(board.checkWin(x, y)) {
 			System.out.println("win!!!");
 		}
 	}
