@@ -83,6 +83,138 @@ public class Board {
 		this.moveNum++;
 	}
 	
+	public boolean checkWin (int x, int y) {
+		State player;
+		player = this.board[x][y];
+		int posX = 0;
+		int posY = 0;
+		
+		//水平向左
+		int count_horizontal_left = 1;
+		for(posX = x - 1; posX > 0 ; posX--) {
+			if (this.board[posX][y] == player) {
+				count_horizontal_left++;
+				if (count_horizontal_left >= AIM_LENGTH) {
+					return true;
+				}
+			}else {
+				break;
+			}
+		}
+		//水平向右
+		int count_horizontal_right = 1;
+		for(posX = x + 1; posX <= BOARD_LENGTH; posX++) {
+			if (this.board[posX][y] == player) {
+				count_horizontal_right++;
+				if (count_horizontal_right >= AIM_LENGTH) {
+					return true;
+				}
+			}else {
+				break;
+			}
+		}
+		//水平
+		int count_horizontal = 0;
+		count_horizontal = count_horizontal_left + count_horizontal_right - 1;
+		if(count_horizontal >= AIM_LENGTH ) {
+			return true;
+		}
+		
+		//垂直向上
+		int count_vertical_up = 1;
+		for(posY = y - 1; posY > 0; posY--) {
+			if (this.board[x][posY] == player) {
+				count_vertical_up++;
+				if (count_vertical_up >= AIM_LENGTH) {
+					return true;
+				}
+			}else {
+				break;
+			}
+		}
+		//垂直向下
+		int count_vertical_down = 1;
+		for(posY = y + 1; posY <= BOARD_LENGTH; posY++) {
+			if (this.board[x][posY] == player) {
+				count_vertical_down++;
+				if (count_vertical_down >= AIM_LENGTH) {
+					return true;
+				}
+			}else {
+				break;
+			}
+		}
+		//垂直
+		int count_vertical = 0;
+		count_vertical = count_vertical_up + count_vertical_down - 1;
+		if(count_vertical >= AIM_LENGTH ) {
+			return true;
+		}
+    	
+		//左上右下 左上
+		int count_left_up = 1;
+		for(posX = x - 1, posY = y - 1; posX > 0 && posY > 0; posX--, posY--) {
+			if (this.board[posX][posY] == player) {
+				count_left_up++;
+				if (count_left_up >= AIM_LENGTH) {
+					return true;
+				}
+			}else {
+				break;
+			}
+		}
+		//左上右下 右下
+		int count_right_down = 1;
+		for(posX = x + 1, posY = y + 1; posX <= BOARD_LENGTH && posY <= BOARD_LENGTH; posX++, posY++) {
+			if (this.board[posX][posY] == player) {
+				count_right_down++;
+				if (count_right_down >= AIM_LENGTH) {
+					return true;
+				}
+			}else {
+				break;
+			}
+		}
+		//左上右下
+		int count_left_up_right_down = 0;
+		count_left_up_right_down = count_left_up + count_right_down - 1;
+		if(count_left_up_right_down >= AIM_LENGTH ) {
+			return true;
+		}
+    	    	
+		//右上左下 右上
+		int count_right_up = 1;
+		for(posX = x + 1, posY = y - 1; posX <= BOARD_LENGTH && posY > 0; posX++, posY--) {
+			if (this.board[posX][posY] == player) {
+				count_right_up++;
+				if (count_right_up >= AIM_LENGTH) {
+					return true;
+				}
+			}else {
+				break;
+			}
+		}
+		//右上左下 左下
+		int count_left_down = 1;
+		for(posX = x - 1, posY = y + 1; posX > 0 && posY <= BOARD_LENGTH; posX--, posY++) {
+			if (this.board[posX][posY] == player) {
+				count_left_down++;
+				if (count_left_down >= AIM_LENGTH) {
+					return true;
+				}
+			}else {
+				break;
+			}
+		}
+		//右上左下
+		int count_right_up_left_down = 0;
+		count_right_up_left_down = count_right_up + count_left_down - 1;
+		if(count_right_up_left_down >= AIM_LENGTH ) {
+			return true;
+		}		
+		return false;
+	}
+	
 	public void show() {
 		System.out.print(" \t");
 		for(int i = 0; i < 10; i++) {
