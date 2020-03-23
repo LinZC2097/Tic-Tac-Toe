@@ -45,7 +45,7 @@ public class AlphaBetaPruning {
 			Board copyedBoard = board.deepcopy();
 			copyedBoard.move(moveIndex);
 
-			int v = this.getMax(alpha, beta, copyedBoard, curDepth + 1);
+			int v = this.getMax(alpha, beta, copyedBoard, curDepth);
 			if(v <= alpha) {
 				return v;
 			}

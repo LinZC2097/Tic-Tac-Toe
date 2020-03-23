@@ -218,39 +218,7 @@ public class Board {
 		for (int val : a) {
 			System.out.println(val);
 
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
+	
 			
 		}
 
