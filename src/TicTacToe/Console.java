@@ -2,14 +2,13 @@ package TicTacToe;
 
 import java.util.Scanner;
 
-import TicTacToe.Board.State;
 
 public class Console {
 	public Scanner sc = new Scanner(System.in);
 	public Board board = new Board();
 	
 	Console(){
-		board.initialization();
+//		board.initialization();
 	}
 	
 	public void play() {		
@@ -17,8 +16,21 @@ public class Console {
 		int x = sc.nextInt();
 		int y = sc.nextInt();
 		
-		board.move(x, y);
-		board.show();
+		if(board.isUseless(x, y)) {
+			board.move(x + y * Board.BOARD_LENGTH);
+			board.show();
+			if(board.checkWin(x, y)) {
+				System.out.println("win !!!!!!!!!!!!!!!!!!!1");
+			}
+			else {
+				System.out.println("????");
+				
+			}
+		}else {
+			System.out.println("this move is useless");
+		}
+		
+		
 //		if(board.checkWin()) {
 //			System.out.println("win!!!");
 //		}
@@ -28,17 +40,19 @@ public class Console {
 	public static void main(String[] args) {
 		Console console = new Console();
 		console.board.show();
-		for(int i = 0; i <2; i++) {
+	
+		int x = console.sc.nextInt();
+		int y = console.sc.nextInt();
+		
+		console.board.move(x + y * Board.BOARD_LENGTH);
+		console.board.show();
+		
+		
+		for(int i = 0; ; i++) {
 			console.play();
 			
 		}
-		Board newBoard = new Board();
-		newBoard = console.board.deepcopy();
-		newBoard.move(14, 14);
-		newBoard.show();
-		System.out.println("new length" + newBoard.getAvaliableMoveLen());
-		console.board.show();
-		System.out.println("old length" + console.board.getAvaliableMoveLen());
+		
 	}
 	
 }
