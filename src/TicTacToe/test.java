@@ -1,12 +1,17 @@
-package TicTacToe;
+package Generalized_Tic_tac_Toe;
 
 import java.util.HashSet;
 
 
+
+
+/**
+ * Represents the Tic Tac Toe board.
+ */
 public class Board {
 
     static final int BOARD_WIDTH = 15;
-    static final int AIM_LENGTH = 6;
+    static final int M = 5;
     static final int[][] SCORE = new int[][] {{10, 100, 1000, 100000, 10000000}, {1, 10, 100, 10000, 10000000}};
 
     public enum State {Blank, X, O}
@@ -24,15 +29,21 @@ public class Board {
     private int moveCount;
     private boolean gameOver;
 
-
+    /**
+     * Construct the Tic Tac Toe board.
+     */
     Board() {
         board = new State[BOARD_WIDTH][BOARD_WIDTH];
-        winningWindowsX = new int[2][AIM_LENGTH];
-        winningWindowsO = new int[2][AIM_LENGTH];
+        winningWindowsX = new int[2][M + 1];
+        winningWindowsO = new int[2][M + 1];
         movesAvailable = new HashSet<>();
         reset();
     }
 
+    /**
+     * Set the cells to be blank and load the available moves (all the moves are
+     * available at the start of the game).
+     */
     private void initialize () {
         for (int row = 0; row < BOARD_WIDTH; row++) {
             for (int col = 0; col < BOARD_WIDTH; col++) {
@@ -44,7 +55,7 @@ public class Board {
         scoreO = 0;
         
         for(int i = 0; i < 2; i++) {
-        	for(int j = 0; j < AIM_LENGTH; j++ ) {
+        	for(int j = 0; j < M; j++ ) {
 	        	winningWindowsX[i][j] = 0;
 	        	winningWindowsO[i][j] = 0;
         	}
@@ -52,12 +63,14 @@ public class Board {
         
         movesAvailable.clear();
 
-        for (int i = 0; i < BOARD_WIDTH*BOARD_WIDTH; i++) {
-            movesAvailable.add(i);
-        }
+//        for (int i = 0; i < BOARD_WIDTH*BOARD_WIDTH; i++) {
+//            movesAvailable.add(i);
+//        }
     }
 
-
+    /**
+     * Restart the game with a new blank board.
+     */
     void reset () {
         moveCount = 0;
         gameOver = false;
@@ -66,14 +79,26 @@ public class Board {
         initialize();
     }
     
-
+    /**
+     * Places an X or an O on the specified index depending on whose turn it is.
+     * @param index     the position on the board (example: index 4 is location (0, 1))
+     * @return          true if the move has not already been played
+     */
     public boolean isUseless (int index) {
         int col = index % BOARD_WIDTH;
         int row = index / BOARD_WIDTH;
         
-        int radius = 1;
+        int radius = 3;
         
-
+     // Check Manhattan distance with max limit 2*M - 1
+        int distance = Math.abs(row - preMoveRow) + Math.abs(col - preMoveCol);
+        if(moveCount < 5 && distance > 3) return true;
+        if(moveCount < 10 && distance > 5) return true;
+        if(moveCount < BOARD_WIDTH * BOARD_WIDTH / 2 && distance > 2 * M) return true;
+        
+        
+        
+        // Search for radius M, if all empty, it's a useless move.
         int start_row = Math.max(0, row - radius);
         int start_col = Math.max(0, col - radius);
         int end_row = Math.min(row + radius, BOARD_WIDTH - 1);
@@ -83,13 +108,7 @@ public class Board {
         for(int i = start_row; i <= end_row; i++) {
         	for(int j = start_col; j <= end_col; j++) {
         		if(board[i][j] != State.Blank) count++;
-//        		if(this.moveCount > 1) {
-//        			if(count > 1)	return false;
-//        		}else {
-//        			if(count >= 1)	return false;
-//        		}
-        		if(count > 1)	return false;
-        			
+        		if(count / moveCount > 1 / 3 || count > 3) return false;
         	}
         }
         
@@ -100,11 +119,39 @@ public class Board {
     }
     
 
+    /**
+     * Places an X or an O on the specified index depending on whose turn it is.
+     * @param index     the position on the board (example: index 4 is location (0, 1))
+     * @return          true if the move has not already been played
+     */
     public boolean move (int index) {
         return move(index % BOARD_WIDTH, index / BOARD_WIDTH);
     }
     
 
+    public void updateAvailable(int x, int y) {
+		int radius = 2;
+		int startX = Math.max(0, x - radius);
+		int startY = Math.max(0, y - radius);
+
+		int endX = Math.min(x + radius, BOARD_WIDTH - 1);
+		int endY = Math.min(y + radius, BOARD_WIDTH - 1);
+
+		for (int j = startY; j <= endY; j++) {
+			for (int i = startX; i <= endX; i++) {
+				if (this.board[j][i] == State.Blank) {
+					this.movesAvailable.add(j * BOARD_WIDTH + i);
+				}
+			}
+		}
+	}
+    
+    /**
+     * Places an X or an O on the specified location depending on who turn it is.
+     * @param x         the x coordinate of the location
+     * @param y         the y coordinate of the location
+     * @return          true if the move has not already been played
+     */
     private boolean move (int x, int y) {
 
         if (gameOver) {
@@ -118,7 +165,8 @@ public class Board {
         }
 
         moveCount++;
-        movesAvailable.remove(y * BOARD_WIDTH + x);
+//        movesAvailable.remove(y * BOARD_WIDTH + x);
+        this.updateAvailable(x, y);
 
         // The game is a draw.
         if (moveCount == BOARD_WIDTH * BOARD_WIDTH) {
@@ -134,23 +182,45 @@ public class Board {
         return true;
     }
 
+    /**
+     * Places an X or an O on the specified index depending on whose turn it is.
+     * @param index     the position on the board (example: index 4 is location (0, 1))
+     * @return          true if the move has not already been played
+     */
     public void setPreMove (int index) {
         preMoveCol = index % BOARD_WIDTH;
         preMoveRow = index / BOARD_WIDTH;
     }
     
+    
+    /**
+     * Check to see if the game is over (if there is a winner or a draw).
+     * @return          true if the game is over
+     */
     public boolean isGameOver () {
         return gameOver;
     }
 
+    /**
+     * Get a copy of the array that represents the board.
+     * @return          the board array
+     */
     State[][] toArray () {
         return board.clone();
     }
 
+    /**
+     * Check to see who's turn it is.
+     * @return          the player who's turn it is
+     */
     public State getTurn () {
         return playersTurn;
     }
 
+    /**
+     * Check to see who won.
+     * @return          the player who won (or Blank if the game is a draw)
+     */
     public State getWinner () {
         if (!gameOver) {
             throw new IllegalStateException("TicTacToe is not over yet.");
@@ -158,34 +228,193 @@ public class Board {
         return winner;
     }
 
+    /**
+     * Get the indexes of all the positions on the board that are empty.
+     * @return          the empty cells
+     */
     public HashSet<Integer> getAvailableMoves () {
         return movesAvailable;
     }
 
     
-  
+//    /**
+//     * Check to see who's turn it is.
+//     * @return          the player who's turn it is
+//     */
+//    public int getScoreX () {
+//    	scoreX = 0;
+//    	for(int i = 0; i < M; i++){
+//    		scoreX += winningWindowsX[i] * i * i;
+//    	}
+//        return scoreX;
+//    }
+//    
+//    /**
+//     * Check to see who's turn it is.
+//     * @return          the player who's turn it is
+//     */
+//    public int getScoreO () {
+//    	scoreO = 0;
+//    	for(int i = 0; i < M; i++){
+//    		scoreO += winningWindowsO[i] * i;
+//    	}
+//        return scoreO;
+//    }
     
+    /**
+     * Check to see who's turn it is.
+     * @return          the player who's turn it is
+     */
     public void printScoreO () {
-    	for(int i = 0; i < AIM_LENGTH; i++){
+    	for(int i = 0; i < M; i++){
     		System.out.print(winningWindowsO[i] + " ");
     	}
     	System.out.println();
     }
-
+    
+    /**
+     * Check to see who's turn it is.
+     * @return          the player who's turn it is
+     */
     public void printScoreX () {
-    	for(int i = 0; i < AIM_LENGTH; i++){
+    	for(int i = 0; i < M; i++){
     		System.out.print(winningWindowsX[i] + " ");
     	}
     	System.out.println();
     }
     
     
+    /**
+     * Check to see who's turn it is.
+     * @return          the player who's turn it is
+     */
     public int getBoardWidth () {
         return BOARD_WIDTH;
     }
-
     
+    /**
+     * Check to see who's turn it is.
+     * @return          the player who's turn it is
+     */
+//    public void updateScoreWindow (int col, int row, State player) {
+//    	int[] scoreWindow = new int[M + 1];
+//    	scoreWindow = (player == State.X) ? this.winningWindowsX : this.winningWindowsO;
+//    	State opponent = (player == State.X) ? State.O : State.X;
+//    	// Update row
+//    	int col_begin = Math.max(0, col - (M - 1));
+//    	
+//    	for(int i = col_begin; i <= col; i++) {
+//    		// winningWindow of (row, i) to (row, i + M - 1)
+//    		
+//    		int count = 0;   		
+//    		
+//    		for(int j = 0; j < M && count != -1; j++) {
+//    			if(i + j == BOARD_WIDTH || board[row][i + j] == opponent) {
+//    				count = -1;
+//    			}
+//    			else if(board[row][i + j] == player) {
+//    				count++;
+//    			}
+//    			
+//    		}
+//    		
+//    		
+//    		if(count > 0) {
+//    			scoreWindow[count - 1]--;
+//    			scoreWindow[count]++;
+//    		}
+//    	}
+//    	
+//    	
+//    	
+//    	// Update col
+//    	int row_begin = Math.max(0, row - (M - 1) );
+//    	
+//    	for(int i = row_begin; i <= row; i++) {
+//    		// winningWindow of (i, col) to (i + M - 1, col)
+//    		int count = 0;
+//    		for(int j = 0; j < M && count != -1; j++) {
+//    			if(i + j == BOARD_WIDTH || board[i + j][col] == opponent) {
+//    				count = -1;
+//    			}
+//    			else if(board[i + j][col] == player) {
+//    				count++;
+//    			}
+//    		}
+//    		
+//    		if(count > 0) {
+//    			scoreWindow[count - 1]--;
+//    			scoreWindow[count]++;
+//    		}
+//    	}
+//    	
+//    	
+//    	// Update diagonal '\'
+//    	int d1_row_end = Math.min(row + M - 1, BOARD_WIDTH - 1);
+//    	int d1_col_end = Math.min(col + M - 1, BOARD_WIDTH - 1);
+//    	
+//    	for(int i = row, j = col; i <= d1_row_end && j <= d1_col_end; i++, j++) {
+//    		int r = i - (M - 1);
+//    		int c = j - (M - 1);
+//    		if(r < 0 || c < 0) continue;
+//    		
+//    		// winningWindow of (r, c) to (i, j)
+//    		int count = 0;
+//    		for(; r <= i && c <= j && count != -1; r++, c++) {	
+//    			if(board[r][c] == opponent) {
+//    				count = -1;
+//    			}
+//    			else if(board[r][c] == player) {
+//    				count++;
+//    			}
+//    		}
+//    		
+//    		if(count > 0) {
+//    			scoreWindow[count - 1]--;
+//    			scoreWindow[count]++;
+//    		}
+//    	}
+//    	
+//    	
+//    	// Update diagonal '/'
+//    	int d2_row_end = Math.max(row - (M - 1), 0);
+//    	int d2_col_end = Math.min(col + M - 1, BOARD_WIDTH - 1);
+//    	
+//    	for(int i = row, j = col; i >= d2_row_end && j <= d1_col_end; i--, j++) {
+//    		int r = i + M - 1;
+//    		int c = j - (M - 1);
+//    		if(r >= BOARD_WIDTH || c < 0) continue;
+//    		
+//    		// winningWindow of (r, c) to (i, j)
+//    		int count = 0;
+//    		for(; r >= i && c <= j && count != -1; r--, c++) {	
+//    			if(board[r][c] == opponent) {
+//    				count = -1;
+//    			}
+//    			else if(board[r][c] == player) {
+//    				count++;
+//    			}
+//    		}
+//    		
+//    		if(count > 0) {
+//    			scoreWindow[count - 1]--;
+//    			scoreWindow[count]++;
+//    		}
+//    	}
+//    	   	
+//    	
+//    	if(player == State.X) {
+//    		this.winningWindowsX = scoreWindow;
+//    	}
+//    	else {
+//    		this.winningWindowsO = scoreWindow;
+//    	}
+//   	
+//        
+//    }
+
     public void updateScoreWindow (int x, int y, State player) {
+    	
 		
 		int count = 1;
 		int block = 0;
@@ -424,7 +653,8 @@ public class Board {
         }
         count += secondCount;
 		updateScoreArray(count, block, empty, player);
-        
+		
+		
     }
     
     public void updateScoreArray(int count, int block, int empty, State player) {
@@ -684,7 +914,7 @@ public class Board {
 	    return;
 	}
     
-    public int getScoreX() {
+	public int getScoreX() {
 		int result = 0;
 		for(int i = 0; i < 2; i++) {
 			for(int j = 0; j < 5; j++) {
@@ -704,6 +934,11 @@ public class Board {
 		return result;
 	}
     
+    /**
+     * Check the right diagonal to see if there is a winner.
+     * @param x     the x coordinate of the most recently played move
+     * @param y     the y coordinate of the most recently played move
+     */
     private void checkWin (int col, int row, State player) {
     	int N = BOARD_WIDTH;
     	// Check vertical
@@ -719,7 +954,7 @@ public class Board {
     		row_down++;
     	}
     	
-    	if(count_vertical >= AIM_LENGTH ) {
+    	if(count_vertical >= M ) {
     		winner = playersTurn;
             gameOver = true;
             return;
@@ -739,7 +974,7 @@ public class Board {
     		col_right++;
     	}
     	
-    	if(count_horizontal >= AIM_LENGTH) {
+    	if(count_horizontal >= M) {
     		winner = playersTurn;
             gameOver = true;
             return;
@@ -774,14 +1009,17 @@ public class Board {
     		col_right_up++;
     	}
     	
-    	if(count_diagonal_left >= AIM_LENGTH || count_diagonal_right >= AIM_LENGTH) {
+    	if(count_diagonal_left >= M || count_diagonal_right >= M) {
     		winner = playersTurn;
             gameOver = true;
             return;
     	}
     }
 
-
+    /**
+     * Get a deep copy of the Tic Tac Toe board.
+     * @return      an identical copy of the board
+     */
     public Board getDeepCopy () {
         Board board             = new Board();
 
