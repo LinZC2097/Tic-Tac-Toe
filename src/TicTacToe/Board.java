@@ -1,4 +1,4 @@
-package TicTacToe;
+package Generalized_Tic_tac_Toe;
 
 import java.util.HashSet;
 
@@ -7,7 +7,7 @@ public class Board {
 
     static final int BOARD_WIDTH = 15;
     static final int AIM_LENGTH = 6;
-    static final int[][] SCORE = new int[][] {{10, 100, 1000, 100000, 10000000}, {1, 10, 100, 10000, 10000000}};
+    static final long[][] SCORE = new long[][] {{10, 100, 1000, 10000, 100000, 1000000, 10000000, 100000000}, {1, 10, 100, 1000, 10000, 100000, 1000000, 10000000}};
 
     public enum State {Blank, X, O}
     private State[][] board;
@@ -16,8 +16,8 @@ public class Board {
     private HashSet<Integer> movesAvailable;
     private int[][] winningWindowsX;
     private int[][] winningWindowsO;
-    private int scoreX;
-    private int scoreO;
+    private long scoreX;
+    private long scoreO;
     private int preMoveRow;
     private int preMoveCol;
     
@@ -27,8 +27,8 @@ public class Board {
 
     Board() {
         board = new State[BOARD_WIDTH][BOARD_WIDTH];
-        winningWindowsX = new int[2][AIM_LENGTH];
-        winningWindowsO = new int[2][AIM_LENGTH];
+        winningWindowsX = new int[2][8];
+        winningWindowsO = new int[2][8];
         movesAvailable = new HashSet<>();
         reset();
     }
@@ -44,7 +44,7 @@ public class Board {
         scoreO = 0;
         
         for(int i = 0; i < 2; i++) {
-        	for(int j = 0; j < AIM_LENGTH; j++ ) {
+        	for(int j = 0; j < 8; j++ ) {
 	        	winningWindowsX[i][j] = 0;
 	        	winningWindowsO[i][j] = 0;
         	}
@@ -71,7 +71,7 @@ public class Board {
         int col = index % BOARD_WIDTH;
         int row = index / BOARD_WIDTH;
         
-        int radius = 1;
+        int radius = 2;
         
 
         int start_row = Math.max(0, row - radius);
@@ -83,12 +83,11 @@ public class Board {
         for(int i = start_row; i <= end_row; i++) {
         	for(int j = start_col; j <= end_col; j++) {
         		if(board[i][j] != State.Blank) count++;
-//        		if(this.moveCount > 1) {
-//        			if(count > 1)	return false;
-//        		}else {
-//        			if(count >= 1)	return false;
-//        		}
-        		if(count > 1)	return false;
+        		if(this.moveCount > 1) {
+        			if(count > 1)	return false;
+        		}else {
+        			if(count >= 1)	return false;
+        		}
         			
         	}
         }
@@ -166,14 +165,14 @@ public class Board {
   
     
     public void printScoreO () {
-    	for(int i = 0; i < AIM_LENGTH; i++){
+    	for(int i = 0; i < 8; i++){
     		System.out.print(winningWindowsO[i] + " ");
     	}
     	System.out.println();
     }
 
     public void printScoreX () {
-    	for(int i = 0; i < AIM_LENGTH; i++){
+    	for(int i = 0; i < 8; i++){
     		System.out.print(winningWindowsX[i] + " ");
     	}
     	System.out.println();
@@ -439,9 +438,9 @@ public class Board {
 		
 		
     	if (empty <= 0) {
-	        if (count >= 5) {
-	        	score[0][5 - 1]++;
-	        	return;// FIVE
+	        if (count >= 8) {
+	        	score[0][8 - 1]++;
+	        	return;
 	        }
 	        if (block == 0) {
 	            switch (count) {
@@ -459,6 +458,18 @@ public class Board {
 	                case 4:
 	                	score[0][4 - 1]++;
 	                	score[0][3 - 1]--;
+	                    return;
+	                case 5:
+	                	score[0][5 - 1]++;
+	                	score[0][4 - 1]--;
+	                    return;   
+	                case 6:
+	                	score[0][6 - 1]++;
+	                	score[0][5 - 1]--;
+	                    return;
+	                case 7:
+	                	score[0][7 - 1]++;
+	                	score[0][8 - 1]--;
 	                    return;
 	            }
 	        }
@@ -480,13 +491,24 @@ public class Board {
 	                	score[1][4 - 1]++;
 	                	score[1][3 - 1]--;
 	                    return;
+	                case 5:
+	                	score[1][5 - 1]++;
+	                	score[1][4 - 1]--;
+	                    return;
+	                case 6:
+	                	score[1][6 - 1]++;
+	                	score[1][5 - 1]--;
+	                    return;
+	                case 7:
+	                	score[1][7 - 1]++;
+	                	score[1][6 - 1]--;
+	                    return;
 	            }
 	        }
 
 	    } else if (empty == 1 || empty == count - 1) {
-	        //第1个是空位
-	        if (count >= 6) {
-	        	score[0][5 - 1]++;
+	        if (count >= 9) {
+	        	score[0][8 - 1]++;
 	        	return;
 	        }
 	        if (block == 0) {
@@ -505,6 +527,18 @@ public class Board {
 	                case 5:
 	                	score[0][4 - 1]++;
 	                	score[0][3 - 1]--;
+	                    return;
+	                case 6:
+	                	score[0][5 - 1]++;
+	                	score[0][4 - 1]--;
+	                    return;
+	                case 7:
+	                	score[0][6 - 1]++;
+	                	score[0][5 - 1]--;
+	                    return;
+	                case 8:
+	                	score[0][7 - 1]++;
+	                	score[0][6 - 1]--;
 	                    return;
 	            }
 	        }
@@ -524,14 +558,25 @@ public class Board {
 	                    return;
 	                case 5:
 	                	score[1][4 - 1]++;
-	                	score[1][2 - 1]--;
+	                	score[1][3 - 1]--;
+	                    return;
+	                case 6:
+	                	score[1][5 - 1]++;
+	                	score[1][4 - 1]--;
+	                    return;
+	                case 7:
+	                	score[1][6 - 1]++;
+	                	score[1][5 - 1]--;
+	                    return;
+	                case 8:
+	                	score[1][7 - 1]++;
+	                	score[1][6 - 1]--;
 	                    return;
 	            }
 	        }
 	    } else if (empty == 2 || empty == count - 2) {
-	        //第二个是空位
-	        if (count >= 7) {
-	        	score[0][5 - 1]++;
+	        if (count >= 10) {
+	        	score[0][8 - 1]++;
 	        	return;
 	        }
 	        if (block == 0) {
@@ -544,11 +589,25 @@ public class Board {
 	                case 5:
 	                	score[1][4 - 1]++;
 	                	score[1][3 - 1]--;
-	                    return;
+	                	return;
+	                	
 	                case 6:
-	                	score[0][4 - 1]++;
-	                	score[0][3 - 1]--;
-	                    return;
+	                	score[1][5 - 1]++;
+	                	score[1][4 - 1]--;
+	                	return;
+	                case 7:
+	                	score[1][6 - 1]++;
+	                	score[1][5 - 1]--;
+	                	return;
+	                case 8:
+	                	score[1][7 - 1]++;
+	                	score[1][6 - 1]--;
+	                	return;
+	                case 9:
+	                	score[0][7 - 1]++;
+	                	score[0][6 - 1]--;
+	                	return;
+
 	            }
 	        }
 
@@ -567,41 +626,67 @@ public class Board {
 	                	score[1][3 - 1]--;
 	                    return;
 	                case 6:
-	                	score[0][4 - 1]++;
-	                	score[0][3 - 1]--;
+	                	score[1][5 - 1]++;
+	                	score[1][4 - 1]--;
+	                    return;
+	                case 7:
+	                	score[1][6 - 1]++;
+	                	score[1][5 - 1]--;
+	                    return;
+	                case 8:
+	                	score[1][7 - 1]++;
+	                	score[1][6 - 1]--;
+	                    return;
+	                case 9:
+	                	score[0][7 - 1]++;
+	                	score[0][6 - 1]--;
 	                    return;
 	            }
 	        }
 
 	        if (block == 2) {
 	            switch (count) {
-	                case 4:
 	                case 5:
 	                case 6:
-	                	score[1][4 - 1]++;
-	                	score[1][3 - 1]--;
+	                	score[1][5 - 1]++;
+	                	score[1][4 - 1]--;
+	                    return;
+	                case 7:
+	                case 8:
+	                case 9:
+	                	score[1][7 - 1]++;
+	                	score[1][6 - 1]--;
 	                    return;
 	            }
 	        }
 	    } else if (empty == 3 || empty == count - 3) {
-	        if (count >= 8) {
-	        	score[0][5 - 1]++;
+	        if (count >= 11) {
+	        	score[0][8 - 1]++;
 	            return;
 	        }
 	        if (block == 0) {
 	            switch (count) {
 	                case 4:
 	                case 5:
+	                case 6:
 	                	score[0][3 - 1]++;
 	                	score[0][2 - 1]--;
-	                    return;
-	                case 6:
-	                	score[1][4 - 1]++;
-	                	score[1][3 - 1]--;
-	                    return;
+	                	return;
 	                case 7:
 	                	score[0][4 - 1]++;
 	                	score[0][3 - 1]--;
+	                    return;
+	                case 8:
+	                	score[0][5 - 1]++;
+	                	score[0][4 - 1]--;
+	                    return;
+	                case 9:
+	                	score[0][6 - 1]++;
+	                	score[0][5 - 1]--;
+	                    return;
+	                case 10:
+	                	score[0][7 - 1]++;
+	                	score[0][6 - 1]--;
 	                    return;
 	            }
 	        }
@@ -609,58 +694,101 @@ public class Board {
 	        if (block == 1) {
 	            switch (count) {
 	                case 4:
-	                case 5:
-	                case 6:
 	                	score[1][4 - 1]++;
 	                	score[1][3 - 1]--;
 	                    return;
+	                case 5:
+	                case 6:
 	                case 7:
-	                	score[0][4 - 1]++;
-	                	score[0][3 - 1]--;
+	                	score[1][5 - 1]++;
+	                	score[1][4 - 1]--;
+	                	return;
+	                case 8:
+	                	score[0][5 - 1]++;
+	                	score[0][4 - 1]--;
+	                	return;
+	                case 9:
+	                	score[0][6 - 1]++;
+	                	score[0][5 - 1]--;
+	                	return;
+	                case 10:
+	                	score[0][7 - 1]++;
+	                	score[0][6 - 1]--;
 	                    return;
 	            }
 	        }
 
 	        if (block == 2) {
 	            switch (count) {
-	                case 4:
-	                case 5:
-	                case 6:
+	            	case 5:
+	            		score[1][5 - 1]++;
+	            		score[1][4 - 1]--;
+	            		return;
+	            	case 6:
 	                case 7:
-	                	score[1][4 - 1]++;
-	                	score[1][3 - 1]--;
+	                	score[1][6 - 1]++;
+	                	score[1][5 - 1]--;
+	                    return;
+	                case 8:
+	                case 9:
+	                case 10:
+	                	score[1][7 - 1]++;
+	                	score[1][6 - 1]--;
 	                    return;
 	            }
 	        }
 	    } else if (empty == 4 || empty == count - 4) {
-	        if (count >= 9) {
-	        	score[0][5 - 1]++;
+	        if (count >= 12) {
+	        	score[0][8 - 1]++;
 	            return;
 	        }
 	        if (block == 0) {
 	            switch (count) {
 	                case 5:
 	                case 6:
+	                	score[1][5 - 1]++;
+	                	score[1][4 - 1]--;
+	                	return;
 	                case 7:
 	                case 8:
-	                	score[0][4 - 1]++;
-	                	score[0][3 - 1]--;
+	                	score[0][5 - 1]++;
+	                	score[0][4 - 1]--;
+	                	return;
+	                case 9:
+	                case 10:
+	                	score[0][6 - 1]++;
+	                	score[0][5 - 1]--;
+	                	return;
+	                case 11:
+	                	score[0][7 - 1]++;
+	                	score[0][6 - 1]--;
 	                    return;
 	            }
 	        }
 
 	        if (block == 1) {
 	            switch (count) {
-	                case 4:
 	                case 5:
 	                case 6:
-	                case 7:
 	                	score[1][4 - 1]++;
 	                	score[1][3 - 1]--;
-	                    return;
+	                	return;
+	                case 7:
 	                case 8:
-	                	score[0][4 - 1]++;
-	                	score[0][3 - 1]--;
+	                	score[1][5 - 1]++;
+	                	score[1][4 - 1]--;
+	                	return;
+	                case 9:
+	                	score[0][5 - 1]++;
+	                	score[0][4 - 1]--;
+	                	return;
+	                case 10:
+	                	score[0][6 - 1]++;
+	                	score[0][5 - 1]--;
+	                	return;
+	                case 11:
+	                	score[0][7 - 1]++;
+	                	score[0][6 - 1]--;
 	                    return;
 	            }
 	        }
@@ -669,17 +797,195 @@ public class Board {
 	            switch (count) {
 	                case 5:
 	                case 6:
+	                	score[1][5 - 1]++;
+	                	score[1][4 - 1]--;
+	                    return;
 	                case 7:
 	                case 8:
-	                	score[1][4 - 1]++;
-	                	score[1][3 - 1]--;
-	                    return;
+	                case 9:
+	                case 10:
+	                case 11:
+	                	score[1][7 - 1]++;
+	                	score[1][7 - 1]--;
+	                	return;
 	            }
 	        }
 	    } else if (empty == 5 || empty == count - 5) {
-	    	score[0][5 - 1]++;
+	    	if (count >= 13) {
+	        	score[0][8 - 1]++;
+	            return;
+	        }
+	    	if (block == 0) {
+	    		switch (count) {
+		    		case 6:
+	                case 7:
+	                case 8:
+	                	score[0][5 - 1]++;
+	                	score[0][4 - 1]--;
+	                	return;
+	                case 9:
+	                case 10:
+	                case 11:
+	                	score[0][6 - 1]++;
+	                	score[0][5 - 1]--;
+	                	return;
+	                case 12:
+	                	score[0][7 - 1]++;
+	                	score[0][6 - 1]--;
+	                	return;
+	    		}
+	    	}
+	    	if (block == 1) {
+	    		switch (count) {
+		    		case 6:
+		    			score[1][5 - 1]++;
+	                	score[1][4 - 1]--;
+	                	return;
+	                case 7:
+	                case 8:
+	                	score[1][7 - 1]++;
+	                	score[1][6 - 1]--;
+	                	return;
+	                case 9:
+	                case 10:
+	                case 11:
+	                case 12:
+	                	score[0][7 - 1]++;
+	                	score[0][6 - 1]--;
+	                	return;
+	    		}
+	    	}
+	    	if( block == 2) {
+	    		switch (count) {
+	                case 6:
+	                	score[1][5 - 1]++;
+	                	score[1][4 - 1]--;
+	                	return;
+	                case 7:
+	                case 8:
+	                case 9:
+	                case 10:
+	                case 11:
+	                case 12:
+	                	score[1][7 - 1]++;
+	                	score[1][7 - 1]--;
+	                	return;
+	    		}
+	    	}
+	    } else if (empty == 6 || empty == count - 6) {
+	    	if (count >= 14) {
+	        	score[0][8 - 1]++;
+	            return;
+	        }
+	    	if (block == 0) {
+	    		switch (count) {
+	                case 7:
+	                case 8:
+	                case 9:
+	                case 10:
+	                case 11:
+	                	score[0][6 - 1]++;
+	                	score[0][5 - 1]--;
+	                	return;
+	                case 12:
+	                case 13:
+	                case 14:
+	                	score[0][7 - 1]++;
+	                	score[0][6 - 1]--;
+	                	return;
+	    		}
+	    	}
+	    	if (block == 1) {
+	    		switch (count) {
+		    		case 7:
+	                case 8:
+	                case 9:
+	                case 10:
+	                case 11:
+	                	score[1][6 - 1]++;
+	                	score[1][5 - 1]--;
+	                	return;
+	                case 12:
+	                case 13:
+	                case 14:
+	                	score[1][7 - 1]++;
+	                	score[1][6 - 1]--;
+	                	return;
+	    		}
+	    	}
+	    	if( block == 2) {
+	    		switch (count) {
+	                case 7:
+	                case 8:
+	                case 9:
+	                case 10:
+	                case 11:
+	                case 12:
+	                case 13:
+	                	score[1][7 - 1]++;
+	                	score[1][7 - 1]--;
+	                	return;
+	    		}
+	    	}
+	    } else if (empty == 7 || empty == count - 7) {
+	    	if (count >= 15) {
+	        	score[0][8 - 1]++;
+	            return;
+	        }
+	    	if (block == 0) {
+	    		switch (count) {
+	                case 8:
+	                case 9:
+	                case 10:
+	                case 11:
+	                	score[0][6 - 1]++;
+	                	score[0][5 - 1]--;
+	                	return;
+	                case 12:
+	                case 13:
+	                case 14:
+	                	score[0][7 - 1]++;
+	                	score[0][6 - 1]--;
+	                	return;
+	    		}
+	    	}
+	    	if (block == 1) {
+	    		switch (count) {
+		    		case 7:
+	                case 8:
+	                case 9:
+	                case 10:
+	                case 11:
+	                	score[1][6 - 1]++;
+	                	score[1][5 - 1]--;
+	                	return;
+	                case 12:
+	                case 13:
+	                case 14:
+	                	score[1][7 - 1]++;
+	                	score[1][6 - 1]--;
+	                	return;
+	    		}
+	    	}
+	    	if( block == 2) {
+	    		switch (count) {
+	                case 8:
+	                case 9:
+	                case 10:
+	                case 11:
+	                case 12:
+	                case 13:
+	                case 14:
+	                	score[1][7 - 1]++;
+	                	score[1][7 - 1]--;
+	                	return;
+	    		}
+	    	}
+	    } else if (empty == 8 || empty == count - 8) {
+	    	score[0][8 - 1]++;
             return;
 	    }
+    	
 
 	    return;
 	}
