@@ -1,90 +1,210 @@
 package TicTacToe;
 
 
-public class AlphaBetaPruning {
+import TicTacToe.Board.State;;
 
-	private int depth = 0;
+/**
+ * Uses the Alpha-Beta Pruning algorithm to play a move in a game of Tic Tac Toe
+ * but includes depth in the evaluation function.
+ *
+ * The vanilla MiniMax algorithm plays perfectly but it may occasionally
+ * decide to make a move that will results in a slower victory or a faster loss.
+ * For example, playing the move 0, 1, and then 7 gives the AI the opportunity
+ * to play a move at index 6. This would result in a victory on the diagonal.
+ * But the AI does not choose this move, instead it chooses another one. It
+ * still wins inevitably, but it chooses a longer route. By adding the depth
+ * into the evaluation function, it allows the AI to pick the move that would
+ * make it win as soon as possible.
+ */
+class AlphaBetaAdvanced {
 
-	public AlphaBetaPruning(int depth) {
+    private static int maxPly = 4;
+    private static int deepening = 0;
 
-		this.depth = depth;
-	}
+    /**
+     * AlphaBetaAdvanced cannot be instantiated.
+     */
+    private AlphaBetaAdvanced() {}
 
-	public void run(Board board) {
-		
+    /**
+     * Execute the algorithm.
+     * @param player        the player that the AI will identify as
+     * @param board         the Tic Tac Toe board to play on
+     * @param maxPly        the maximum depth
+     */
+    static void run (Board.State player, Board board) {
 
-		int width = Board.BOARD_LENGTH;
+        if (maxPly < 1) {
+            throw new IllegalArgumentException("Maximum depth must be greater than 0.");
+        }
 
-		if (board.getAvailableMoves().size() == width * width) {
-			if (width % 2 == 1) {
-				board.move(width * width / 2);
-				board.setPreMove(width * width / 2);
-			} else {
-				board.move(width * width / 2 - width / 2 - 1);
-				board.setPreMove(width * width / 2 - width / 2 - 1);
-			}
-		} else {
-			alphaBetaPruning(Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, board, 0);
-		}
-	}
+        //deepening++;
+        /*
+        
+        if(maxPly < 4) {
+        	if(deepening == 6) {
+        		maxPly++;
+        		System.out.println("Depth changes to " + maxPly);
+        	}
+        	if(deepening == 10) {
+        		maxPly++;
+        		System.out.println("Depth changes to " + maxPly);
+        	}
+        }
+        */
+        
+        int width = board.getBoardWidth();
+        
+        if(board.getAvailableMoves().size() == width * width) {
+        	if(width % 2 == 1) {
+        		board.move(width * width / 2);
+//        		board.setPreMove(width * width / 2);
+        	}
+        	else {
+        		board.move(width * width / 2 - width / 2 - 1);
+//        		board.setPreMove(width * width / 2 - width / 2 - 1);
+        	}
+        }
+        else {        
+        	alphaBetaPruning(player, board, Double.NEGATIVE_INFINITY + 100, Double.POSITIVE_INFINITY - 100, 0);
+        }
+    }
 
-	public int alphaBetaPruning(int alpha, int beta, Board board, int curDepth) {
-		if (curDepth == this.depth || board.isGameOver()) {
-			return this.value(board);
-		}
-		if (board.getPlayer() == Board.State.O) {
-			return getMax(alpha, beta, board, curDepth);
-		} else {
-			return getMin(alpha, beta, board, curDepth);
-		}
-	}
+    /**
+     * The meat of the algorithm.
+     * @param player        the player that the AI will identify as
+     * @param board         the Tic Tac Toe board to play on
+     * @param alpha         the alpha value
+     * @param beta          the beta value
+     * @param currentPly    the current depth
+     * @return              the score of the board
+     */
+    private static int alphaBetaPruning (Board.State player, Board board, double alpha, double beta, int currentPly) {
+    	
+        if (currentPly++ == maxPly || board.isGameOver()) {
+        	return evaluate(player, board, currentPly);
+        }
+        
+        if (board.getTurn() == player) {
+            return getMax(player, board, alpha, beta, currentPly);
+        } else {
+            return getMin(player, board, alpha, beta, currentPly);
+        }
+    }
 
-	public int getMax(int alpha, int beta, Board board, int curDepth) {
-		for (int moveIndex : board.getAvailableMove()) {
+    /**
+     * Play the move with the highest score.
+     * @param player        the player that the AI will identify as
+     * @param board         the Tic Tac Toe board to play on
+     * @param alpha         the alpha value
+     * @param beta          the beta value
+     * @param currentPly    the current depth
+     * @return              the score of the board
+     */
+    private static int getMax (Board.State player, Board board, double alpha, double beta, int currentPly) {
+        int indexOfBestMove = -1;
+        
+        for (Integer theMove : board.getAvailableMoves()) {
+            Board modifiedBoard = board.getDeepCopy();
+            
+            if(modifiedBoard.isUseless(theMove)) continue;
+            
+            modifiedBoard.move(theMove);
+            int score = alphaBetaPruning(player, modifiedBoard, alpha, beta, currentPly);
+            //System.out.println("Player O moves at (" + theMove / board.getBoardWidth() + "," + theMove % board.getBoardWidth() + "), score = " + score);
+            
+            
+            if (score > alpha) {
+                alpha = score;
+                indexOfBestMove = theMove;
+            }
 
-			Board copyedBoard = board.deepcopy();
-			copyedBoard.move(moveIndex);
+            if (alpha >= beta) {
+                break;
+            }
+        }
+        
+        if (indexOfBestMove != -1) {
+            board.move(indexOfBestMove);
+            if(currentPly == 1) {
+            	System.out.println("Player O moves at (" + indexOfBestMove / board.getBoardWidth() + "," + indexOfBestMove % board.getBoardWidth() + "), alpha = " + alpha + ",beta = " + beta);
+//            	board.setPreMove(indexOfBestMove);
+            }
+        }
+        
+        return (int)alpha;
+    }
 
-			int v = this.alphaBetaPruning(alpha, beta, copyedBoard, curDepth + 1);
-			if (v >= beta) {
-				board.move(moveIndex);
-				return v;
-			}
-			alpha = Math.max(v, alpha);
-		}
-		return alpha;
-	}
+    /**
+     * Play the move with the lowest score.
+     * @param player        the player that the AI will identify as
+     * @param board         the Tic Tac Toe board to play on
+     * @param alpha         the alpha value
+     * @param beta          the beta value
+     * @param currentPly    the current depth
+     * @return              the score of the board
+     */
+    private static int getMin (Board.State player, Board board, double alpha, double beta, int currentPly) {
+        int indexOfBestMove = -1;
+        
+        for (Integer theMove : board.getAvailableMoves()) {
 
-	public int getMin(int alpha, int beta, Board board, int curDepth) {
-		for (int moveIndex : board.getAvailableMove()) {
+            Board modifiedBoard = board.getDeepCopy();
+            
+            if(modifiedBoard.isUseless(theMove)) continue;
+            
+            modifiedBoard.move(theMove);
+            int score = alphaBetaPruning(player, modifiedBoard, alpha, beta, currentPly);
+            
+            //System.out.println("Player X moves at (" + theMove / board.getBoardWidth() + "," + theMove % board.getBoardWidth() + "), score = " + score);
+            
+            if (score < beta) {
+                beta = score;
+                indexOfBestMove = theMove;
+            }
 
-			Board copyedBoard = board.deepcopy();
-			copyedBoard.move(moveIndex);
+            if (alpha >= beta) {
+                break;
+            }
+        }
+        
 
-			int v = this.alphaBetaPruning(alpha, beta, copyedBoard, curDepth);
-			if (v <= alpha) {
-				board.move(moveIndex);
-				return v;
-			}
-			beta = Math.min(v, beta);
-		}
-		return beta;
-	}
+        if (indexOfBestMove != -1) {
+            board.move(indexOfBestMove);
+            if(currentPly == 1) {
+            	System.out.println("Player X moves at (" + indexOfBestMove / board.getBoardWidth() + "," + indexOfBestMove % board.getBoardWidth() + "), alpha = " + alpha + ",beta = " + beta);
+//            	board.setPreMove(indexOfBestMove);
+            }
+        }
+        return (int)beta;
+    }
 
-	public int value(Board board) {
-		if (board.getPlayer() == Board.State.Blank) {
-			throw new IllegalArgumentException("Player must be X or O.");
-		}
 
-		Board.State opponent = (board.getPlayer() == Board.State.X) ? Board.State.O : Board.State.X;
+    /**
+     * Get the score of the board. Takes depth into account.
+     * @param player        the play that the AI will identify as
+     * @param board         the Tic Tac Toe board to play on
+     * @param currentPly    the current depth
+     * @return              the score of the board
+     */
+    private static int evaluate (Board.State player, Board board, int currentPly) {
 
-		if (board.isGameOver() && board.getWinner() == Board.State.O) {
-			return Integer.MAX_VALUE;
-		} else if (board.isGameOver() && board.getWinner() == Board.State.X) {
-			return Integer.MIN_VALUE;
-		} else {
-			return board.getScore();
-		}
-	}
+        if (player == Board.State.Blank) {
+            throw new IllegalArgumentException("Player must be X or O.");
+        }
+
+        Board.State opponent = (player == Board.State.X) ?  Board.State.O : Board.State.X;
+        
+        if (board.isGameOver() && board.getWinner() == Board.State.O) {
+            return Integer.MAX_VALUE - currentPly;
+        } else if (board.isGameOver() && board.getWinner() == Board.State.X) {
+            return Integer.MIN_VALUE + currentPly;
+        } else if(player == State.O) {
+        	return board.getScoreO() - board.getScoreX();
+        }
+        else {
+        	return board.getScoreX() - board.getScoreO();
+        }
+    }
 
 }

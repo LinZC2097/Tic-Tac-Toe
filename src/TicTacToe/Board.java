@@ -1,17 +1,18 @@
-package Generalized_Tic_tac_Toe;
+package TicTacToe;
 
 import java.util.HashSet;
 
 
 public class Board {
 
-    static final int BOARD_WIDTH = 15;
-    static final int AIM_LENGTH = 6;
+    static final int BOARD_WIDTH = 16;
+    static final int AIM_LENGTH = 8;
     static final long[][] SCORE = new long[][] {{10, 100, 1000, 10000, 100000, 1000000, 10000000, 100000000}, {1, 10, 100, 1000, 10000, 100000, 1000000, 10000000}};
 
     public enum State {Blank, X, O}
     private State[][] board;
     private State playersTurn;
+    private State oppnent;
     private State winner;
     private HashSet<Integer> movesAvailable;
     private int[][] winningWindowsX;
@@ -62,17 +63,24 @@ public class Board {
         moveCount = 0;
         gameOver = false;
         playersTurn = State.X;
+        oppnent = State.O;
         winner = State.Blank;
         initialize();
     }
     
+    public int getMoveCount() {
+    	return this.moveCount;
+    }
 
     public boolean isUseless (int index) {
         int col = index % BOARD_WIDTH;
         int row = index / BOARD_WIDTH;
-        
         int radius = 2;
-        
+//        if(this.moveCount < 10) {
+//        	radius = 2;
+//        }else {
+//        	radius = 3;
+//        }
 
         int start_row = Math.max(0, row - radius);
         int start_col = Math.max(0, col - radius);
@@ -80,6 +88,9 @@ public class Board {
         int end_col = Math.min(col + radius, BOARD_WIDTH - 1);
         
         int count = 0;
+        int playerCount = 0;
+        int oppnentCount = 0;
+        outLoop:
         for(int i = start_row; i <= end_row; i++) {
         	for(int j = start_col; j <= end_col; j++) {
         		if(board[i][j] != State.Blank) count++;
@@ -88,18 +99,85 @@ public class Board {
         		}else {
         			if(count >= 1)	return false;
         		}
-        			
         	}
         }
-        
-        
-        
         
         return true;
     }
     
+    
+    
+    
+    public boolean isMoreTwo(int y, int x) {
+    	int startX = Math.max(0, x - 2);
+    	int startY = Math.max(0, y - 2);
+    	int endX = Math.min(BOARD_WIDTH - 1, x + 2);
+    	int endY = Math.min(BOARD_WIDTH - 1, y + 2);
+    	
+    	for(int i = startX; i < endX; i++) {
+    		if(i == x) {
+    			continue;
+    		}
+    		if(i == x - 1 && i + 2 <= endX) {
+    			if(this.board[y][i] == this.board[y][i + 2] && this.board[y][i] != State.Blank ) {
+    				return true;
+    			}
+    		}
+    		if(this.board[y][i] == this.board[y][i + 1] && this.board[y][i] != State.Blank ) {
+    			return true;
+    		}
+    	}
+    	
+    	for(int i = startY; i < endY; i++) {
+    		if(i == y) {
+    			continue;
+    		}
+    		if(i == y - 1 && i + 2 <= endY) {
+    			if(this.board[i][x] == this.board[i + 2][x] && this.board[i][x] != State.Blank ) {
+    				return true;
+    			}
+    		}
+    		if(this.board[i][x] == this.board[i + 1][x] && this.board[i][x] != State.Blank) {
+    			return true;
+    		}
+    	}
+    	
+    	for(int i = startX, j = startY; i < endX && j < endY; i++, j++) {
+    		if(i == x) {
+    			continue;
+    		}
+    		if(i == x - 1 && i + 2 <= endX && j + 2 <= endY) {
+    			if(this.board[j][i] == this.board[j + 2][i + 2] && this.board[j][i] != State.Blank ) {
+    				return true;
+    			}
+    		}
+    		if(this.board[j][i] == this.board[j + 1][i + 1] && this.board[j][i] != State.Blank) {
+    			return true;
+    		}
+    	}
+    	
+    	for(int i = startX, j = endY; i < endX && j > startY; i++, j--) {
+    		if(i == x) {
+    			continue;
+    		}
+    		if(i == x - 1 && i + 2 <= endX && j - 2 >= startY) {
+    			if(this.board[j][i] == this.board[j - 2][i + 2] && this.board[j][i] != State.Blank ) {
+    				return true;
+    			}
+    		}
+    		if(this.board[j][i] == this.board[j - 1][i + 1] && this.board[j][i] != State.Blank) {
+    			return true;
+    		}
+    	}
+    	
+    	return false;
+    }
+    
+    
+    
 
     public boolean move (int index) {
+    	this.setPreMove(index);
         return move(index % BOARD_WIDTH, index / BOARD_WIDTH);
     }
     
@@ -128,7 +206,7 @@ public class Board {
         // Check for a winner.
         checkWin(x, y, playersTurn);
         updateScoreWindow(x, y, playersTurn);
-
+        oppnent = playersTurn;
         playersTurn = (playersTurn == State.X) ? State.O : State.X;
         return true;
     }
@@ -136,6 +214,10 @@ public class Board {
     public void setPreMove (int index) {
         preMoveCol = index % BOARD_WIDTH;
         preMoveRow = index / BOARD_WIDTH;
+    }
+    
+    public int[] getPreMove () {
+    	return new int[] {preMoveRow, preMoveCol};
     }
     
     public boolean isGameOver () {
@@ -1101,6 +1183,7 @@ public class Board {
         }
 
         board.playersTurn       = this.playersTurn;
+        board.oppnent	        = this.oppnent;
         board.winner            = this.winner;
         board.movesAvailable    = new HashSet<>();
         board.movesAvailable.addAll(this.movesAvailable);
