@@ -4,8 +4,9 @@ public class Move {
 	private int moveX;
 	private int moveY;
 
-	public Move() {
-		
+	public Move(int x, int y) {
+		this.moveX = x;
+		this.moveY = y;
 	}
 	
 	public int getMoveX() {

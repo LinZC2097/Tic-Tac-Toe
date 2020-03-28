@@ -1,7 +1,10 @@
 package TicTacToe;
 import TicTacToe.Algorithms;
 
+import java.io.IOException;
+import java.util.Arrays;
 import java.util.Scanner;
+import java.util.concurrent.TimeUnit;
 
 
 public class Console {
@@ -33,6 +36,116 @@ public class Console {
             }
         }
     }
+    
+    private void firstPlay() {
+    	System.out.println("Starting a new game.");
+    	int[] move = new int[2];
+    	int[] oppnentMove = new int[2];
+    	while (true) {
+    		// run AI
+    		long bt = System.currentTimeMillis();  
+        	Algorithms.alphaBetaAdvanced(Board.State.X, board);
+        	move = board.getPreMove();
+        	System.out.printf("x:%d, y:%d", move[0], move[1]);
+        	System.out.printf("\nmoveNum:%d", board.getMoveCount());
+        	long et2 = System.currentTimeMillis();  
+        	System.out.println("\n[1]耗时:"+(et2 - bt)+ "ms");  
+        	
+        	// send to API
+        	try {
+				sender.sendMove(board.getPreMoveCol(), board.getPreMoveRow());
+			} catch (IOException e) {
+				System.out.println("console sender get error");
+				e.printStackTrace();
+			}
+        	printGameStatus();
+        	
+        	
+        	// get oppnent's move
+        	while (true) {
+        		try {
+					TimeUnit.SECONDS.sleep(5);
+				} catch (InterruptedException e) {
+					System.out.println("console sleep error");
+					e.printStackTrace();
+				}
+        		try {
+					oppnentMove = sender.getMove();
+				} catch (IOException e) {
+					System.out.println("console sender get error");
+					e.printStackTrace();
+				}
+        		if(!Arrays.equals(move, oppnentMove)) {
+        			board.move(oppnentMove[0] * Board.BOARD_WIDTH + oppnentMove[1]);
+        			break;
+        		}
+        	}
+        	
+        	printGameStatus();
+
+            if (board.isGameOver()) {
+                printWinner();
+                break;
+            }
+        }
+    }
+    
+    private void secondPlay() {
+    	System.out.println("Starting a new game.");
+    	int[] move = new int[2];
+    	int[] oppnentMove = new int[2];
+    	while (true) {
+    		// get oppnent's move
+        	while (true) {
+        		try {
+					TimeUnit.SECONDS.sleep(5);
+				} catch (InterruptedException e) {
+					System.out.println("console sleep error");
+					e.printStackTrace();
+				}
+        		try {
+					oppnentMove = sender.getMove();
+				} catch (IOException e) {
+					System.out.println("console sender get error");
+					e.printStackTrace();
+				}
+        		if(!Arrays.equals(move, oppnentMove) && oppnentMove[0] != -1) {
+        			board.move(oppnentMove[0] * Board.BOARD_WIDTH + oppnentMove[1]);
+        			break;
+        		}
+        		System.out.println("x: " + oppnentMove[0]);
+ 	            System.out.println("y: " + oppnentMove[1]);
+        	}
+        	
+        	printGameStatus();
+    		
+    		
+    		// run AI
+    		long bt = System.currentTimeMillis();  
+        	Algorithms.alphaBetaAdvanced(Board.State.O, board);
+        	move = board.getPreMove();
+        	System.out.printf("x:%d, y:%d", move[0], move[1]);
+        	System.out.printf("\nmoveNum:%d", board.getMoveCount());
+        	long et2 = System.currentTimeMillis();  
+        	System.out.println("\n[1]耗时:"+(et2 - bt)+ "ms");  
+        	
+        	// send to API
+        	try {
+				sender.sendMove(board.getPreMoveCol(), board.getPreMoveRow());
+			} catch (IOException e) {
+				System.out.println("console sender get error");
+				e.printStackTrace();
+			}
+        	printGameStatus();
+        	
+
+            if (board.isGameOver()) {
+                printWinner();
+                break;
+            }
+        }
+    }
+    
 
     private void playMove () {
     	
@@ -133,8 +246,26 @@ public class Console {
 
     public static void main(String[] args) {
     	System.out.println("Input the game Id: ");
-        Console ticTacToe = new Console(new Scanner(System.in).nextInt());
-        ticTacToe.play();
+    	Scanner sc = new Scanner(System.in);
+        Console ticTacToe = new Console(sc.nextInt());
+        
+        System.out.println("input your order:(first: 1, second 2): ");
+        int i = sc.nextInt();
+        while(true) {
+        	if(i == 1 || i == 2) {
+        		break;
+        	}
+        	else {
+        		i = sc.nextInt();
+        	}
+        }
+        
+        if(i == 1) {
+        	ticTacToe.firstPlay();
+        }else {
+        	ticTacToe.secondPlay();
+        }
+//        ticTacToe.play();
     }
 
 }

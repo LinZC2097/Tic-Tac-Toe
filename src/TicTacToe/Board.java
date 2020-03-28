@@ -5,8 +5,9 @@ import java.util.HashSet;
 
 public class Board {
 
-    static final int BOARD_WIDTH = 16;
-    static final int AIM_LENGTH = 8;
+    static final int BOARD_WIDTH = 12;
+    static final int AIM_LENGTH = 6;
+    
     static final long[][] SCORE = new long[][] {{10, 100, 1000, 10000, 100000, 1000000, 10000000, 100000000}, {1, 10, 100, 1000, 10000, 100000, 1000000, 10000000}};
 
     public enum State {Blank, X, O}
@@ -218,6 +219,14 @@ public class Board {
     
     public int[] getPreMove () {
     	return new int[] {preMoveRow, preMoveCol};
+    }
+    
+    public int getPreMoveRow() {
+    	return this.preMoveRow;
+    }
+    
+    public int getPreMoveCol() {
+    	return this.preMoveCol;
     }
     
     public boolean isGameOver () {

@@ -1,7 +1,12 @@
 package TicTacToe;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import com.google.gson.Gson;
 
 import okhttp3.Response;
@@ -26,6 +31,7 @@ public class APISender {
     }
     
     public int[] getMove() throws IOException {
+    	
         Request request = new Request.Builder()
                 .url(String.format("%s?%s%s", HOST, "type=moves&count=1&gameId=", GAMEID))
                 .addHeader("x-api-key", APIKEY)
@@ -38,12 +44,21 @@ public class APISender {
             if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
 
             Gson gson = new Gson();
-            Move move = gson.fromJson(response.body().string(), Move.class);
-            return move.getMove();
+            Moves moves = gson.fromJson(response.body().string(), Moves.class);
+            try {
+            	JsonObject move = (JsonObject) moves.getMoves().get(0);
+	            int x = Integer.parseInt(move.get("moveX").toString().replace("\"", ""));
+	            int y = Integer.parseInt(move.get("moveY").toString().replace("\"", ""));
+	            System.out.println("x: " + x);
+	            System.out.println("y: " + y);
+	            return  new Move(x, y).getMove();
+            }catch (Exception e) {
+            	return new int[] {-1, -1};
+            }
         }
     }
     
-	 public boolean requestMove(int x, int y) throws IOException {
+	 public boolean sendMove(int x, int y) throws IOException {
 
 	        RequestBody body = new FormBody.Builder()
 	                .add("gameId", GAMEID)
@@ -70,5 +85,44 @@ public class APISender {
 	        return true;
     }
     
+	public static void main(String[] args) {
+		APISender sender = new APISender(235);
+		int[] move;
+		try {
+			move = sender.getMove();
+			System.out.println(move[0] + move[1]);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
     
 }
+
+class Moves{
+	private JsonArray moves;
+	public Moves() {
+		
+	}
+	
+	public JsonArray getMoves() {
+		return this.moves;
+	}
+	
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
