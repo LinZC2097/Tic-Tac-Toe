@@ -3,24 +3,18 @@ import TicTacToe.Algorithms;
 
 import java.util.Scanner;
 
-/**
- * For playing Tic Tac Toe in the console.
- */
+
 public class Console {
 
     private Board board;
     private Scanner sc = new Scanner(System.in);
-
-    /**
-     * Construct Console.
-     */
-    private Console() {
+    private APISender sender;
+    
+    private Console(int GameId) {
         board = new Board();
+        this.sender = new APISender(GameId);
     }
 
-    /**
-     * Begin the game.
-     */
     private void play () {
 
         System.out.println("Starting a new game.");
@@ -40,9 +34,6 @@ public class Console {
         }
     }
 
-    /**
-     * Handle the move to be played, either by the player or the AI.
-     */
     private void playMove () {
     	
         if (board.getTurn() == Board.State.X) {
@@ -81,17 +72,11 @@ public class Console {
     	
     }
 
-    /**
-     * Print out the board and the player who's turn it is.
-     */
     private void printGameStatus () {
         System.out.println("\n" + board + "\n");
         System.out.println(board.getTurn().name() + "'s turn.");
     }
 
-    /**
-     * For reading in and interpreting the move that the user types into the console.
-     */
     private void getPlayerMove () {
         System.out.print("Index of move: ");
 
@@ -110,9 +95,6 @@ public class Console {
         }
     }
 
-    /**
-     * Print out the winner of the game.
-     */
     private void printWinner () {
         Board.State winner = board.getWinner();
 
@@ -125,10 +107,6 @@ public class Console {
         }
     }
 
-    /**
-     * Reset the game if the player wants to play again.
-     * @return      true if the player wants to play again
-     */
     private boolean tryAgain () {
         if (promptTryAgain()) {
             board.reset();
@@ -140,10 +118,6 @@ public class Console {
         return false;
     }
 
-    /**
-     * Ask the player if they want to play again.
-     * @return      true if the player wants to play again
-     */
     private boolean promptTryAgain () {
         while (true) {
             System.out.print("Would you like to start a new game? (Y/N): ");
@@ -158,7 +132,8 @@ public class Console {
     }
 
     public static void main(String[] args) {
-        Console ticTacToe = new Console();
+    	System.out.println("Input the game Id: ");
+        Console ticTacToe = new Console(new Scanner(System.in).nextInt());
         ticTacToe.play();
     }
 
