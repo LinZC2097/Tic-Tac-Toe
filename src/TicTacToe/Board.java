@@ -8,7 +8,9 @@ public class Board {
     static final int BOARD_WIDTH = 12;
     static final int AIM_LENGTH = 6;
     
-    static final long[][] SCORE = new long[][] {{10, 100, 1000, 10000, 100000, 1000000, 10000000, 100000000}, {1, 10, 100, 1000, 10000, 100000, 1000000, 10000000}};
+    static final long[][] SCORE = new long[][] {
+    	{10,	100, 	1000, 	10000,	100000,	 100000000,	 1000000000,	1000000000}, 
+    	{1,		10, 	100, 	1000, 	10000,	 10000000,	 100000000,	 	1000000000}};
 
     public enum State {Blank, X, O}
     private State[][] board;
@@ -20,8 +22,8 @@ public class Board {
     private int[][] winningWindowsO;
     private long scoreX;
     private long scoreO;
-    private int preMoveRow;
-    private int preMoveCol;
+    private int preMoveY;
+    private int preMoveX;
     
     private int moveCount;
     private boolean gameOver;
@@ -213,20 +215,20 @@ public class Board {
     }
 
     public void setPreMove (int index) {
-        preMoveCol = index % BOARD_WIDTH;
-        preMoveRow = index / BOARD_WIDTH;
+        preMoveX = index % BOARD_WIDTH;
+        preMoveY = index / BOARD_WIDTH;
     }
     
     public int[] getPreMove () {
-    	return new int[] {preMoveRow, preMoveCol};
+    	return new int[] {preMoveX, preMoveY};
     }
     
-    public int getPreMoveRow() {
-    	return this.preMoveRow;
+    public int getPreMoveY() {
+    	return this.preMoveY;
     }
     
-    public int getPreMoveCol() {
-    	return this.preMoveCol;
+    public int getPreMoveX() {
+    	return this.preMoveX;
     }
     
     public boolean isGameOver () {
@@ -1198,8 +1200,8 @@ public class Board {
         board.movesAvailable.addAll(this.movesAvailable);
         board.moveCount         = this.moveCount;
         board.gameOver          = this.gameOver;
-        board.preMoveRow        = this.preMoveRow;
-        board.preMoveCol        = this.preMoveCol;
+        board.preMoveY        = this.preMoveY;
+        board.preMoveX        = this.preMoveX;
         
         
         return board;

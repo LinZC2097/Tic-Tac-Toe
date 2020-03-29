@@ -76,7 +76,10 @@ public class APISender {
 
 	        try (Response response = httpClient.newCall(request).execute()) {
 
-	            if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
+	            if (!response.isSuccessful()) {
+//	            	throw new IOException("Unexpected code " + response);
+	            	return false;
+	            }
 
 	            // Get response body
 	            System.out.println(response.body().string());
