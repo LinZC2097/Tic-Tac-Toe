@@ -7,10 +7,21 @@ public class Board {
 
     static final int BOARD_WIDTH = 12;
     static final int AIM_LENGTH = 6;
-    
-    static final long[][] SCORE = new long[][] {
-    	{10,	100, 	1000, 	10000,	100000,	 100000000,	 1000000000,	1000000000}, 
-    	{1,		10, 	100, 	1000, 	10000,	 10000000,	 100000000,	 	1000000000}};
+//    
+//    static final long[][] SCORE = new long[][] {
+//    	{10,	100, 	1000, 	10000,	100000,	 100000000,	 1000000000,	1000000000}, 
+//    	{1,		10, 	100, 	1000, 	10000,	 10000000,	 100000000,	 	1000000000}};
+    static final long[][][] SCORE = new long[][][] {
+    	{
+    		{},
+    		{}
+    	}, 
+    	{
+    		{},
+    		{}
+    	}};
+    	// empty block count
+
 
     public enum State {Blank, X, O}
     private State[][] board;
@@ -18,8 +29,8 @@ public class Board {
     private State oppnent;
     private State winner;
     private HashSet<Integer> movesAvailable;
-    private int[][] winningWindowsX;
-    private int[][] winningWindowsO;
+    private int[][][] winningWindowsX;
+    private int[][][] winningWindowsO;
     private long scoreX;
     private long scoreO;
     private int preMoveY;
@@ -31,8 +42,8 @@ public class Board {
 
     Board() {
         board = new State[BOARD_WIDTH][BOARD_WIDTH];
-        winningWindowsX = new int[2][8];
-        winningWindowsO = new int[2][8];
+        winningWindowsX = new int[2][2][BOARD_WIDTH];
+        winningWindowsO = new int[2][2][BOARD_WIDTH];
         movesAvailable = new HashSet<>();
         reset();
     }
@@ -48,9 +59,11 @@ public class Board {
         scoreO = 0;
         
         for(int i = 0; i < 2; i++) {
-        	for(int j = 0; j < 8; j++ ) {
-	        	winningWindowsX[i][j] = 0;
-	        	winningWindowsO[i][j] = 0;
+        	for(int k = 0; i < 2; i++) {
+        		for(int j = 0; j < BOARD_WIDTH; j++ ) {
+        			winningWindowsX[i][k][j] = 0;
+        			winningWindowsO[i][k][j] = 0;
+        		}
         	}
         }
         
@@ -208,7 +221,7 @@ public class Board {
 
         // Check for a winner.
         checkWin(x, y, playersTurn);
-        updateScoreWindow(x, y, playersTurn);
+        updateScoreWindowPlayer(x, y, playersTurn);
         oppnent = playersTurn;
         playersTurn = (playersTurn == State.X) ? State.O : State.X;
         return true;
@@ -252,38 +265,295 @@ public class Board {
 
     public HashSet<Integer> getAvailableMoves () {
         return movesAvailable;
-    }
-
-    
-  
-    
-    public void printScoreO () {
-    	for(int i = 0; i < 8; i++){
-    		System.out.print(winningWindowsO[i] + " ");
-    	}
-    	System.out.println();
-    }
-
-    public void printScoreX () {
-    	for(int i = 0; i < 8; i++){
-    		System.out.print(winningWindowsX[i] + " ");
-    	}
-    	System.out.println();
-    }
-    
+    } 
     
     public int getBoardWidth () {
         return BOARD_WIDTH;
     }
+    
+    public void printScoreWindow() {
+    	System.out.println("Score window OOOOOO");
+    	for(int i = 0; i < 2; i ++) {
+    		for(int j = 0; j < 2; j ++) {
+    			for(int k = 0; k < AIM_LENGTH; k++) {
+    				System.out.printf("block:%d empty:%d lenth:%d number:%d\n", i, j, k, this.winningWindowsO[i][j][k]);
+    			}
+    		}
+    	}
+    	System.out.println("Score window XXXXXX");
+    	for(int i = 0; i < 2; i ++) {
+    		for(int j = 0; j < 2; j ++) {
+    			for(int k = 0; k < AIM_LENGTH; k++) {
+    				System.out.printf("block:%d empty:%d lenth:%d number:%d\n", i, j, k, this.winningWindowsX[i][j][k]);
+    			}
+    		}
+    	}
+    	
+    }
 
     
-    public void updateScoreWindow (int x, int y, State player) {
+    public void updateScoreWindowOppnent(int x, int y, State player) {
+    	
+    	int count = 1;
+    	int secondCount = 0;
+		int block = 0;
+		int secondBlock = 0;
+		int empty = -1;
+		int secondEmpty = -1;
+		
+		// count col
+		for(int i = y + 1; true; i++) {
+			if(i >= BOARD_WIDTH) {
+				block++;
+				break;
+			}
+			if(this.board[i][x] == State.Blank) {
+				if(empty == -1 && i < BOARD_WIDTH - 1 && board[i + 1][x] == oppnent) {
+					empty = count;
+					continue;
+				}else {
+					break;
+				}
+			}
+			
+			if(this.board[i][x] == oppnent) {
+				count++;
+				continue;
+			}else {
+				block++;
+				break;
+			}
+		}
+	
+		for(int i = y - 1; true; i--) {
+			if(i < 0) {
+				secondBlock++;
+				break;
+			}
+			if(this.board[i][x] == State.Blank) {
+				if(secondEmpty == -1 && i > 0 && board[i + 1][x] == oppnent) {
+					secondEmpty = 0;
+					continue;
+				}else {
+					break;
+				}
+			}
+			if(this.board[i][x] == oppnent) {
+				secondCount ++;
+				if(secondEmpty != -1) {
+					secondEmpty++;
+				}else {
+					secondBlock++;
+					break;
+				}
+			}
+		}
+		count += secondCount;
+		updateScoreArray(count, block, empty, oppnent);
+		
+		// count row
+		count = 1;
+		secondCount = 0;
+		block = 0;
+		secondBlock = 0;
+		empty = -1;
+		secondEmpty = -1;
+		
+		for (int i = x + 1; true; i++) {
+            if (i >= BOARD_WIDTH) {
+                block++;
+                break;
+            }
+            if (this.board[y][i] == State.Blank) {
+                if (empty == -1 && i < BOARD_WIDTH - 1 && board[y][i + 1] == oppnent) {
+                    empty = count;
+                    continue;
+                } else {
+                    break;
+                }
+            }
+            if (this.board[y][i] == oppnent) {
+                count++;
+                continue;
+            } else {
+                block++;
+                break;
+            }
+        }
+		
+		for (int i = x - 1; true; i--) {
+            if (i < 0) {
+            	secondBlock++;
+                break;
+            }
+            
+            if (this.board[i][y] == State.Blank) {
+                if (secondEmpty == -1 && i > 0 && this.board[i - 1][y] == oppnent) {
+                	secondEmpty = 0;
+                    continue;
+                } else {
+                    break;
+                }
+            }
+            if (this.board[i][y]  == oppnent) {
+            	secondCount++;
+                if(secondEmpty != -1) { 
+                	secondEmpty++;
+                }
+                continue;
+            } else {
+            	secondBlock++;
+                break;
+            }
+        }
+		count += secondCount;
+		updateScoreArray(count, block, empty, oppnent);
+		
+		// count diagonal \ 
+		count = 1;
+		secondCount = 0;
+		block = 0;
+		secondBlock = 0;
+		empty = -1;
+		secondEmpty = -1;
+		
+		for (int i = 1; true; i++) {
+            int tempX = x + i;
+            int tempY = y + i;
+            if (tempX >= BOARD_WIDTH || tempY >= BOARD_WIDTH) {
+                block++;
+                break;
+            }
+            State t = this.board[tempY][tempX];
+            if (t == State.Blank) {
+                if (empty == -1 && (tempX < BOARD_WIDTH- 1 && tempY < BOARD_WIDTH- 1) && this.board[tempY + 1][tempX + 1] == oppnent) {
+                    empty = count;
+                    continue;
+                } else {
+                    break;
+                }
+            }
+            if (t == oppnent) {
+                count++;
+                continue;
+            } else {
+                block++;
+                break;
+            }
+        }
+		for (int i = 1; true; i++) {
+            int tempX = x - i;
+            int tempY = y - i;
+            if (tempX < 0 || tempY < 0) {
+            	secondBlock++;
+                break;
+            }
+            State t = this.board[tempY][tempX];
+            if (t == State.Blank) {
+                if (secondEmpty == -1 && (tempX > 0 && tempY > 0) && this.board[tempY - 1][tempX - 1] == oppnent) {
+                	secondEmpty = 0;
+                    continue;
+                } else {
+                    break;
+                }
+            }
+            if (t == oppnent) {
+                secondCount++;
+                if(secondEmpty != -1) { 
+                	secondEmpty++;
+                }
+                continue;
+            } else {
+            	secondBlock++;
+                break;
+            }
+        }
+		count += secondCount;
+		updateScoreArray(count, block, empty, oppnent);
+		
+		
+		// count diagonal /
+		count = 1;
+		secondCount = 0;
+		block = 0;
+		secondBlock = 0;
+		empty = -1;
+		secondEmpty = -1;
+
+		for (int i = 1; true; i++) {
+            int tempX = x + i;
+            int tempY = y - i;
+            if (tempX < 0 || tempY < 0 || tempX >= BOARD_WIDTH || tempY >= BOARD_WIDTH) {
+                block++;
+                break;
+            }
+            State t = this.board[tempY][tempX];
+            if (t == State.Blank) {
+            	try {
+	                if (empty == -1 && (tempX < BOARD_WIDTH - 1 && tempY > 0) && this.board[tempY - 1][tempX + 1] == oppnent) {
+	                    empty = count;
+	                    continue;
+	                } else {
+	                    break;
+	                }
+            	} catch(Exception e) {
+            		System.out.println("\n" + this.toString() + "\n");
+            		System.out.print("y:");
+            		System.out.println(tempY - 1);
+            		System.out.print("x:");
+            		System.out.println(tempX - 1);
+            	}
+            }
+            if (t == oppnent) {
+                count++;
+                continue;
+            } else {
+                block++;
+                break;
+            }
+        }
+
+        for (int i = 1; true; i++) {
+            int tempX = x - i;
+            int tempY = y + i;
+            if (tempX < 0 || tempY < 0 || tempX >= BOARD_WIDTH || tempY >= BOARD_WIDTH) {
+            	secondBlock++;
+                break;
+            }
+            State t = this.board[tempX][tempY];
+            if (t == State.Blank) {
+                if (secondEmpty == -1 && (tempX > 0 && tempY > BOARD_WIDTH - 1) && this.board[tempY + 1][tempX - 1] == oppnent) {
+                	secondEmpty = 0;
+                    continue;
+                } else {
+                    break;
+                }
+            }
+            if (t == oppnent) {
+                secondCount++;
+                if(secondEmpty != -1) { 
+                	secondEmpty++;
+                }
+                continue;
+            } else {
+            	secondBlock++;
+                break;
+            }
+        }
+        count += secondCount;
+		updateScoreArray(count, block, empty, oppnent);
+    }
+    
+    public void updateScoreWindowPlayer (int x, int y, State player) {
 		
 		int count = 1;
-		int block = 0;
-		int empty = -1;
 		int secondCount = 0;
+		int block = 0;
+		int secondBlock = 0;
+		int empty = -1;
+		int secondEmpty = -1;
 		
+		// count col
 		for(int i = y + 1; true; i++) {
 			if(i >= BOARD_WIDTH) {
 				block++;
@@ -309,12 +579,12 @@ public class Board {
 	
 		for(int i = y - 1; true; i--) {
 			if(i < 0) {
-				block++;
+				secondBlock++;
 				break;
 			}
 			if(this.board[i][x] == State.Blank) {
-				if(empty == -1 && i > 0 && board[i + 1][x] == player) {
-					empty = 0;
+				if(secondEmpty == -1 && i > 0 && board[i + 1][x] == player) {
+					secondEmpty = 0;
 					continue;
 				}else {
 					break;
@@ -322,10 +592,10 @@ public class Board {
 			}
 			if(this.board[i][x] == player) {
 				secondCount ++;
-				if(empty != -1) {
-					empty++;
+				if(secondEmpty != -1) {
+					secondEmpty++;
 				}else {
-					block++;
+					secondBlock++;
 					break;
 				}
 			}
@@ -333,11 +603,13 @@ public class Board {
 		count += secondCount;
 		updateScoreArray(count, block, empty, player);
 		
-		
+		// count row
 		count = 1;
-		block = 0;
-		empty = -1;
 		secondCount = 0;
+		block = 0;
+		secondBlock = 0;
+		empty = -1;
+		secondEmpty = -1;
 		
 		for (int i = x + 1; true; i++) {
             if (i >= BOARD_WIDTH) {
@@ -363,13 +635,13 @@ public class Board {
 		
 		for (int i = x - 1; true; i--) {
             if (i < 0) {
-                block++;
+            	secondBlock++;
                 break;
             }
             
             if (this.board[i][y] == State.Blank) {
-                if (empty == -1 && i > 0 && this.board[i - 1][y] == player) {
-                    empty = 0;
+                if (secondEmpty == -1 && i > 0 && this.board[i - 1][y] == player) {
+                	secondEmpty = 0;
                     continue;
                 } else {
                     break;
@@ -377,23 +649,25 @@ public class Board {
             }
             if (this.board[i][y]  == player) {
             	secondCount++;
-                if(empty != -1) { 
-                	empty++;
+                if(secondEmpty != -1) { 
+                	secondEmpty++;
                 }
                 continue;
             } else {
-                block++;
+            	secondBlock++;
                 break;
             }
         }
 		count += secondCount;
 		updateScoreArray(count, block, empty, player);
 		
-		
+		// count diagonal \ 
 		count = 1;
-		block = 0;
-		empty = -1;
 		secondCount = 0;
+		block = 0;
+		secondBlock = 0;
+		empty = -1;
+		secondEmpty = -1;
 		
 		for (int i = 1; true; i++) {
             int tempX = x + i;
@@ -423,13 +697,13 @@ public class Board {
             int tempX = x - i;
             int tempY = y - i;
             if (tempX < 0 || tempY < 0) {
-                block++;
+            	secondBlock++;
                 break;
             }
             State t = this.board[tempY][tempX];
             if (t == State.Blank) {
-                if (empty == -1 && (tempX > 0 && tempY > 0) && this.board[tempY - 1][tempX - 1] == player) {
-                    empty = 0;
+                if (secondEmpty == -1 && (tempX > 0 && tempY > 0) && this.board[tempY - 1][tempX - 1] == player) {
+                	secondEmpty = 0;
                     continue;
                 } else {
                     break;
@@ -437,22 +711,26 @@ public class Board {
             }
             if (t == player) {
                 secondCount++;
-                if(empty != -1) { 
-                	empty++;
+                if(secondEmpty != -1) { 
+                	secondEmpty++;
                 }
                 continue;
             } else {
-                block++;
+            	secondBlock++;
                 break;
             }
         }
 		count += secondCount;
 		updateScoreArray(count, block, empty, player);
 		
+		
+		// count diagonal /
 		count = 1;
-		block = 0;
-		empty = -1;
 		secondCount = 0;
+		block = 0;
+		secondBlock = 0;
+		empty = -1;
+		secondEmpty = -1;
 
 		for (int i = 1; true; i++) {
             int tempX = x + i;
@@ -491,13 +769,13 @@ public class Board {
             int tempX = x - i;
             int tempY = y + i;
             if (tempX < 0 || tempY < 0 || tempX >= BOARD_WIDTH || tempY >= BOARD_WIDTH) {
-                block++;
+            	secondBlock++;
                 break;
             }
             State t = this.board[tempX][tempY];
             if (t == State.Blank) {
-                if (empty == -1 && (tempX > 0 && tempY > BOARD_WIDTH - 1) && this.board[tempY + 1][tempX - 1] == player) {
-                    empty = 0;
+                if (secondEmpty == -1 && (tempX > 0 && tempY > BOARD_WIDTH - 1) && this.board[tempY + 1][tempX - 1] == player) {
+                	secondEmpty = 0;
                     continue;
                 } else {
                     break;
@@ -505,12 +783,12 @@ public class Board {
             }
             if (t == player) {
                 secondCount++;
-                if(empty != -1) { 
-                	empty++;
+                if(secondEmpty != -1) { 
+                	secondEmpty++;
                 }
                 continue;
             } else {
-                block++;
+            	secondBlock++;
                 break;
             }
         }
@@ -519,575 +797,14 @@ public class Board {
         
     }
     
-    public void updateScoreArray(int count, int block, int empty, State player) {
-		int[][] score = new int[2][BOARD_WIDTH];
-		
-		
-		if(player == State.O) {
-			score = this.winningWindowsO;
-		}else {
-			score = this.winningWindowsX;
-		}
-		
-		
-    	if (empty <= 0) {
-	        if (count >= 8) {
-	        	score[0][8 - 1]++;
-	        	return;
-	        }
-	        if (block == 0) {
-	            switch (count) {
-	                case 1:
-	                    score[0][1 - 1]++;
-	                    return;
-	                case 2:
-	                	score[0][2 - 1]++;
-	                	score[0][1 - 1]--;
-	                    return;
-	                case 3:
-	                	score[0][3 - 1]++;
-	                	score[0][2 - 1]--;
-	                    return;
-	                case 4:
-	                	score[0][4 - 1]++;
-	                	score[0][3 - 1]--;
-	                    return;
-	                case 5:
-	                	score[0][5 - 1]++;
-	                	score[0][4 - 1]--;
-	                    return;   
-	                case 6:
-	                	score[0][6 - 1]++;
-	                	score[0][5 - 1]--;
-	                    return;
-	                case 7:
-	                	score[0][7 - 1]++;
-	                	score[0][8 - 1]--;
-	                    return;
-	            }
-	        }
-
-	        if (block == 1) {
-	            switch (count) {
-	                case 1:
-	                	score[1][1 - 1]++;
-	                    return;
-	                case 2:
-	                	score[1][2 - 1]++;
-	                	score[1][1 - 1]--;
-	                    return;
-	                case 3:
-	                	score[1][3 - 1]++;
-	                	score[1][2 - 1]--;
-	                    return;
-	                case 4:
-	                	score[1][4 - 1]++;
-	                	score[1][3 - 1]--;
-	                    return;
-	                case 5:
-	                	score[1][5 - 1]++;
-	                	score[1][4 - 1]--;
-	                    return;
-	                case 6:
-	                	score[1][6 - 1]++;
-	                	score[1][5 - 1]--;
-	                    return;
-	                case 7:
-	                	score[1][7 - 1]++;
-	                	score[1][6 - 1]--;
-	                    return;
-	            }
-	        }
-
-	    } else if (empty == 1 || empty == count - 1) {
-	        if (count >= 9) {
-	        	score[0][8 - 1]++;
-	        	return;
-	        }
-	        if (block == 0) {
-	            switch (count) {
-	                case 2:
-	                    score[0][1 - 1]++;
-	                    return;
-	                case 3:
-	                	score[0][2 - 1]++;
-	                	score[0][1 - 1]--;
-	                    return;
-	                case 4:
-	                	score[0][3 - 1]++;
-	                	score[0][2 - 1]--;
-	                    return;
-	                case 5:
-	                	score[0][4 - 1]++;
-	                	score[0][3 - 1]--;
-	                    return;
-	                case 6:
-	                	score[0][5 - 1]++;
-	                	score[0][4 - 1]--;
-	                    return;
-	                case 7:
-	                	score[0][6 - 1]++;
-	                	score[0][5 - 1]--;
-	                    return;
-	                case 8:
-	                	score[0][7 - 1]++;
-	                	score[0][6 - 1]--;
-	                    return;
-	            }
-	        }
-
-	        if (block == 1) {
-	            switch (count) {
-		            case 2:
-	                	score[1][1 - 1]++;
-	                    return;
-	                case 3:
-	                	score[1][2 - 1]++;
-	                	score[1][1 - 1]--;
-	                    return;
-	                case 4:
-	                	score[1][3 - 1]++;
-	                	score[1][2 - 1]--;
-	                    return;
-	                case 5:
-	                	score[1][4 - 1]++;
-	                	score[1][3 - 1]--;
-	                    return;
-	                case 6:
-	                	score[1][5 - 1]++;
-	                	score[1][4 - 1]--;
-	                    return;
-	                case 7:
-	                	score[1][6 - 1]++;
-	                	score[1][5 - 1]--;
-	                    return;
-	                case 8:
-	                	score[1][7 - 1]++;
-	                	score[1][6 - 1]--;
-	                    return;
-	            }
-	        }
-	    } else if (empty == 2 || empty == count - 2) {
-	        if (count >= 10) {
-	        	score[0][8 - 1]++;
-	        	return;
-	        }
-	        if (block == 0) {
-	            switch (count) {
-	                case 3:
-	                	score[0][3 - 1]++;
-	                	score[0][2 - 1]--;
-	                    return;
-	                case 4:
-	                case 5:
-	                	score[1][4 - 1]++;
-	                	score[1][3 - 1]--;
-	                	return;
-	                	
-	                case 6:
-	                	score[1][5 - 1]++;
-	                	score[1][4 - 1]--;
-	                	return;
-	                case 7:
-	                	score[1][6 - 1]++;
-	                	score[1][5 - 1]--;
-	                	return;
-	                case 8:
-	                	score[1][7 - 1]++;
-	                	score[1][6 - 1]--;
-	                	return;
-	                case 9:
-	                	score[0][7 - 1]++;
-	                	score[0][6 - 1]--;
-	                	return;
-
-	            }
-	        }
-
-	        if (block == 1) {
-	            switch (count) {
-	                case 3:
-	                	score[1][3 - 1]++;
-	                	score[1][2 - 1]--;
-	                    return;
-	                case 4:
-	                	score[1][4 - 1]++;
-	                	score[1][3 - 1]--;
-	                    return;
-	                case 5:
-	                	score[1][4 - 1]++;
-	                	score[1][3 - 1]--;
-	                    return;
-	                case 6:
-	                	score[1][5 - 1]++;
-	                	score[1][4 - 1]--;
-	                    return;
-	                case 7:
-	                	score[1][6 - 1]++;
-	                	score[1][5 - 1]--;
-	                    return;
-	                case 8:
-	                	score[1][7 - 1]++;
-	                	score[1][6 - 1]--;
-	                    return;
-	                case 9:
-	                	score[0][7 - 1]++;
-	                	score[0][6 - 1]--;
-	                    return;
-	            }
-	        }
-
-	        if (block == 2) {
-	            switch (count) {
-	                case 5:
-	                case 6:
-	                	score[1][5 - 1]++;
-	                	score[1][4 - 1]--;
-	                    return;
-	                case 7:
-	                case 8:
-	                case 9:
-	                	score[1][7 - 1]++;
-	                	score[1][6 - 1]--;
-	                    return;
-	            }
-	        }
-	    } else if (empty == 3 || empty == count - 3) {
-	        if (count >= 11) {
-	        	score[0][8 - 1]++;
-	            return;
-	        }
-	        if (block == 0) {
-	            switch (count) {
-	                case 4:
-	                case 5:
-	                case 6:
-	                	score[0][3 - 1]++;
-	                	score[0][2 - 1]--;
-	                	return;
-	                case 7:
-	                	score[0][4 - 1]++;
-	                	score[0][3 - 1]--;
-	                    return;
-	                case 8:
-	                	score[0][5 - 1]++;
-	                	score[0][4 - 1]--;
-	                    return;
-	                case 9:
-	                	score[0][6 - 1]++;
-	                	score[0][5 - 1]--;
-	                    return;
-	                case 10:
-	                	score[0][7 - 1]++;
-	                	score[0][6 - 1]--;
-	                    return;
-	            }
-	        }
-
-	        if (block == 1) {
-	            switch (count) {
-	                case 4:
-	                	score[1][4 - 1]++;
-	                	score[1][3 - 1]--;
-	                    return;
-	                case 5:
-	                case 6:
-	                case 7:
-	                	score[1][5 - 1]++;
-	                	score[1][4 - 1]--;
-	                	return;
-	                case 8:
-	                	score[0][5 - 1]++;
-	                	score[0][4 - 1]--;
-	                	return;
-	                case 9:
-	                	score[0][6 - 1]++;
-	                	score[0][5 - 1]--;
-	                	return;
-	                case 10:
-	                	score[0][7 - 1]++;
-	                	score[0][6 - 1]--;
-	                    return;
-	            }
-	        }
-
-	        if (block == 2) {
-	            switch (count) {
-	            	case 5:
-	            		score[1][5 - 1]++;
-	            		score[1][4 - 1]--;
-	            		return;
-	            	case 6:
-	                case 7:
-	                	score[1][6 - 1]++;
-	                	score[1][5 - 1]--;
-	                    return;
-	                case 8:
-	                case 9:
-	                case 10:
-	                	score[1][7 - 1]++;
-	                	score[1][6 - 1]--;
-	                    return;
-	            }
-	        }
-	    } else if (empty == 4 || empty == count - 4) {
-	        if (count >= 12) {
-	        	score[0][8 - 1]++;
-	            return;
-	        }
-	        if (block == 0) {
-	            switch (count) {
-	                case 5:
-	                case 6:
-	                	score[1][5 - 1]++;
-	                	score[1][4 - 1]--;
-	                	return;
-	                case 7:
-	                case 8:
-	                	score[0][5 - 1]++;
-	                	score[0][4 - 1]--;
-	                	return;
-	                case 9:
-	                case 10:
-	                	score[0][6 - 1]++;
-	                	score[0][5 - 1]--;
-	                	return;
-	                case 11:
-	                	score[0][7 - 1]++;
-	                	score[0][6 - 1]--;
-	                    return;
-	            }
-	        }
-
-	        if (block == 1) {
-	            switch (count) {
-	                case 5:
-	                case 6:
-	                	score[1][4 - 1]++;
-	                	score[1][3 - 1]--;
-	                	return;
-	                case 7:
-	                case 8:
-	                	score[1][5 - 1]++;
-	                	score[1][4 - 1]--;
-	                	return;
-	                case 9:
-	                	score[0][5 - 1]++;
-	                	score[0][4 - 1]--;
-	                	return;
-	                case 10:
-	                	score[0][6 - 1]++;
-	                	score[0][5 - 1]--;
-	                	return;
-	                case 11:
-	                	score[0][7 - 1]++;
-	                	score[0][6 - 1]--;
-	                    return;
-	            }
-	        }
-
-	        if (block == 2) {
-	            switch (count) {
-	                case 5:
-	                case 6:
-	                	score[1][5 - 1]++;
-	                	score[1][4 - 1]--;
-	                    return;
-	                case 7:
-	                case 8:
-	                case 9:
-	                case 10:
-	                case 11:
-	                	score[1][7 - 1]++;
-	                	score[1][7 - 1]--;
-	                	return;
-	            }
-	        }
-	    } else if (empty == 5 || empty == count - 5) {
-	    	if (count >= 13) {
-	        	score[0][8 - 1]++;
-	            return;
-	        }
-	    	if (block == 0) {
-	    		switch (count) {
-		    		case 6:
-	                case 7:
-	                case 8:
-	                	score[0][5 - 1]++;
-	                	score[0][4 - 1]--;
-	                	return;
-	                case 9:
-	                case 10:
-	                case 11:
-	                	score[0][6 - 1]++;
-	                	score[0][5 - 1]--;
-	                	return;
-	                case 12:
-	                	score[0][7 - 1]++;
-	                	score[0][6 - 1]--;
-	                	return;
-	    		}
-	    	}
-	    	if (block == 1) {
-	    		switch (count) {
-		    		case 6:
-		    			score[1][5 - 1]++;
-	                	score[1][4 - 1]--;
-	                	return;
-	                case 7:
-	                case 8:
-	                	score[1][7 - 1]++;
-	                	score[1][6 - 1]--;
-	                	return;
-	                case 9:
-	                case 10:
-	                case 11:
-	                case 12:
-	                	score[0][7 - 1]++;
-	                	score[0][6 - 1]--;
-	                	return;
-	    		}
-	    	}
-	    	if( block == 2) {
-	    		switch (count) {
-	                case 6:
-	                	score[1][5 - 1]++;
-	                	score[1][4 - 1]--;
-	                	return;
-	                case 7:
-	                case 8:
-	                case 9:
-	                case 10:
-	                case 11:
-	                case 12:
-	                	score[1][7 - 1]++;
-	                	score[1][7 - 1]--;
-	                	return;
-	    		}
-	    	}
-	    } else if (empty == 6 || empty == count - 6) {
-	    	if (count >= 14) {
-	        	score[0][8 - 1]++;
-	            return;
-	        }
-	    	if (block == 0) {
-	    		switch (count) {
-	                case 7:
-	                case 8:
-	                case 9:
-	                case 10:
-	                case 11:
-	                	score[0][6 - 1]++;
-	                	score[0][5 - 1]--;
-	                	return;
-	                case 12:
-	                case 13:
-	                case 14:
-	                	score[0][7 - 1]++;
-	                	score[0][6 - 1]--;
-	                	return;
-	    		}
-	    	}
-	    	if (block == 1) {
-	    		switch (count) {
-		    		case 7:
-	                case 8:
-	                case 9:
-	                case 10:
-	                case 11:
-	                	score[1][6 - 1]++;
-	                	score[1][5 - 1]--;
-	                	return;
-	                case 12:
-	                case 13:
-	                case 14:
-	                	score[1][7 - 1]++;
-	                	score[1][6 - 1]--;
-	                	return;
-	    		}
-	    	}
-	    	if( block == 2) {
-	    		switch (count) {
-	                case 7:
-	                case 8:
-	                case 9:
-	                case 10:
-	                case 11:
-	                case 12:
-	                case 13:
-	                	score[1][7 - 1]++;
-	                	score[1][7 - 1]--;
-	                	return;
-	    		}
-	    	}
-	    } else if (empty == 7 || empty == count - 7) {
-	    	if (count >= 15) {
-	        	score[0][8 - 1]++;
-	            return;
-	        }
-	    	if (block == 0) {
-	    		switch (count) {
-	                case 8:
-	                case 9:
-	                case 10:
-	                case 11:
-	                	score[0][6 - 1]++;
-	                	score[0][5 - 1]--;
-	                	return;
-	                case 12:
-	                case 13:
-	                case 14:
-	                	score[0][7 - 1]++;
-	                	score[0][6 - 1]--;
-	                	return;
-	    		}
-	    	}
-	    	if (block == 1) {
-	    		switch (count) {
-		    		case 7:
-	                case 8:
-	                case 9:
-	                case 10:
-	                case 11:
-	                	score[1][6 - 1]++;
-	                	score[1][5 - 1]--;
-	                	return;
-	                case 12:
-	                case 13:
-	                case 14:
-	                	score[1][7 - 1]++;
-	                	score[1][6 - 1]--;
-	                	return;
-	    		}
-	    	}
-	    	if( block == 2) {
-	    		switch (count) {
-	                case 8:
-	                case 9:
-	                case 10:
-	                case 11:
-	                case 12:
-	                case 13:
-	                case 14:
-	                	score[1][7 - 1]++;
-	                	score[1][7 - 1]--;
-	                	return;
-	    		}
-	    	}
-	    } else if (empty == 8 || empty == count - 8) {
-	    	score[0][8 - 1]++;
-            return;
-	    }
-    	
-
-	    return;
-	}
+    public void updateScoreArray(int count, int block, int empty, State player) {}
+    
     
     public int getScoreX() {
 		int result = 0;
 		for(int i = 0; i < 2; i++) {
 			for(int j = 0; j < 5; j++) {
-				result += this.winningWindowsX[i][j] * SCORE[i][j];
+//				result += this.winningWindowsX[i][j] * SCORE[i][j];
 			}
 		}
 		return result;
@@ -1097,7 +814,7 @@ public class Board {
 		int result = 0;
 		for(int i = 0; i < 2; i++) {
 			for(int j = 0; j < 5; j++) {
-				result += this.winningWindowsO[i][j] * SCORE[i][j];
+//				result += this.winningWindowsO[i][j] * SCORE[i][j];
 			}
 		}
 		return result;
@@ -1189,8 +906,10 @@ public class Board {
         }
         
         for(int i = 0; i < 2; i++) {
-        	board.winningWindowsX[i] = this.winningWindowsX[i].clone();
-        	board.winningWindowsO[i] = this.winningWindowsO[i].clone();
+        	for(int j = 0; i < 2; i++) {
+	        	board.winningWindowsX[i][j] = this.winningWindowsX[i][j].clone();
+	        	board.winningWindowsO[i][j] = this.winningWindowsO[i][j].clone();
+        	}
         }
 
         board.playersTurn       = this.playersTurn;
