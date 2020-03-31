@@ -3,6 +3,7 @@ package TicTacToe;
 import java.util.HashSet;
 
 
+
 public class Board {
 
     static final int BOARD_WIDTH = 12;
@@ -19,7 +20,8 @@ public class Board {
     	{
     		{},
     		{}
-    	}};
+    	},
+    };
     	// empty block count
 
 
@@ -31,6 +33,8 @@ public class Board {
     private HashSet<Integer> movesAvailable;
     private int[][][] winningWindowsX;
     private int[][][] winningWindowsO;
+    private int [] twoBlockX;
+    private int [] twoBlockO;
     private long scoreX;
     private long scoreO;
     private int preMoveY;
@@ -44,6 +48,8 @@ public class Board {
         board = new State[BOARD_WIDTH][BOARD_WIDTH];
         winningWindowsX = new int[2][2][BOARD_WIDTH];
         winningWindowsO = new int[2][2][BOARD_WIDTH];
+        twoBlockO = new int[] {0, 0};
+        twoBlockX = new int[] {0, 0};
         movesAvailable = new HashSet<>();
         reset();
     }
@@ -332,7 +338,7 @@ public class Board {
 			}
 			if(this.board[i][x] == State.Blank) {
 				if(secondEmpty == -1 && i > 0 && board[i + 1][x] == oppnent) {
-					secondEmpty = 0;
+					secondEmpty = secondCount;
 					continue;
 				}else {
 					break;
@@ -340,12 +346,13 @@ public class Board {
 			}
 			if(this.board[i][x] == oppnent) {
 				secondCount ++;
-				if(secondEmpty != -1) {
-					secondEmpty++;
-				}else {
-					secondBlock++;
-					break;
-				}
+//				if(secondEmpty != -1) {
+//					secondEmpty++;
+//				}
+				continue;
+			}else {
+				secondBlock++;
+				break;
 			}
 		}
 		count += secondCount;
@@ -389,7 +396,7 @@ public class Board {
             
             if (this.board[i][y] == State.Blank) {
                 if (secondEmpty == -1 && i > 0 && this.board[i - 1][y] == oppnent) {
-                	secondEmpty = 0;
+                	secondEmpty = secondCount;
                     continue;
                 } else {
                     break;
@@ -397,9 +404,9 @@ public class Board {
             }
             if (this.board[i][y]  == oppnent) {
             	secondCount++;
-                if(secondEmpty != -1) { 
-                	secondEmpty++;
-                }
+//                if(secondEmpty != -1) { 
+//                	secondEmpty++;
+//                }
                 continue;
             } else {
             	secondBlock++;
@@ -451,7 +458,7 @@ public class Board {
             State t = this.board[tempY][tempX];
             if (t == State.Blank) {
                 if (secondEmpty == -1 && (tempX > 0 && tempY > 0) && this.board[tempY - 1][tempX - 1] == oppnent) {
-                	secondEmpty = 0;
+                	secondEmpty = secondCount;
                     continue;
                 } else {
                     break;
@@ -459,9 +466,9 @@ public class Board {
             }
             if (t == oppnent) {
                 secondCount++;
-                if(secondEmpty != -1) { 
-                	secondEmpty++;
-                }
+//                if(secondEmpty != -1) { 
+//                	secondEmpty++;
+//                }
                 continue;
             } else {
             	secondBlock++;
@@ -523,7 +530,7 @@ public class Board {
             State t = this.board[tempX][tempY];
             if (t == State.Blank) {
                 if (secondEmpty == -1 && (tempX > 0 && tempY > BOARD_WIDTH - 1) && this.board[tempY + 1][tempX - 1] == oppnent) {
-                	secondEmpty = 0;
+                	secondEmpty = secondCount;
                     continue;
                 } else {
                     break;
@@ -531,9 +538,9 @@ public class Board {
             }
             if (t == oppnent) {
                 secondCount++;
-                if(secondEmpty != -1) { 
-                	secondEmpty++;
-                }
+//                if(secondEmpty != -1) { 
+//                	secondEmpty++;
+//                }
                 continue;
             } else {
             	secondBlock++;
@@ -584,7 +591,7 @@ public class Board {
 			}
 			if(this.board[i][x] == State.Blank) {
 				if(secondEmpty == -1 && i > 0 && board[i + 1][x] == player) {
-					secondEmpty = 0;
+					secondEmpty = secondCount;
 					continue;
 				}else {
 					break;
@@ -592,16 +599,18 @@ public class Board {
 			}
 			if(this.board[i][x] == player) {
 				secondCount ++;
-				if(secondEmpty != -1) {
-					secondEmpty++;
-				}else {
-					secondBlock++;
-					break;
-				}
+//				if (secondEmpty != -1) {
+//					secondEmpty++;
+//				}
+				continue;
+			}else {
+				secondBlock++;
+				break;
 			}
+			
 		}
-		count += secondCount;
-		updateScoreArray(count, block, empty, player);
+//		count += secondCount;
+		this.updateScoreArray(count, secondCount, block, secondBlock, empty, secondEmpty, player);
 		
 		// count row
 		count = 1;
@@ -641,7 +650,7 @@ public class Board {
             
             if (this.board[i][y] == State.Blank) {
                 if (secondEmpty == -1 && i > 0 && this.board[i - 1][y] == player) {
-                	secondEmpty = 0;
+                	secondEmpty = secondCount;
                     continue;
                 } else {
                     break;
@@ -649,17 +658,17 @@ public class Board {
             }
             if (this.board[i][y]  == player) {
             	secondCount++;
-                if(secondEmpty != -1) { 
-                	secondEmpty++;
-                }
+//                if(secondEmpty != -1) { 
+//                	secondEmpty++;
+//                }
                 continue;
             } else {
             	secondBlock++;
                 break;
             }
         }
-		count += secondCount;
-		updateScoreArray(count, block, empty, player);
+//		count += secondCount;
+		this.updateScoreArray(count, secondCount, block, secondBlock, empty, secondEmpty, player);
 		
 		// count diagonal \ 
 		count = 1;
@@ -703,7 +712,7 @@ public class Board {
             State t = this.board[tempY][tempX];
             if (t == State.Blank) {
                 if (secondEmpty == -1 && (tempX > 0 && tempY > 0) && this.board[tempY - 1][tempX - 1] == player) {
-                	secondEmpty = 0;
+                	secondEmpty = secondCount;
                     continue;
                 } else {
                     break;
@@ -711,17 +720,17 @@ public class Board {
             }
             if (t == player) {
                 secondCount++;
-                if(secondEmpty != -1) { 
-                	secondEmpty++;
-                }
+//                if(secondEmpty != -1) { 
+//                	secondEmpty++;
+//                }
                 continue;
             } else {
             	secondBlock++;
                 break;
             }
         }
-		count += secondCount;
-		updateScoreArray(count, block, empty, player);
+//		count += secondCount;
+		this.updateScoreArray(count, secondCount, block, secondBlock, empty, secondEmpty, player);
 		
 		
 		// count diagonal /
@@ -775,7 +784,7 @@ public class Board {
             State t = this.board[tempX][tempY];
             if (t == State.Blank) {
                 if (secondEmpty == -1 && (tempX > 0 && tempY > BOARD_WIDTH - 1) && this.board[tempY + 1][tempX - 1] == player) {
-                	secondEmpty = 0;
+                	secondEmpty = secondCount;
                     continue;
                 } else {
                     break;
@@ -783,21 +792,400 @@ public class Board {
             }
             if (t == player) {
                 secondCount++;
-                if(secondEmpty != -1) { 
-                	secondEmpty++;
-                }
+//                if(secondEmpty != -1) { 
+//                	secondEmpty++;
+//                }
                 continue;
             } else {
             	secondBlock++;
                 break;
             }
         }
-        count += secondCount;
-		updateScoreArray(count, block, empty, player);
+//        count += secondCount;
+		this.updateScoreArray(count, secondCount, block, secondBlock, empty, secondEmpty, player);
+		
         
     }
     
-    public void updateScoreArray(int count, int block, int empty, State player) {}
+    public void updateScoreArray(int count, int secondCount, int block, int secondBlock, int empty, int secondEmpty, State player) {
+    	
+    	int[][][] scoreWindows = new int[2][2][BOARD_WIDTH];
+    	
+    	if(player == State.O) {
+			scoreWindows = this.winningWindowsO;
+		}else {
+			scoreWindows = this.winningWindowsX;
+		}
+    	
+		if(block == 0 && secondBlock == 0) {
+			if(empty == -1 && secondEmpty == -1) {
+				if(count == 1 && secondCount == 0) {
+					scoreWindows[0][0][count]++;
+					return;
+				}
+				if(count != 1 && secondCount == 0) {
+					scoreWindows[0][0][count]++;
+					scoreWindows[0][0][count - 1]--;
+					return;
+				}
+				if(count == 1 && secondCount != 0) {
+					scoreWindows[0][0][secondCount + 1]++;
+					scoreWindows[0][0][secondCount]--;
+					return;
+				}
+				if(count != 1 && secondCount != 0) {
+					scoreWindows[0][0][count + secondCount]++;
+					scoreWindows[0][1][count + secondCount - 1]--;
+					return;
+				}
+    		}
+			if(empty != -1 && secondEmpty == -1) {
+				if(empty == 1) {
+					if(secondCount == 0) {
+						scoreWindows[0][1][count]++;
+						scoreWindows[0][0][count - 1]--;
+						return;
+					}
+					
+					if(secondCount != 0) {
+						scoreWindows[0][1][count + secondCount]++;
+						scoreWindows[0][0][secondCount]--;
+						scoreWindows[0][0][count - 1]--;
+						return;
+					}
+				}else {
+					if(secondCount == 0) {
+						scoreWindows[0][1][count]++;
+						scoreWindows[0][1][count - 1]--;
+						return;
+					}
+					
+					if(secondCount != 0) {
+						scoreWindows[0][1][count + secondCount]++;
+						scoreWindows[0][0][count - 1]--;
+						scoreWindows[0][1][secondCount + empty - 1]--;
+						return;
+					}
+				}
+    		}
+			if(empty == -1 && secondEmpty != -1) {
+				if(secondEmpty == 0) {
+					if(count == 1) {
+						scoreWindows[0][1][secondCount + 1]++;
+						scoreWindows[0][0][secondCount]--;
+						return;
+					}
+					if(count != 1) {
+						scoreWindows[0][1][secondCount + count]++;
+						scoreWindows[0][0][secondCount]--;
+						scoreWindows[0][0][count - 1]--;
+						return;
+					}
+				}else {
+					if(count == 1) {
+						scoreWindows[0][1][secondCount + 1]++;
+						scoreWindows[0][1][secondCount]--;
+						return;
+					}
+					if(count != 1) {
+						scoreWindows[0][1][secondCount + count]++;
+						scoreWindows[0][1][secondCount]--;
+						scoreWindows[0][0][count - 1 + secondEmpty]--;
+						return;
+					}
+				}
+    		}
+			
+			if(empty != -1 && secondEmpty != -1) {
+				if(empty == 1) {
+					if(secondEmpty == 0) {
+						scoreWindows[0][1][secondCount + 1]++;
+						scoreWindows[0][1][count]++;
+						scoreWindows[0][0][count - 1]--;
+						scoreWindows[0][0][secondCount]--;
+						return;
+					}else {
+						scoreWindows[0][1][secondCount + 1]++;
+						scoreWindows[0][1][secondEmpty + count]++;
+						scoreWindows[0][1][secondEmpty]--;
+						scoreWindows[0][0][count - 1]--;
+						return;
+					}
+				}else {
+					if(secondEmpty == 0) {
+						scoreWindows[0][1][count]++;
+						scoreWindows[0][1][secondCount + empty]++;
+						scoreWindows[0][1][count - 1]--;
+						scoreWindows[0][0][secondCount]--;
+						return;
+					}else {
+						scoreWindows[0][1][count + secondEmpty]++;
+						scoreWindows[0][1][secondCount + empty]++;
+						scoreWindows[0][1][count - 1]--;
+						scoreWindows[0][1][empty + secondEmpty]--;
+						scoreWindows[0][1][secondCount]--;
+						return;
+					}
+				}
+			}
+    	}
+		
+		if(block != 0 && secondBlock == 0) {
+			if(empty == -1 && secondEmpty == -1) {
+				if(count == 1 && secondCount == 0) {
+					scoreWindows[1][0][empty + secondEmpty]++;
+					return;
+				}
+				if(count != 1 && secondCount == 0) {
+					scoreWindows[1][0][count]++;
+					scoreWindows[1][0][count - 1]--;
+					return;
+				}
+				if(count == 1 && secondCount != 0) {
+					scoreWindows[1][0][secondCount + 1]++;
+					scoreWindows[0][0][secondCount]--;
+					return;
+				}
+				if(count != 1 && secondCount != 0) {
+					scoreWindows[1][0][empty + secondEmpty]++;
+					scoreWindows[1][1][empty + secondEmpty - 1]--;
+					return;
+				}
+				
+				
+    		}
+			
+			if(empty != -1 && secondEmpty == -1) {
+				if(empty == 1) {
+					if(secondCount == 0) {
+						scoreWindows[1][1][count]++;
+						scoreWindows[1][0][count - 1]--;
+						return;
+					}
+					if(secondCount != 0) {
+						scoreWindows[1][1][count + secondCount]++;
+						scoreWindows[1][0][count - 1]--;
+						scoreWindows[0][0][secondCount]--;
+						return;
+					}
+				}else {
+					if(secondCount == 0) {
+						scoreWindows[1][1][count]++;
+						scoreWindows[1][1][count - 1]--;
+						return;
+					}
+					if(secondCount != 0) {
+						scoreWindows[1][1][count + secondCount]++;
+						scoreWindows[1][0][count - 1]--;
+						scoreWindows[0][0][secondCount + empty - 1]--;
+						return;
+					}
+				}
+    		}
+//			
+			if(empty == -1 && secondEmpty != -1) {
+				if(count == 1) {
+					if(secondEmpty == 0) {
+						scoreWindows[1][1][count + secondCount]++;
+						scoreWindows[0][0][secondCount]--;
+						return;
+					}else {
+						scoreWindows[1][1][count + secondCount]++;
+						scoreWindows[0][1][secondCount]--;
+						return;
+					}
+				}else {
+					if(secondEmpty == 0) {
+						scoreWindows[1][1][count + secondCount]++;
+						scoreWindows[1][0][count - 1]--;
+						scoreWindows[0][0][secondCount]--;
+						return;
+					}else {
+						scoreWindows[1][1][count + secondCount]++;
+						scoreWindows[1][1][count - 1 + secondEmpty]--;
+						scoreWindows[0][1][secondCount]--;
+						return;
+					}
+				}
+				
+				
+    		}
+			if(empty != -1 && secondEmpty != -1) {
+				if(empty == 1) {
+					if(secondEmpty == 0) {
+						scoreWindows[1][1][count]++;
+						scoreWindows[0][1][secondCount + empty]++;
+						scoreWindows[0][0][secondCount]--;
+						scoreWindows[1][0][count - empty]--;
+						return;
+					}else {
+						scoreWindows[0][1][secondCount + empty]++;
+						scoreWindows[1][1][count + secondEmpty]++;
+						scoreWindows[0][1][secondCount]--;
+						scoreWindows[1][0][count - empty]--;
+						return;
+					}
+				}else {
+					if(secondEmpty == 0) {
+						scoreWindows[0][1][secondCount + empty]++;
+						scoreWindows[1][1][count]++;
+						scoreWindows[0][0][secondCount]--;
+						scoreWindows[1][1][count - 1]++;
+						return;
+					}else {
+						scoreWindows[0][1][secondCount + empty]++;
+						scoreWindows[1][1][count + secondEmpty]++;
+						scoreWindows[0][1][secondCount]--;
+						scoreWindows[1][1][count - 1]--;
+						return;	
+					}
+				}
+				
+				
+			}
+    	}
+    	
+		if(block == 0 && secondBlock != 0) {
+			if(empty == -1 && secondEmpty == -1) {
+				if(count == 1 && secondCount == 0) {
+					scoreWindows[1][0][count]++;
+					return;
+				}
+				if(count != 1 && secondCount == 0) {
+					scoreWindows[1][0][count]++;
+					scoreWindows[0][0][count - 1]--;
+					return;
+				}
+				if(count == 1 && secondCount != 0) {
+					scoreWindows[1][0][secondCount + count]++;
+					scoreWindows[1][0][secondCount]--;
+					return;
+				}
+				if(count != 1 && secondCount != 0) {
+					scoreWindows[1][0][secondCount + count]++;
+					scoreWindows[1][1][secondCount + count - 1]--;
+					return;
+				}
+				
+				
+    		}
+			if(empty != -1 && secondEmpty == -1) {
+				if(empty == 1) {
+					if(secondCount == 0) {
+						scoreWindows[1][1][count]++;
+						scoreWindows[0][0][count - 1]--;
+						return;
+					}else {
+						scoreWindows[1][1][count + secondCount]++;
+						scoreWindows[1][0][secondCount]--;
+						scoreWindows[0][0][count - 1]--;
+						return;
+					}
+				}else {
+					if(secondCount == 0) {
+						scoreWindows[1][1][count]++;
+						scoreWindows[0][1][count - 1]--;
+						return;
+					}else {
+						scoreWindows[1][1][count + secondCount]++;
+						scoreWindows[1][0][secondCount + empty - 1]--;
+						scoreWindows[0][1][count - 1]--;
+						return;
+					}
+				}
+    		}
+			if(empty == -1 && secondEmpty != -1) {
+				if(secondEmpty == 0) {
+					if(count == 1) {
+						scoreWindows[1][1][secondCount + count]++;
+						scoreWindows[1][0][secondCount]--;
+						return;
+					}else {
+						scoreWindows[1][1][secondCount + count]++;
+						scoreWindows[0][0][count - 1]--;
+						scoreWindows[1][0][secondCount]--;
+						return;
+					}
+				}else {
+					if(count == 1) {
+						scoreWindows[1][1][secondCount + count]++;
+						scoreWindows[1][1][secondCount]--;
+						return;
+					}else {
+						scoreWindows[1][1][secondCount + count]++;
+						scoreWindows[1][1][secondCount]--;
+						scoreWindows[0][1][count - 1 + secondEmpty]--;
+						return;
+					}
+				}
+				
+				
+    		}
+			if(empty != -1 && secondEmpty != -1) {
+				if(secondEmpty == 0) {
+					if(empty == 1) {
+						scoreWindows[1][1][secondCount + empty]++;
+						scoreWindows[0][1][count]++;
+						scoreWindows[1][0][secondCount]--;
+						scoreWindows[0][0][count - 1]--;
+						return;
+					}else {
+						scoreWindows[1][1][secondCount + empty]++;
+						scoreWindows[0][1][count]++;
+						scoreWindows[1][0][secondCount]--;
+						scoreWindows[0][1][count - 1]--;
+						return;
+					}
+				}else {
+					if(empty == 1) {
+						scoreWindows[1][1][secondCount + empty]++;
+						scoreWindows[0][1][count + secondEmpty]++;
+						scoreWindows[1][1][secondCount]--;
+						scoreWindows[0][0][count - 1]--;
+						return;
+					}else {
+						scoreWindows[1][1][secondCount + empty]++;
+						scoreWindows[0][1][count + secondEmpty]++;
+						scoreWindows[1][1][secondCount]--;
+						scoreWindows[0][1][secondEmpty + empty - 1]--;
+						scoreWindows[0][1][count - 1]--;
+						return;
+					}
+				}
+				
+				
+			}
+    	}
+		
+		if(block != 0 && secondBlock != 0) {
+			if(empty == -1 && secondEmpty == -1) {
+				return;
+				
+    		}
+			if(empty != -1 && secondEmpty == -1 || empty == -1 && secondEmpty != -1) {
+				if(count + secondCount - 1 > AIM_LENGTH) {
+					if(player == State.O) {
+						this.twoBlockO[1 - 1] ++;
+					}else {
+						this.twoBlockX[1 - 1] ++;
+					}
+				}
+				return;
+				
+    		}
+			
+			if(empty != -1 && secondEmpty != -1) {
+				if(count + secondCount - 2 > AIM_LENGTH) {
+					if(player == State.O) {
+						this.twoBlockO[2 - 1] ++;
+					}else {
+						this.twoBlockX[2 - 1] ++;
+					}
+				}
+				return;
+			}
+    	}
+    }
     
     
     public int getScoreX() {
@@ -911,7 +1299,9 @@ public class Board {
 	        	board.winningWindowsO[i][j] = this.winningWindowsO[i][j].clone();
         	}
         }
-
+        
+        board.twoBlockO 		= this.twoBlockO.clone();
+        board.twoBlockX 		= this.twoBlockX.clone();
         board.playersTurn       = this.playersTurn;
         board.oppnent	        = this.oppnent;
         board.winner            = this.winner;
