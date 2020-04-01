@@ -17,7 +17,7 @@ import okhttp3.OkHttpClient;
 
 public class APISender {
 	public static final String HOST = "http://www.notexponential.com/aip2pgaming/api/index.php";
-    public static final String TEAMID = "1205";
+    public static final String TEAMID = "1229";
     public static final String APIKEY = "9b392e42cf6813dafbed";
     public static final String USERID = "868";
     

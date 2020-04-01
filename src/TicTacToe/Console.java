@@ -52,7 +52,6 @@ public class Console {
         	System.out.println("\n[1]耗时:"+(et2 - bt)+ "ms");  
         	
         	// send to API
-        	
         	try {
         		while(true) {
         			if(sender.sendMove(board.getPreMoveX(), board.getPreMoveY())) break;
@@ -170,8 +169,8 @@ public class Console {
         	
         } else {
         	long bt = System.currentTimeMillis();  
-        	Algorithms.alphaBetaAdvanced(Board.State.O, board);
-//        	getPlayerMove();
+//        	Algorithms.alphaBetaAdvanced(Board.State.O, board);
+        	getPlayerMove();
         	int[] move = board.getPreMove();
         	System.out.printf("x:%d, y:%d", move[0], move[1]);
         	System.out.printf("\nmoveNum:%d", board.getMoveCount());
@@ -259,23 +258,24 @@ public class Console {
     	Scanner sc = new Scanner(System.in);
         Console ticTacToe = new Console(sc.nextInt());
         
-//        System.out.println("input your order:(first: 1, second 2): ");
-//        int i = sc.nextInt();
-//        while(true) {
-//        	if(i == 1 || i == 2) {
-//        		break;
-//        	}
-//        	else {
-//        		i = sc.nextInt();
-//        	}
-//        }
-//        
-//        if(i == 1) {
-//        	ticTacToe.firstPlay();
-//        }else {
-//        	ticTacToe.secondPlay();
-//        }
-        ticTacToe.play();
+        System.out.println("input your order:(first: 1, second 2): ");
+        int i = sc.nextInt();
+        while(true) {
+        	if(i == 1 || i == 2) {
+        		break;
+        	}
+        	else {
+        		i = sc.nextInt();
+        	}
+        }
+        
+        if(i == 1) {
+        	ticTacToe.firstPlay();
+        }else {
+        	ticTacToe.secondPlay();
+        }
+//    	Console ticTacToe = new Console(1);
+//        ticTacToe.play();
     }
 
 }

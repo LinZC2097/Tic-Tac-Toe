@@ -2,485 +2,483 @@ package TicTacToe;
 
 import java.util.HashSet;
 
-
-
 public class Board {
 
-    static final int BOARD_WIDTH = 12;
-    static final int AIM_LENGTH = 6;
+	static final int BOARD_WIDTH = 12;
+	static final int AIM_LENGTH = 6;
 //    
 //    static final long[][] SCORE = new long[][] {
 //    	{10,	100, 	1000, 	10000,	100000,	 100000000,	 1000000000,	1000000000}, 
 //    	{1,		10, 	100, 	1000, 	10000,	 10000000,	 100000000,	 	1000000000}};
-    static final long[][][] SCORE = new long[][][] {
-    	{
-    		{},
-    		{}
-    	}, 
-    	{
-    		{},
-    		{}
-    	},
-    };
-    	// empty block count
+	static final int[][][] SCORE_SIX = new int[][][] {
+			{ { 0, 10, 100, 1000, 10000, 100000, 1000000 }, { 0, 8, 80, 800, 8000, 80000, 800000 } },
+			{ { 0, 6, 60, 600, 6000, 60000, 600000 }, { 0, 1, 10, 100, 1000, 10000, 100000 } }, };
+	static final int[][][] SCORE_EIGHT = new int[][][] {
+			{ { 0, 10, 100, 1000, 10000, 100000, 1000000, 10000000, 100000000 },
+					{ 0, 8, 80, 800, 8000, 80000, 800000, 8000000, 80000000 } },
+			{ { 0, 6, 60, 600, 6000, 60000, 600000, 6000000, 60000000 },
+					{ 0, 1, 10, 100, 1000, 10000, 100000, 1000000, 10000000 } }, };
+	// empty block count
+	static final int[] SCORE_SIX_TWO = new int[] { 1000, 500 };
+	static final int[] SCORE_EIGHT_TWO = new int[] { 1000000, 500000 };
 
+	public enum State {
+		Blank, X, O
+	}
 
-    public enum State {Blank, X, O}
-    private State[][] board;
-    private State playersTurn;
-    private State oppnent;
-    private State winner;
-    private HashSet<Integer> movesAvailable;
-    private int[][][] winningWindowsX;
-    private int[][][] winningWindowsO;
-    private int [] twoBlockX;
-    private int [] twoBlockO;
-    private long scoreX;
-    private long scoreO;
-    private int preMoveY;
-    private int preMoveX;
-    
-    private int moveCount;
-    private boolean gameOver;
+	private State[][] board;
+	private State playersTurn;
+	private State oppnent;
+	private State winner;
+	private HashSet<Integer> movesAvailable;
+	private int[][][] winningWindowsX;
+	private int[][][] winningWindowsO;
+	private int[] twoBlockX;
+	private int[] twoBlockO;
+	private long scoreX;
+	private long scoreO;
+	private int preMoveY;
+	private int preMoveX;
 
+	private int moveCount;
+	private boolean gameOver;
 
-    Board() {
-        board = new State[BOARD_WIDTH][BOARD_WIDTH];
-        winningWindowsX = new int[2][2][BOARD_WIDTH];
-        winningWindowsO = new int[2][2][BOARD_WIDTH];
-        twoBlockO = new int[] {0, 0};
-        twoBlockX = new int[] {0, 0};
-        movesAvailable = new HashSet<>();
-        reset();
-    }
+	Board() {
+		board = new State[BOARD_WIDTH][BOARD_WIDTH];
+		winningWindowsX = new int[2][2][AIM_LENGTH + 1];
+		winningWindowsO = new int[2][2][AIM_LENGTH + 1];
+		twoBlockO = new int[] { 0, 0 };
+		twoBlockX = new int[] { 0, 0 };
+		movesAvailable = new HashSet<>();
+		reset();
+	}
 
-    private void initialize () {
-        for (int row = 0; row < BOARD_WIDTH; row++) {
-            for (int col = 0; col < BOARD_WIDTH; col++) {
-                board[row][col] = State.Blank;
-            }
-        }
-        
-        scoreX = 0;
-        scoreO = 0;
-        
-        for(int i = 0; i < 2; i++) {
-        	for(int k = 0; i < 2; i++) {
-        		for(int j = 0; j < BOARD_WIDTH; j++ ) {
-        			winningWindowsX[i][k][j] = 0;
-        			winningWindowsO[i][k][j] = 0;
-        		}
-        	}
-        }
-        
-        movesAvailable.clear();
+	private void initialize() {
+		for (int row = 0; row < BOARD_WIDTH; row++) {
+			for (int col = 0; col < BOARD_WIDTH; col++) {
+				board[row][col] = State.Blank;
+			}
+		}
 
-        for (int i = 0; i < BOARD_WIDTH*BOARD_WIDTH; i++) {
-            movesAvailable.add(i);
-        }
-    }
+		scoreX = 0;
+		scoreO = 0;
 
+		for (int i = 0; i < 2; i++) {
+			for (int k = 0; i < 2; i++) {
+				for (int j = 0; j < AIM_LENGTH; j++) {
+					winningWindowsX[i][k][j] = 0;
+					winningWindowsO[i][k][j] = 0;
+				}
+			}
+		}
 
-    void reset () {
-        moveCount = 0;
-        gameOver = false;
-        playersTurn = State.X;
-        oppnent = State.O;
-        winner = State.Blank;
-        initialize();
-    }
-    
-    public int getMoveCount() {
-    	return this.moveCount;
-    }
+		movesAvailable.clear();
 
-    public boolean isUseless (int index) {
-        int col = index % BOARD_WIDTH;
-        int row = index / BOARD_WIDTH;
-        int radius = 2;
+		for (int i = 0; i < BOARD_WIDTH * BOARD_WIDTH; i++) {
+			movesAvailable.add(i);
+		}
+	}
+
+	void reset() {
+		moveCount = 0;
+		gameOver = false;
+		playersTurn = State.X;
+		oppnent = State.O;
+		winner = State.Blank;
+		initialize();
+	}
+
+	public int getMoveCount() {
+		return this.moveCount;
+	}
+
+	public boolean isUseless(int index) {
+		int col = index % BOARD_WIDTH;
+		int row = index / BOARD_WIDTH;
+		int radius = 2;
 //        if(this.moveCount < 10) {
 //        	radius = 2;
 //        }else {
 //        	radius = 3;
 //        }
 
-        int start_row = Math.max(0, row - radius);
-        int start_col = Math.max(0, col - radius);
-        int end_row = Math.min(row + radius, BOARD_WIDTH - 1);
-        int end_col = Math.min(col + radius, BOARD_WIDTH - 1);
-        
-        int count = 0;
-        int playerCount = 0;
-        int oppnentCount = 0;
-        outLoop:
-        for(int i = start_row; i <= end_row; i++) {
-        	for(int j = start_col; j <= end_col; j++) {
-        		if(board[i][j] != State.Blank) count++;
-        		if(this.moveCount > 1) {
-        			if(count > 1)	return false;
-        		}else {
-        			if(count >= 1)	return false;
-        		}
-        	}
-        }
-        
-        return true;
-    }
-    
-    
-    
-    
-    public boolean isMoreTwo(int y, int x) {
-    	int startX = Math.max(0, x - 2);
-    	int startY = Math.max(0, y - 2);
-    	int endX = Math.min(BOARD_WIDTH - 1, x + 2);
-    	int endY = Math.min(BOARD_WIDTH - 1, y + 2);
-    	
-    	for(int i = startX; i < endX; i++) {
-    		if(i == x) {
-    			continue;
-    		}
-    		if(i == x - 1 && i + 2 <= endX) {
-    			if(this.board[y][i] == this.board[y][i + 2] && this.board[y][i] != State.Blank ) {
-    				return true;
-    			}
-    		}
-    		if(this.board[y][i] == this.board[y][i + 1] && this.board[y][i] != State.Blank ) {
-    			return true;
-    		}
-    	}
-    	
-    	for(int i = startY; i < endY; i++) {
-    		if(i == y) {
-    			continue;
-    		}
-    		if(i == y - 1 && i + 2 <= endY) {
-    			if(this.board[i][x] == this.board[i + 2][x] && this.board[i][x] != State.Blank ) {
-    				return true;
-    			}
-    		}
-    		if(this.board[i][x] == this.board[i + 1][x] && this.board[i][x] != State.Blank) {
-    			return true;
-    		}
-    	}
-    	
-    	for(int i = startX, j = startY; i < endX && j < endY; i++, j++) {
-    		if(i == x) {
-    			continue;
-    		}
-    		if(i == x - 1 && i + 2 <= endX && j + 2 <= endY) {
-    			if(this.board[j][i] == this.board[j + 2][i + 2] && this.board[j][i] != State.Blank ) {
-    				return true;
-    			}
-    		}
-    		if(this.board[j][i] == this.board[j + 1][i + 1] && this.board[j][i] != State.Blank) {
-    			return true;
-    		}
-    	}
-    	
-    	for(int i = startX, j = endY; i < endX && j > startY; i++, j--) {
-    		if(i == x) {
-    			continue;
-    		}
-    		if(i == x - 1 && i + 2 <= endX && j - 2 >= startY) {
-    			if(this.board[j][i] == this.board[j - 2][i + 2] && this.board[j][i] != State.Blank ) {
-    				return true;
-    			}
-    		}
-    		if(this.board[j][i] == this.board[j - 1][i + 1] && this.board[j][i] != State.Blank) {
-    			return true;
-    		}
-    	}
-    	
-    	return false;
-    }
-    
-    
-    
+		int start_row = Math.max(0, row - radius);
+		int start_col = Math.max(0, col - radius);
+		int end_row = Math.min(row + radius, BOARD_WIDTH - 1);
+		int end_col = Math.min(col + radius, BOARD_WIDTH - 1);
 
-    public boolean move (int index) {
-    	this.setPreMove(index);
-        return move(index % BOARD_WIDTH, index / BOARD_WIDTH);
-    }
-    
+		int count = 0;
+		int playerCount = 0;
+		int oppnentCount = 0;
+		outLoop: for (int i = start_row; i <= end_row; i++) {
+			for (int j = start_col; j <= end_col; j++) {
+				if (board[i][j] != State.Blank)
+					count++;
+				if (this.moveCount > 1) {
+					if (count > 1)
+						return false;
+				} else {
+					if (count >= 1)
+						return false;
+				}
+			}
+		}
 
-    private boolean move (int x, int y) {
+		return true;
+	}
 
-        if (gameOver) {
-            throw new IllegalStateException("TicTacToe is over. No moves can be played.");
-        }
+	public boolean isMoreTwo(int y, int x) {
+		int startX = Math.max(0, x - 2);
+		int startY = Math.max(0, y - 2);
+		int endX = Math.min(BOARD_WIDTH - 1, x + 2);
+		int endY = Math.min(BOARD_WIDTH - 1, y + 2);
 
-        if (board[y][x] == State.Blank) {
-            board[y][x] = playersTurn;
-        } else {
-            return false;
-        }
+		for (int i = startX; i < endX; i++) {
+			if (i == x) {
+				continue;
+			}
+			if (i == x - 1 && i + 2 <= endX) {
+				if (this.board[y][i] == this.board[y][i + 2] && this.board[y][i] != State.Blank) {
+					return true;
+				}
+			}
+			if (this.board[y][i] == this.board[y][i + 1] && this.board[y][i] != State.Blank) {
+				return true;
+			}
+		}
 
-        moveCount++;
-        movesAvailable.remove(y * BOARD_WIDTH + x);
+		for (int i = startY; i < endY; i++) {
+			if (i == y) {
+				continue;
+			}
+			if (i == y - 1 && i + 2 <= endY) {
+				if (this.board[i][x] == this.board[i + 2][x] && this.board[i][x] != State.Blank) {
+					return true;
+				}
+			}
+			if (this.board[i][x] == this.board[i + 1][x] && this.board[i][x] != State.Blank) {
+				return true;
+			}
+		}
 
-        // The game is a draw.
-        if (moveCount == BOARD_WIDTH * BOARD_WIDTH) {
-            winner = State.Blank;
-            gameOver = true;
-        }
+		for (int i = startX, j = startY; i < endX && j < endY; i++, j++) {
+			if (i == x) {
+				continue;
+			}
+			if (i == x - 1 && i + 2 <= endX && j + 2 <= endY) {
+				if (this.board[j][i] == this.board[j + 2][i + 2] && this.board[j][i] != State.Blank) {
+					return true;
+				}
+			}
+			if (this.board[j][i] == this.board[j + 1][i + 1] && this.board[j][i] != State.Blank) {
+				return true;
+			}
+		}
 
-        // Check for a winner.
-        checkWin(x, y, playersTurn);
-        updateScoreWindowPlayer(x, y, playersTurn);
-        oppnent = playersTurn;
-        playersTurn = (playersTurn == State.X) ? State.O : State.X;
-        return true;
-    }
+		for (int i = startX, j = endY; i < endX && j > startY; i++, j--) {
+			if (i == x) {
+				continue;
+			}
+			if (i == x - 1 && i + 2 <= endX && j - 2 >= startY) {
+				if (this.board[j][i] == this.board[j - 2][i + 2] && this.board[j][i] != State.Blank) {
+					return true;
+				}
+			}
+			if (this.board[j][i] == this.board[j - 1][i + 1] && this.board[j][i] != State.Blank) {
+				return true;
+			}
+		}
 
-    public void setPreMove (int index) {
-        preMoveX = index % BOARD_WIDTH;
-        preMoveY = index / BOARD_WIDTH;
-    }
-    
-    public int[] getPreMove () {
-    	return new int[] {preMoveX, preMoveY};
-    }
-    
-    public int getPreMoveY() {
-    	return this.preMoveY;
-    }
-    
-    public int getPreMoveX() {
-    	return this.preMoveX;
-    }
-    
-    public boolean isGameOver () {
-        return gameOver;
-    }
+		return false;
+	}
 
-    State[][] toArray () {
-        return board.clone();
-    }
+	public boolean move(int index) {
+		this.setPreMove(index);
+		return move(index % BOARD_WIDTH, index / BOARD_WIDTH);
+	}
 
-    public State getTurn () {
-        return playersTurn;
-    }
+	private boolean move(int x, int y) {
 
-    public State getWinner () {
-        if (!gameOver) {
-            throw new IllegalStateException("TicTacToe is not over yet.");
-        }
-        return winner;
-    }
+		if (gameOver) {
+			throw new IllegalStateException("TicTacToe is over. No moves can be played.");
+		}
 
-    public HashSet<Integer> getAvailableMoves () {
-        return movesAvailable;
-    } 
-    
-    public int getBoardWidth () {
-        return BOARD_WIDTH;
-    }
-    
-    public void printScoreWindow() {
-    	System.out.println("Score window OOOOOO");
-    	for(int i = 0; i < 2; i ++) {
-    		for(int j = 0; j < 2; j ++) {
-    			for(int k = 0; k < AIM_LENGTH; k++) {
-    				System.out.printf("block:%d empty:%d lenth:%d number:%d\n", i, j, k, this.winningWindowsO[i][j][k]);
-    			}
-    		}
-    	}
-    	System.out.println("Score window XXXXXX");
-    	for(int i = 0; i < 2; i ++) {
-    		for(int j = 0; j < 2; j ++) {
-    			for(int k = 0; k < AIM_LENGTH; k++) {
-    				System.out.printf("block:%d empty:%d lenth:%d number:%d\n", i, j, k, this.winningWindowsX[i][j][k]);
-    			}
-    		}
-    	}
-    	
-    }
+		if (board[y][x] == State.Blank) {
+			board[y][x] = playersTurn;
+		} else {
+			return false;
+		}
 
-    
-    public void updateScoreWindowOppnent(int x, int y, State player) {
-    	
-    	int count = 1;
-    	int secondCount = 0;
+		moveCount++;
+		movesAvailable.remove(y * BOARD_WIDTH + x);
+
+		// The game is a draw.
+		if (moveCount == BOARD_WIDTH * BOARD_WIDTH) {
+			winner = State.Blank;
+			gameOver = true;
+		}
+
+		// Check for a winner.
+		checkWin(x, y, playersTurn);
+		updateScoreWindow(x, y, playersTurn);
+		oppnent = playersTurn;
+		playersTurn = (playersTurn == State.X) ? State.O : State.X;
+		return true;
+	}
+
+	public void setPreMove(int index) {
+		preMoveX = index % BOARD_WIDTH;
+		preMoveY = index / BOARD_WIDTH;
+	}
+
+	public int[] getPreMove() {
+		return new int[] { preMoveX, preMoveY };
+	}
+
+	public int getPreMoveY() {
+		return this.preMoveY;
+	}
+
+	public int getPreMoveX() {
+		return this.preMoveX;
+	}
+
+	public boolean isGameOver() {
+		return gameOver;
+	}
+
+	State[][] toArray() {
+		return board.clone();
+	}
+
+	public State getTurn() {
+		return playersTurn;
+	}
+
+	public State getWinner() {
+		if (!gameOver) {
+			throw new IllegalStateException("TicTacToe is not over yet.");
+		}
+		return winner;
+	}
+
+	public HashSet<Integer> getAvailableMoves() {
+		return movesAvailable;
+	}
+
+	public int getBoardWidth() {
+		return BOARD_WIDTH;
+	}
+
+	public void printScoreWindow() {
+		System.out.println("Score window OOOOOO");
+		for (int i = 0; i < 2; i++) {
+			for (int j = 0; j < 2; j++) {
+				for (int k = 0; k < AIM_LENGTH; k++) {
+					System.out.printf("block:%d empty:%d lenth:%d number:%d\n", i, j, k, this.winningWindowsO[i][j][k]);
+				}
+			}
+		}
+		System.out.println("Score window XXXXXX");
+		for (int i = 0; i < 2; i++) {
+			for (int j = 0; j < 2; j++) {
+				for (int k = 0; k < AIM_LENGTH; k++) {
+					System.out.printf("block:%d empty:%d lenth:%d number:%d\n", i, j, k, this.winningWindowsX[i][j][k]);
+				}
+			}
+		}
+
+	}
+
+	public void updateScoreWindow(int x, int y, State player) {
+		updateScoreWindowPlayer(x, y, player);
+		updateScoreWindowOppnent(x, y, player);
+
+	}
+
+	public void updateScoreWindowOppnent(int x, int y, State player) {
+
+		int count = 0;
+		int secondCount = 0;
 		int block = 0;
 		int secondBlock = 0;
 		int empty = -1;
 		int secondEmpty = -1;
-		
+
 		// count col
-		for(int i = y + 1; true; i++) {
-			if(i >= BOARD_WIDTH) {
+		for (int i = y + 1; true; i++) {
+			if (i >= BOARD_WIDTH) {
 				block++;
 				break;
 			}
-			if(this.board[i][x] == State.Blank) {
-				if(empty == -1 && i < BOARD_WIDTH - 1 && board[i + 1][x] == oppnent) {
+			if (this.board[i][x] == State.Blank) {
+				if (empty == -1 && i < BOARD_WIDTH - 1 && board[i + 1][x] == oppnent) {
 					empty = count;
 					continue;
-				}else {
+				} else {
 					break;
 				}
 			}
-			
-			if(this.board[i][x] == oppnent) {
+
+			if (this.board[i][x] == oppnent) {
 				count++;
 				continue;
-			}else {
+			} else {
 				block++;
 				break;
 			}
 		}
-	
-		for(int i = y - 1; true; i--) {
-			if(i < 0) {
+
+		for (int i = y - 1; true; i--) {
+			if (i < 0) {
 				secondBlock++;
 				break;
 			}
-			if(this.board[i][x] == State.Blank) {
-				if(secondEmpty == -1 && i > 0 && board[i + 1][x] == oppnent) {
+			if (this.board[i][x] == State.Blank) {
+				if (secondEmpty == -1 && i > 0 && board[i + 1][x] == oppnent) {
 					secondEmpty = secondCount;
 					continue;
-				}else {
+				} else {
 					break;
 				}
 			}
-			if(this.board[i][x] == oppnent) {
-				secondCount ++;
+			if (this.board[i][x] == oppnent) {
+				secondCount++;
 //				if(secondEmpty != -1) {
 //					secondEmpty++;
 //				}
 				continue;
-			}else {
+			} else {
 				secondBlock++;
 				break;
 			}
 		}
-		count += secondCount;
-		updateScoreArray(count, block, empty, oppnent);
-		
+//      count += secondCount;
+		updateScoreArrayOppnent(count, secondCount, block, secondBlock, empty, secondEmpty, player);
+
 		// count row
-		count = 1;
+		count = 0;
 		secondCount = 0;
 		block = 0;
 		secondBlock = 0;
 		empty = -1;
 		secondEmpty = -1;
-		
+
 		for (int i = x + 1; true; i++) {
-            if (i >= BOARD_WIDTH) {
-                block++;
-                break;
-            }
-            if (this.board[y][i] == State.Blank) {
-                if (empty == -1 && i < BOARD_WIDTH - 1 && board[y][i + 1] == oppnent) {
-                    empty = count;
-                    continue;
-                } else {
-                    break;
-                }
-            }
-            if (this.board[y][i] == oppnent) {
-                count++;
-                continue;
-            } else {
-                block++;
-                break;
-            }
-        }
-		
+			if (i >= BOARD_WIDTH) {
+				block++;
+				break;
+			}
+			if (this.board[y][i] == State.Blank) {
+				if (empty == -1 && i < BOARD_WIDTH - 1 && board[y][i + 1] == oppnent) {
+					empty = count;
+					continue;
+				} else {
+					break;
+				}
+			}
+			if (this.board[y][i] == oppnent) {
+				count++;
+				continue;
+			} else {
+				block++;
+				break;
+			}
+		}
+
 		for (int i = x - 1; true; i--) {
-            if (i < 0) {
-            	secondBlock++;
-                break;
-            }
-            
-            if (this.board[i][y] == State.Blank) {
-                if (secondEmpty == -1 && i > 0 && this.board[i - 1][y] == oppnent) {
-                	secondEmpty = secondCount;
-                    continue;
-                } else {
-                    break;
-                }
-            }
-            if (this.board[i][y]  == oppnent) {
-            	secondCount++;
+			if (i < 0) {
+				secondBlock++;
+				break;
+			}
+
+			if (this.board[i][y] == State.Blank) {
+				if (secondEmpty == -1 && i > 0 && this.board[i - 1][y] == oppnent) {
+					secondEmpty = secondCount;
+					continue;
+				} else {
+					break;
+				}
+			}
+			if (this.board[i][y] == oppnent) {
+				secondCount++;
 //                if(secondEmpty != -1) { 
 //                	secondEmpty++;
 //                }
-                continue;
-            } else {
-            	secondBlock++;
-                break;
-            }
-        }
-		count += secondCount;
-		updateScoreArray(count, block, empty, oppnent);
-		
-		// count diagonal \ 
-		count = 1;
+				continue;
+			} else {
+				secondBlock++;
+				break;
+			}
+		}
+//      count += secondCount;
+		updateScoreArrayOppnent(count, secondCount, block, secondBlock, empty, secondEmpty, player);
+
+		// count diagonal \
+		count = 0;
 		secondCount = 0;
 		block = 0;
 		secondBlock = 0;
 		empty = -1;
 		secondEmpty = -1;
-		
+
 		for (int i = 1; true; i++) {
-            int tempX = x + i;
-            int tempY = y + i;
-            if (tempX >= BOARD_WIDTH || tempY >= BOARD_WIDTH) {
-                block++;
-                break;
-            }
-            State t = this.board[tempY][tempX];
-            if (t == State.Blank) {
-                if (empty == -1 && (tempX < BOARD_WIDTH- 1 && tempY < BOARD_WIDTH- 1) && this.board[tempY + 1][tempX + 1] == oppnent) {
-                    empty = count;
-                    continue;
-                } else {
-                    break;
-                }
-            }
-            if (t == oppnent) {
-                count++;
-                continue;
-            } else {
-                block++;
-                break;
-            }
-        }
+			int tempX = x + i;
+			int tempY = y + i;
+			if (tempX >= BOARD_WIDTH || tempY >= BOARD_WIDTH) {
+				block++;
+				break;
+			}
+			State t = this.board[tempY][tempX];
+			if (t == State.Blank) {
+				if (empty == -1 && (tempX < BOARD_WIDTH - 1 && tempY < BOARD_WIDTH - 1)
+						&& this.board[tempY + 1][tempX + 1] == oppnent) {
+					empty = count;
+					continue;
+				} else {
+					break;
+				}
+			}
+			if (t == oppnent) {
+				count++;
+				continue;
+			} else {
+				block++;
+				break;
+			}
+		}
 		for (int i = 1; true; i++) {
-            int tempX = x - i;
-            int tempY = y - i;
-            if (tempX < 0 || tempY < 0) {
-            	secondBlock++;
-                break;
-            }
-            State t = this.board[tempY][tempX];
-            if (t == State.Blank) {
-                if (secondEmpty == -1 && (tempX > 0 && tempY > 0) && this.board[tempY - 1][tempX - 1] == oppnent) {
-                	secondEmpty = secondCount;
-                    continue;
-                } else {
-                    break;
-                }
-            }
-            if (t == oppnent) {
-                secondCount++;
+			int tempX = x - i;
+			int tempY = y - i;
+			if (tempX < 0 || tempY < 0) {
+				secondBlock++;
+				break;
+			}
+			State t = this.board[tempY][tempX];
+			if (t == State.Blank) {
+				if (secondEmpty == -1 && (tempX > 0 && tempY > 0) && this.board[tempY - 1][tempX - 1] == oppnent) {
+					secondEmpty = secondCount;
+					continue;
+				} else {
+					break;
+				}
+			}
+			if (t == oppnent) {
+				secondCount++;
 //                if(secondEmpty != -1) { 
 //                	secondEmpty++;
 //                }
-                continue;
-            } else {
-            	secondBlock++;
-                break;
-            }
-        }
-		count += secondCount;
-		updateScoreArray(count, block, empty, oppnent);
-		
-		
+				continue;
+			} else {
+				secondBlock++;
+				break;
+			}
+		}
+//      count += secondCount;
+		updateScoreArrayOppnent(count, secondCount, block, secondBlock, empty, secondEmpty, player);
+
 		// count diagonal /
-		count = 1;
+		count = 0;
 		secondCount = 0;
 		block = 0;
 		secondBlock = 0;
@@ -488,130 +486,440 @@ public class Board {
 		secondEmpty = -1;
 
 		for (int i = 1; true; i++) {
-            int tempX = x + i;
-            int tempY = y - i;
-            if (tempX < 0 || tempY < 0 || tempX >= BOARD_WIDTH || tempY >= BOARD_WIDTH) {
-                block++;
-                break;
-            }
-            State t = this.board[tempY][tempX];
-            if (t == State.Blank) {
-            	try {
-	                if (empty == -1 && (tempX < BOARD_WIDTH - 1 && tempY > 0) && this.board[tempY - 1][tempX + 1] == oppnent) {
-	                    empty = count;
-	                    continue;
-	                } else {
-	                    break;
-	                }
-            	} catch(Exception e) {
-            		System.out.println("\n" + this.toString() + "\n");
-            		System.out.print("y:");
-            		System.out.println(tempY - 1);
-            		System.out.print("x:");
-            		System.out.println(tempX - 1);
-            	}
-            }
-            if (t == oppnent) {
-                count++;
-                continue;
-            } else {
-                block++;
-                break;
-            }
-        }
+			int tempX = x + i;
+			int tempY = y - i;
+			if (tempX < 0 || tempY < 0 || tempX >= BOARD_WIDTH || tempY >= BOARD_WIDTH) {
+				block++;
+				break;
+			}
+			State t = this.board[tempY][tempX];
+			if (t == State.Blank) {
+				try {
+					if (empty == -1 && (tempX < BOARD_WIDTH - 1 && tempY > 0)
+							&& this.board[tempY - 1][tempX + 1] == oppnent) {
+						empty = count;
+						continue;
+					} else {
+						break;
+					}
+				} catch (Exception e) {
+					System.out.println("\n" + this.toString() + "\n");
+					System.out.print("y:");
+					System.out.println(tempY - 1);
+					System.out.print("x:");
+					System.out.println(tempX - 1);
+				}
+			}
+			if (t == oppnent) {
+				count++;
+				continue;
+			} else {
+				block++;
+				break;
+			}
+		}
 
-        for (int i = 1; true; i++) {
-            int tempX = x - i;
-            int tempY = y + i;
-            if (tempX < 0 || tempY < 0 || tempX >= BOARD_WIDTH || tempY >= BOARD_WIDTH) {
-            	secondBlock++;
-                break;
-            }
-            State t = this.board[tempX][tempY];
-            if (t == State.Blank) {
-                if (secondEmpty == -1 && (tempX > 0 && tempY > BOARD_WIDTH - 1) && this.board[tempY + 1][tempX - 1] == oppnent) {
-                	secondEmpty = secondCount;
-                    continue;
-                } else {
-                    break;
-                }
-            }
-            if (t == oppnent) {
-                secondCount++;
+		for (int i = 1; true; i++) {
+			int tempX = x - i;
+			int tempY = y + i;
+			if (tempX < 0 || tempY < 0 || tempX >= BOARD_WIDTH || tempY >= BOARD_WIDTH) {
+				secondBlock++;
+				break;
+			}
+			State t = this.board[tempX][tempY];
+			if (t == State.Blank) {
+				if (secondEmpty == -1 && (tempX > 0 && tempY > BOARD_WIDTH - 1)
+						&& this.board[tempY + 1][tempX - 1] == oppnent) {
+					secondEmpty = secondCount;
+					continue;
+				} else {
+					break;
+				}
+			}
+			if (t == oppnent) {
+				secondCount++;
 //                if(secondEmpty != -1) { 
 //                	secondEmpty++;
 //                }
-                continue;
-            } else {
-            	secondBlock++;
-                break;
-            }
-        }
-        count += secondCount;
-		updateScoreArray(count, block, empty, oppnent);
-    }
-    
-    public void updateScoreWindowPlayer (int x, int y, State player) {
-		
+				continue;
+			} else {
+				secondBlock++;
+				break;
+			}
+		}
+//      count += secondCount;
+		updateScoreArrayOppnent(count, secondCount, block, secondBlock, empty, secondEmpty, player);
+	}
+
+	public void updateScoreArrayOppnent(int count, int secondCount, int block, int secondBlock, int empty,
+			int secondEmpty, State player) {
+		if (count == 0 && secondCount == 0) {
+			return;
+		}
+
+		int[] twoBlock = new int[2];
+		int[][][] scoreWindows = new int[2][2][AIM_LENGTH];
+
+		if (player == State.O) {
+			scoreWindows = this.winningWindowsX;
+			twoBlock = this.twoBlockX;
+		} else {
+			scoreWindows = this.winningWindowsO;
+			twoBlock = this.twoBlockO;
+		}
+
+		if (count == 0) {
+			if (secondBlock == 0) {
+				if (secondEmpty == -1) {
+					scoreWindows[0][0][secondCount]--;
+					scoreWindows[1][0][secondCount]++;
+					return;
+				} else if (secondEmpty == 0) {
+					return;
+				} else {
+					scoreWindows[0][1][secondCount]--;
+					scoreWindows[1][1][secondCount]++;
+					return;
+				}
+			} else {
+				if (secondEmpty == -1) {
+					scoreWindows[1][0][secondCount]--;
+					return;
+				} else {
+					scoreWindows[1][1][secondCount]--;
+					if (secondCount + 1 >= AIM_LENGTH) {
+						twoBlock[1 - 1]++;
+					}
+					return;
+				}
+			}
+		}
+
+		if (secondCount == 0) {
+			if (block == 0) {
+				if (empty == -1) {
+					scoreWindows[0][0][count]--;
+					scoreWindows[1][0][count]++;
+					return;
+				} else if (empty == 0) {
+					return;
+				} else {
+					scoreWindows[0][1][count]--;
+					scoreWindows[1][1][count]++;
+					return;
+				}
+			} else {
+				if (empty == -1) {
+					scoreWindows[1][0][count]--;
+					return;
+				} else {
+					scoreWindows[1][1][count]--;
+					if (count + 1 >= AIM_LENGTH) {
+						twoBlock[1 - 1]++;
+					}
+					return;
+				}
+			}
+		}
+
+		// count && secondCount != 0
+		if (block == 0 && secondBlock == 0) {
+			if (empty == -1) {
+				if (secondEmpty == -1) {
+					scoreWindows[0][1][count + secondCount]--;
+					scoreWindows[1][0][count]++;
+					scoreWindows[1][0][secondCount]++;
+					return;
+				} else if (secondEmpty == 0) {
+					scoreWindows[0][0][count]--;
+					scoreWindows[1][0][count]++;
+					return;
+				} else {
+					scoreWindows[0][1][secondCount]--;
+					scoreWindows[0][1][count + secondEmpty]--;
+					scoreWindows[1][1][secondCount]++;
+					scoreWindows[1][0][count]++;
+					return;
+				}
+			} else if (empty == 0) {
+				if (secondEmpty == -1) {
+					scoreWindows[0][0][secondCount]--;
+					scoreWindows[1][0][secondCount]++;
+					return;
+				} else if (secondEmpty == 0) {
+					return;
+				} else {
+					scoreWindows[0][1][secondCount]--;
+					scoreWindows[1][1][secondCount]++;
+					return;
+				}
+			} else {
+				if (secondEmpty == -1) {
+					scoreWindows[0][1][secondCount + empty]--;
+					scoreWindows[0][1][count]--;
+					scoreWindows[1][0][secondCount]++;
+					scoreWindows[1][1][count]++;
+					return;
+				} else if (secondEmpty == 0) {
+					scoreWindows[0][1][count]--;
+					scoreWindows[1][1][count]++;
+					return;
+				} else {
+					scoreWindows[0][1][secondCount]--;
+					scoreWindows[0][1][secondEmpty + empty]--;
+					scoreWindows[0][1][count]--;
+					scoreWindows[1][1][secondCount]++;
+					scoreWindows[1][1][count]++;
+					return;
+				}
+			}
+		}
+
+		if (block != 0 && secondBlock == 0) {
+			if (empty == -1) {
+				if (secondEmpty == -1) {
+					if (count + secondCount > AIM_LENGTH) {
+						scoreWindows[1][1][AIM_LENGTH]--;
+					} else {
+						scoreWindows[1][1][count + secondCount]--;
+					}
+					scoreWindows[1][0][secondCount]++;
+					return;
+				} else if (secondEmpty == 0) {
+					scoreWindows[1][0][count]--;
+					return;
+				} else {
+					scoreWindows[1][1][count + secondEmpty]--;
+					scoreWindows[0][1][secondCount]--;
+					scoreWindows[1][1][secondCount]++;
+					return;
+				}
+			} else if (empty == 0) {
+				if (secondEmpty == -1) {
+					scoreWindows[0][0][secondCount]--;
+					scoreWindows[1][0][secondCount]++;
+
+				} else if (secondEmpty == 0) {
+//					System.out.println();
+				} else {
+					scoreWindows[0][1][secondCount]--;
+					scoreWindows[1][1][secondCount]++;
+				}
+				scoreWindows[1][0][count]--;
+				if (count + 1 >= AIM_LENGTH) {
+					twoBlock[1 - 1]++;
+				}
+				return;
+			} else {
+				if (secondEmpty == -1) {
+					scoreWindows[1][1][secondCount + empty]--;
+					scoreWindows[1][0][secondCount]++;
+				} else if (secondEmpty == 0) {
+//					System.out.println();
+				} else {
+					scoreWindows[0][1][secondCount]--;
+					scoreWindows[0][1][secondEmpty + empty]--;
+					scoreWindows[1][1][secondCount]++;
+					if (secondCount + 1 >= AIM_LENGTH) {
+						twoBlock[1 - 1]++;
+					}
+				}
+
+				scoreWindows[1][1][count]--;
+				if (count + 1 >= AIM_LENGTH) {
+					twoBlock[1 - 1]++;
+				}
+				return;
+			}
+
+		}
+
+		if (block == 0 && secondBlock != 0) {
+			if (secondEmpty == -1) {
+				if (empty == -1) {
+					scoreWindows[1][0][secondCount]--;
+					scoreWindows[1][0][count]++;
+					return;
+				} else if (empty == 0) {
+					scoreWindows[1][0][secondCount]--;
+					return;
+				} else {
+					scoreWindows[1][1][secondCount + empty]--;
+					scoreWindows[0][1][count]--;
+					scoreWindows[1][1][count]--;
+					return;
+				}
+			} else if (secondEmpty == 0) {
+				if (empty == -1) {
+					scoreWindows[1][0][secondCount]--;
+
+				} else if (empty == 0) {
+					scoreWindows[1][0][secondCount]--;
+					if (secondCount + 1 >= AIM_LENGTH) {
+						twoBlock[1 - 1]++;
+					}
+				} else {
+					scoreWindows[1][1][secondCount]--;
+					if (secondCount + 1 >= AIM_LENGTH) {
+						twoBlock[1 - 1]++;
+					}
+				}
+				scoreWindows[1][0][secondCount]--;
+				if (count + 1 >= AIM_LENGTH) {
+					twoBlock[1 - 1]++;
+					return;
+				}
+			} else {
+				if (empty == -1) {
+					scoreWindows[0][1][secondEmpty + count]--;
+					scoreWindows[1][0][count]++;
+				} else if (empty == 0) {
+//					System.out.println();
+				} else {
+					scoreWindows[0][1][secondEmpty + empty]--;
+					scoreWindows[0][1][count]--;
+					scoreWindows[1][1][count]--;
+					if (secondCount + 1 >= AIM_LENGTH) {
+						twoBlock[1 - 1]++;
+					}
+				}
+
+				scoreWindows[1][1][secondCount]--;
+				if (count + 1 >= AIM_LENGTH) {
+					twoBlock[1 - 1]++;
+					return;
+				}
+			}
+		}
+
+		if (block != 0 && secondBlock != 0) {
+			if (empty == -1) {
+				if (secondEmpty == -1) {
+					scoreWindows[1][0][secondCount]--;
+					scoreWindows[1][0][count]--;
+					return;
+				} else if (secondEmpty == 0) {
+					scoreWindows[1][0][count]--;
+					if (secondCount + 1 >= AIM_LENGTH) {
+						scoreWindows[1][0][secondCount]--;
+						twoBlock[1 - 1]++;
+					}
+					return;
+				} else {
+					scoreWindows[1][0][count]--;
+					if (secondCount + 1 >= AIM_LENGTH) {
+						scoreWindows[1][1][secondCount]--;
+						twoBlock[1 - 1]++;
+					}
+					return;
+				}
+			} else if (empty == 0) {
+				if (secondEmpty == -1) {
+					scoreWindows[1][0][secondCount]--;
+
+				} else if (secondEmpty == 0) {
+					scoreWindows[1][0][secondCount]--;
+					if (secondCount + 1 >= AIM_LENGTH) {
+						twoBlock[1 - 1]++;
+					}
+				} else {
+					scoreWindows[1][1][secondCount]--;
+					if (secondCount + 1 >= AIM_LENGTH) {
+						twoBlock[1 - 1]++;
+					}
+				}
+				scoreWindows[1][0][count]--;
+				if (count + 1 >= AIM_LENGTH) {
+					twoBlock[1 - 1]++;
+				}
+				return;
+			} else {
+				if (secondEmpty == -1) {
+					scoreWindows[1][0][secondCount]--;
+					scoreWindows[1][1][secondCount + empty]--;
+				} else if (secondEmpty == 0) {
+					scoreWindows[1][0][secondCount]--;
+					if (secondCount + 1 >= AIM_LENGTH) {
+						twoBlock[1 - 1]++;
+					}
+				} else {
+					scoreWindows[1][1][secondCount]--;
+					scoreWindows[0][1][secondEmpty + empty]--;
+					if (secondCount + 1 >= AIM_LENGTH) {
+						twoBlock[1 - 1]++;
+					}
+				}
+
+				scoreWindows[1][1][count]--;
+				if (count + 1 >= AIM_LENGTH) {
+					twoBlock[1 - 1]++;
+				}
+				return;
+			}
+		}
+	}
+
+	public void updateScoreWindowPlayer(int x, int y, State player) {
+
 		int count = 1;
 		int secondCount = 0;
 		int block = 0;
 		int secondBlock = 0;
 		int empty = -1;
 		int secondEmpty = -1;
-		
+
 		// count col
-		for(int i = y + 1; true; i++) {
-			if(i >= BOARD_WIDTH) {
+		for (int i = y + 1; true; i++) {
+			if (i >= BOARD_WIDTH) {
 				block++;
 				break;
 			}
-			if(this.board[i][x] == State.Blank) {
-				if(empty == -1 && i < BOARD_WIDTH - 1 && board[i + 1][x] == player) {
+			if (this.board[i][x] == State.Blank) {
+				if (empty == -1 && i < BOARD_WIDTH - 1 && board[i + 1][x] == player) {
 					empty = count;
 					continue;
-				}else {
+				} else {
 					break;
 				}
 			}
-			
-			if(this.board[i][x] == player) {
+
+			if (this.board[i][x] == player) {
 				count++;
 				continue;
-			}else {
+			} else {
 				block++;
 				break;
 			}
 		}
-	
-		for(int i = y - 1; true; i--) {
-			if(i < 0) {
+
+		for (int i = y - 1; true; i--) {
+			if (i < 0) {
 				secondBlock++;
 				break;
 			}
-			if(this.board[i][x] == State.Blank) {
-				if(secondEmpty == -1 && i > 0 && board[i + 1][x] == player) {
+			if (this.board[i][x] == State.Blank) {
+				if (secondEmpty == -1 && i > 0 && board[i + 1][x] == player) {
 					secondEmpty = secondCount;
 					continue;
-				}else {
+				} else {
 					break;
 				}
 			}
-			if(this.board[i][x] == player) {
-				secondCount ++;
+			if (this.board[i][x] == player) {
+				secondCount++;
 //				if (secondEmpty != -1) {
 //					secondEmpty++;
 //				}
 				continue;
-			}else {
+			} else {
 				secondBlock++;
 				break;
 			}
-			
+
 		}
 //		count += secondCount;
-		this.updateScoreArray(count, secondCount, block, secondBlock, empty, secondEmpty, player);
-		
+		this.updateScoreArrayPlayer(count, secondCount, block, secondBlock, empty, secondEmpty, player);
+
 		// count row
 		count = 1;
 		secondCount = 0;
@@ -619,120 +927,120 @@ public class Board {
 		secondBlock = 0;
 		empty = -1;
 		secondEmpty = -1;
-		
+
 		for (int i = x + 1; true; i++) {
-            if (i >= BOARD_WIDTH) {
-                block++;
-                break;
-            }
-            if (this.board[y][i] == State.Blank) {
-                if (empty == -1 && i < BOARD_WIDTH - 1 && board[y][i + 1] == player) {
-                    empty = count;
-                    continue;
-                } else {
-                    break;
-                }
-            }
-            if (this.board[y][i] == player) {
-                count++;
-                continue;
-            } else {
-                block++;
-                break;
-            }
-        }
-		
+			if (i >= BOARD_WIDTH) {
+				block++;
+				break;
+			}
+			if (this.board[y][i] == State.Blank) {
+				if (empty == -1 && i < BOARD_WIDTH - 1 && board[y][i + 1] == player) {
+					empty = count;
+					continue;
+				} else {
+					break;
+				}
+			}
+			if (this.board[y][i] == player) {
+				count++;
+				continue;
+			} else {
+				block++;
+				break;
+			}
+		}
+
 		for (int i = x - 1; true; i--) {
-            if (i < 0) {
-            	secondBlock++;
-                break;
-            }
-            
-            if (this.board[i][y] == State.Blank) {
-                if (secondEmpty == -1 && i > 0 && this.board[i - 1][y] == player) {
-                	secondEmpty = secondCount;
-                    continue;
-                } else {
-                    break;
-                }
-            }
-            if (this.board[i][y]  == player) {
-            	secondCount++;
+			if (i < 0) {
+				secondBlock++;
+				break;
+			}
+
+			if (this.board[i][y] == State.Blank) {
+				if (secondEmpty == -1 && i > 0 && this.board[i - 1][y] == player) {
+					secondEmpty = secondCount;
+					continue;
+				} else {
+					break;
+				}
+			}
+			if (this.board[i][y] == player) {
+				secondCount++;
 //                if(secondEmpty != -1) { 
 //                	secondEmpty++;
 //                }
-                continue;
-            } else {
-            	secondBlock++;
-                break;
-            }
-        }
+				continue;
+			} else {
+				secondBlock++;
+				break;
+			}
+		}
 //		count += secondCount;
-		this.updateScoreArray(count, secondCount, block, secondBlock, empty, secondEmpty, player);
-		
-		// count diagonal \ 
+		this.updateScoreArrayPlayer(count, secondCount, block, secondBlock, empty, secondEmpty, player);
+
+		// count diagonal \
 		count = 1;
 		secondCount = 0;
 		block = 0;
 		secondBlock = 0;
 		empty = -1;
 		secondEmpty = -1;
-		
+
 		for (int i = 1; true; i++) {
-            int tempX = x + i;
-            int tempY = y + i;
-            if (tempX >= BOARD_WIDTH || tempY >= BOARD_WIDTH) {
-                block++;
-                break;
-            }
-            State t = this.board[tempY][tempX];
-            if (t == State.Blank) {
-                if (empty == -1 && (tempX < BOARD_WIDTH- 1 && tempY < BOARD_WIDTH- 1) && this.board[tempY + 1][tempX + 1] == player) {
-                    empty = count;
-                    continue;
-                } else {
-                    break;
-                }
-            }
-            if (t == player) {
-                count++;
-                continue;
-            } else {
-                block++;
-                break;
-            }
-        }
+			int tempX = x + i;
+			int tempY = y + i;
+			if (tempX >= BOARD_WIDTH || tempY >= BOARD_WIDTH) {
+				block++;
+				break;
+			}
+			State t = this.board[tempY][tempX];
+			if (t == State.Blank) {
+				if (empty == -1 && (tempX < BOARD_WIDTH - 1 && tempY < BOARD_WIDTH - 1)
+						&& this.board[tempY + 1][tempX + 1] == player) {
+					empty = count;
+					continue;
+				} else {
+					break;
+				}
+			}
+			if (t == player) {
+				count++;
+				continue;
+			} else {
+				block++;
+				break;
+			}
+		}
 		for (int i = 1; true; i++) {
-            int tempX = x - i;
-            int tempY = y - i;
-            if (tempX < 0 || tempY < 0) {
-            	secondBlock++;
-                break;
-            }
-            State t = this.board[tempY][tempX];
-            if (t == State.Blank) {
-                if (secondEmpty == -1 && (tempX > 0 && tempY > 0) && this.board[tempY - 1][tempX - 1] == player) {
-                	secondEmpty = secondCount;
-                    continue;
-                } else {
-                    break;
-                }
-            }
-            if (t == player) {
-                secondCount++;
+			int tempX = x - i;
+			int tempY = y - i;
+			if (tempX < 0 || tempY < 0) {
+				secondBlock++;
+				break;
+			}
+			State t = this.board[tempY][tempX];
+			if (t == State.Blank) {
+				if (secondEmpty == -1 && (tempX > 0 && tempY > 0) && this.board[tempY - 1][tempX - 1] == player) {
+					secondEmpty = secondCount;
+					continue;
+				} else {
+					break;
+				}
+			}
+			if (t == player) {
+				secondCount++;
 //                if(secondEmpty != -1) { 
 //                	secondEmpty++;
 //                }
-                continue;
-            } else {
-            	secondBlock++;
-                break;
-            }
-        }
+				continue;
+			} else {
+				secondBlock++;
+				break;
+			}
+		}
 //		count += secondCount;
-		this.updateScoreArray(count, secondCount, block, secondBlock, empty, secondEmpty, player);
-		
-		
+		this.updateScoreArrayPlayer(count, secondCount, block, secondBlock, empty, secondEmpty, player);
+
 		// count diagonal /
 		count = 1;
 		secondCount = 0;
@@ -742,183 +1050,205 @@ public class Board {
 		secondEmpty = -1;
 
 		for (int i = 1; true; i++) {
-            int tempX = x + i;
-            int tempY = y - i;
-            if (tempX < 0 || tempY < 0 || tempX >= BOARD_WIDTH || tempY >= BOARD_WIDTH) {
-                block++;
-                break;
-            }
-            State t = this.board[tempY][tempX];
-            if (t == State.Blank) {
-            	try {
-	                if (empty == -1 && (tempX < BOARD_WIDTH - 1 && tempY > 0) && this.board[tempY - 1][tempX + 1] == player) {
-	                    empty = count;
-	                    continue;
-	                } else {
-	                    break;
-	                }
-            	} catch(Exception e) {
-            		System.out.println("\n" + this.toString() + "\n");
-            		System.out.print("y:");
-            		System.out.println(tempY - 1);
-            		System.out.print("x:");
-            		System.out.println(tempX - 1);
-            	}
-            }
-            if (t == player) {
-                count++;
-                continue;
-            } else {
-                block++;
-                break;
-            }
-        }
+			int tempX = x + i;
+			int tempY = y - i;
+			if (tempX < 0 || tempY < 0 || tempX >= BOARD_WIDTH || tempY >= BOARD_WIDTH) {
+				block++;
+				break;
+			}
+			State t = this.board[tempY][tempX];
+			if (t == State.Blank) {
+				try {
+					if (empty == -1 && (tempX < BOARD_WIDTH - 1 && tempY > 0)
+							&& this.board[tempY - 1][tempX + 1] == player) {
+						empty = count;
+						continue;
+					} else {
+						break;
+					}
+				} catch (Exception e) {
+					System.out.println("\n" + this.toString() + "\n");
+					System.out.print("y:");
+					System.out.println(tempY - 1);
+					System.out.print("x:");
+					System.out.println(tempX - 1);
+				}
+			}
+			if (t == player) {
+				count++;
+				continue;
+			} else {
+				block++;
+				break;
+			}
+		}
 
-        for (int i = 1; true; i++) {
-            int tempX = x - i;
-            int tempY = y + i;
-            if (tempX < 0 || tempY < 0 || tempX >= BOARD_WIDTH || tempY >= BOARD_WIDTH) {
-            	secondBlock++;
-                break;
-            }
-            State t = this.board[tempX][tempY];
-            if (t == State.Blank) {
-                if (secondEmpty == -1 && (tempX > 0 && tempY > BOARD_WIDTH - 1) && this.board[tempY + 1][tempX - 1] == player) {
-                	secondEmpty = secondCount;
-                    continue;
-                } else {
-                    break;
-                }
-            }
-            if (t == player) {
-                secondCount++;
+		for (int i = 1; true; i++) {
+			int tempX = x - i;
+			int tempY = y + i;
+			if (tempX < 0 || tempY < 0 || tempX >= BOARD_WIDTH || tempY >= BOARD_WIDTH) {
+				secondBlock++;
+				break;
+			}
+			State t = this.board[tempX][tempY];
+			if (t == State.Blank) {
+				if (secondEmpty == -1 && (tempX > 0 && tempY > BOARD_WIDTH - 1)
+						&& this.board[tempY + 1][tempX - 1] == player) {
+					secondEmpty = secondCount;
+					continue;
+				} else {
+					break;
+				}
+			}
+			if (t == player) {
+				secondCount++;
 //                if(secondEmpty != -1) { 
 //                	secondEmpty++;
 //                }
-                continue;
-            } else {
-            	secondBlock++;
-                break;
-            }
-        }
+				continue;
+			} else {
+				secondBlock++;
+				break;
+			}
+		}
 //        count += secondCount;
-		this.updateScoreArray(count, secondCount, block, secondBlock, empty, secondEmpty, player);
-		
-        
-    }
-    
-    public void updateScoreArray(int count, int secondCount, int block, int secondBlock, int empty, int secondEmpty, State player) {
-    	
-    	int[][][] scoreWindows = new int[2][2][BOARD_WIDTH];
-    	
-    	if(player == State.O) {
+		this.updateScoreArrayPlayer(count, secondCount, block, secondBlock, empty, secondEmpty, player);
+	}
+
+	public void updateScoreArrayPlayer(int count, int secondCount, int block, int secondBlock, int empty,
+			int secondEmpty, State player) {
+
+		int[][][] scoreWindows = new int[2][2][AIM_LENGTH];
+
+		if (player == State.O) {
 			scoreWindows = this.winningWindowsO;
-		}else {
+		} else {
 			scoreWindows = this.winningWindowsX;
 		}
-    	
-		if(block == 0 && secondBlock == 0) {
-			if(empty == -1 && secondEmpty == -1) {
-				if(count == 1 && secondCount == 0) {
+
+		if (block == 0 && secondBlock == 0) {
+			if (empty == -1 && secondEmpty == -1) {
+				if (count == 1 && secondCount == 0) {
 					scoreWindows[0][0][count]++;
 					return;
 				}
-				if(count != 1 && secondCount == 0) {
+				if (count != 1 && secondCount == 0) {
 					scoreWindows[0][0][count]++;
 					scoreWindows[0][0][count - 1]--;
 					return;
 				}
-				if(count == 1 && secondCount != 0) {
+				if (count == 1 && secondCount != 0) {
 					scoreWindows[0][0][secondCount + 1]++;
 					scoreWindows[0][0][secondCount]--;
 					return;
 				}
-				if(count != 1 && secondCount != 0) {
-					scoreWindows[0][0][count + secondCount]++;
+				if (count != 1 && secondCount != 0) {
+//					System.out.printf("count:%d, secondcount:%d\n",count,secondCount);
+//					if(count + secondCount > AIM_LENGTH) {
+//						if(player == State.O) {
+//							System.out.println("\nOOOOOO");
+//						}else {
+//							System.out.println("\nXXXXXXXX");
+//						}
+//						
+//						System.out.printf("x: %d, y: %d", this.preMoveX, this.preMoveY);
+//						System.out.println("\n" + this.toString());
+//						scoreWindows[0][0][count + secondCount]++;
+//					}else {
+//					}
+					if (count + secondCount > AIM_LENGTH) {
+						scoreWindows[0][0][AIM_LENGTH]++;
+					} else {
+						scoreWindows[0][0][count + secondCount]++;
+					}
 					scoreWindows[0][1][count + secondCount - 1]--;
 					return;
 				}
-    		}
-			if(empty != -1 && secondEmpty == -1) {
-				if(empty == 1) {
-					if(secondCount == 0) {
+			}
+			if (empty != -1 && secondEmpty == -1) {
+				if (empty == 1) {
+					if (secondCount == 0) {
 						scoreWindows[0][1][count]++;
 						scoreWindows[0][0][count - 1]--;
 						return;
 					}
-					
-					if(secondCount != 0) {
+
+					if (secondCount != 0) {
 						scoreWindows[0][1][count + secondCount]++;
 						scoreWindows[0][0][secondCount]--;
 						scoreWindows[0][0][count - 1]--;
 						return;
 					}
-				}else {
-					if(secondCount == 0) {
+				} else {
+					if (secondCount == 0) {
 						scoreWindows[0][1][count]++;
 						scoreWindows[0][1][count - 1]--;
 						return;
 					}
-					
-					if(secondCount != 0) {
-						scoreWindows[0][1][count + secondCount]++;
+
+					if (secondCount != 0) {
+						if(count + secondCount > AIM_LENGTH) {
+							scoreWindows[0][1][AIM_LENGTH]++;
+						}else {
+							scoreWindows[0][1][count + secondCount]++;
+						}
 						scoreWindows[0][0][count - 1]--;
 						scoreWindows[0][1][secondCount + empty - 1]--;
 						return;
 					}
 				}
-    		}
-			if(empty == -1 && secondEmpty != -1) {
-				if(secondEmpty == 0) {
-					if(count == 1) {
+			}
+			if (empty == -1 && secondEmpty != -1) {
+				if (secondEmpty == 0) {
+					if (count == 1) {
 						scoreWindows[0][1][secondCount + 1]++;
 						scoreWindows[0][0][secondCount]--;
 						return;
 					}
-					if(count != 1) {
+					if (count != 1) {
 						scoreWindows[0][1][secondCount + count]++;
 						scoreWindows[0][0][secondCount]--;
 						scoreWindows[0][0][count - 1]--;
 						return;
 					}
-				}else {
-					if(count == 1) {
+				} else {
+					if (count == 1) {
 						scoreWindows[0][1][secondCount + 1]++;
 						scoreWindows[0][1][secondCount]--;
 						return;
 					}
-					if(count != 1) {
+					if (count != 1) {
 						scoreWindows[0][1][secondCount + count]++;
 						scoreWindows[0][1][secondCount]--;
 						scoreWindows[0][0][count - 1 + secondEmpty]--;
 						return;
 					}
 				}
-    		}
-			
-			if(empty != -1 && secondEmpty != -1) {
-				if(empty == 1) {
-					if(secondEmpty == 0) {
+			}
+
+			if (empty != -1 && secondEmpty != -1) {
+				if (empty == 1) {
+					if (secondEmpty == 0) {
 						scoreWindows[0][1][secondCount + 1]++;
 						scoreWindows[0][1][count]++;
 						scoreWindows[0][0][count - 1]--;
 						scoreWindows[0][0][secondCount]--;
 						return;
-					}else {
+					} else {
 						scoreWindows[0][1][secondCount + 1]++;
 						scoreWindows[0][1][secondEmpty + count]++;
 						scoreWindows[0][1][secondEmpty]--;
 						scoreWindows[0][0][count - 1]--;
 						return;
 					}
-				}else {
-					if(secondEmpty == 0) {
+				} else {
+					if (secondEmpty == 0) {
 						scoreWindows[0][1][count]++;
 						scoreWindows[0][1][secondCount + empty]++;
 						scoreWindows[0][1][count - 1]--;
 						scoreWindows[0][0][secondCount]--;
 						return;
-					}else {
+					} else {
 						scoreWindows[0][1][count + secondEmpty]++;
 						scoreWindows[0][1][secondCount + empty]++;
 						scoreWindows[0][1][count - 1]--;
@@ -928,222 +1258,221 @@ public class Board {
 					}
 				}
 			}
-    	}
-		
-		if(block != 0 && secondBlock == 0) {
-			if(empty == -1 && secondEmpty == -1) {
-				if(count == 1 && secondCount == 0) {
-					scoreWindows[1][0][empty + secondEmpty]++;
+		}
+
+		if (block != 0 && secondBlock == 0) {
+			if (empty == -1 && secondEmpty == -1) {
+				if (count == 1 && secondCount == 0) {
+					scoreWindows[1][0][count]++;
 					return;
 				}
-				if(count != 1 && secondCount == 0) {
+				if (count != 1 && secondCount == 0) {
 					scoreWindows[1][0][count]++;
 					scoreWindows[1][0][count - 1]--;
 					return;
 				}
-				if(count == 1 && secondCount != 0) {
+				if (count == 1 && secondCount != 0) {
 					scoreWindows[1][0][secondCount + 1]++;
 					scoreWindows[0][0][secondCount]--;
 					return;
 				}
-				if(count != 1 && secondCount != 0) {
-					scoreWindows[1][0][empty + secondEmpty]++;
-					scoreWindows[1][1][empty + secondEmpty - 1]--;
+				if (count != 1 && secondCount != 0) {
+					scoreWindows[1][0][count + secondCount]++;
+					scoreWindows[1][1][count + secondCount - 1]--;
 					return;
 				}
-				
-				
-    		}
-			
-			if(empty != -1 && secondEmpty == -1) {
-				if(empty == 1) {
-					if(secondCount == 0) {
+
+			}
+
+			if (empty != -1 && secondEmpty == -1) {
+				if (empty == 1) {
+					if (secondCount == 0) {
 						scoreWindows[1][1][count]++;
 						scoreWindows[1][0][count - 1]--;
 						return;
 					}
-					if(secondCount != 0) {
+					if (secondCount != 0) {
 						scoreWindows[1][1][count + secondCount]++;
 						scoreWindows[1][0][count - 1]--;
 						scoreWindows[0][0][secondCount]--;
 						return;
 					}
-				}else {
-					if(secondCount == 0) {
+				} else {
+					if (secondCount == 0) {
 						scoreWindows[1][1][count]++;
 						scoreWindows[1][1][count - 1]--;
 						return;
 					}
-					if(secondCount != 0) {
+					if (secondCount != 0) {
 						scoreWindows[1][1][count + secondCount]++;
 						scoreWindows[1][0][count - 1]--;
 						scoreWindows[0][0][secondCount + empty - 1]--;
 						return;
 					}
 				}
-    		}
+			}
 //			
-			if(empty == -1 && secondEmpty != -1) {
-				if(count == 1) {
-					if(secondEmpty == 0) {
+			if (empty == -1 && secondEmpty != -1) {
+				if (count == 1) {
+					if (secondEmpty == 0) {
 						scoreWindows[1][1][count + secondCount]++;
 						scoreWindows[0][0][secondCount]--;
 						return;
-					}else {
+					} else {
 						scoreWindows[1][1][count + secondCount]++;
 						scoreWindows[0][1][secondCount]--;
 						return;
 					}
-				}else {
-					if(secondEmpty == 0) {
+				} else {
+					if (secondEmpty == 0) {
 						scoreWindows[1][1][count + secondCount]++;
 						scoreWindows[1][0][count - 1]--;
 						scoreWindows[0][0][secondCount]--;
 						return;
-					}else {
+					} else {
 						scoreWindows[1][1][count + secondCount]++;
 						scoreWindows[1][1][count - 1 + secondEmpty]--;
 						scoreWindows[0][1][secondCount]--;
 						return;
 					}
 				}
-				
-				
-    		}
-			if(empty != -1 && secondEmpty != -1) {
-				if(empty == 1) {
-					if(secondEmpty == 0) {
+
+			}
+			if (empty != -1 && secondEmpty != -1) {
+				if (empty == 1) {
+					if (secondEmpty == 0) {
 						scoreWindows[1][1][count]++;
 						scoreWindows[0][1][secondCount + empty]++;
 						scoreWindows[0][0][secondCount]--;
 						scoreWindows[1][0][count - empty]--;
 						return;
-					}else {
+					} else {
 						scoreWindows[0][1][secondCount + empty]++;
 						scoreWindows[1][1][count + secondEmpty]++;
 						scoreWindows[0][1][secondCount]--;
 						scoreWindows[1][0][count - empty]--;
 						return;
 					}
-				}else {
-					if(secondEmpty == 0) {
+				} else {
+					if (secondEmpty == 0) {
 						scoreWindows[0][1][secondCount + empty]++;
 						scoreWindows[1][1][count]++;
 						scoreWindows[0][0][secondCount]--;
 						scoreWindows[1][1][count - 1]++;
 						return;
-					}else {
+					} else {
 						scoreWindows[0][1][secondCount + empty]++;
 						scoreWindows[1][1][count + secondEmpty]++;
 						scoreWindows[0][1][secondCount]--;
 						scoreWindows[1][1][count - 1]--;
-						return;	
+						return;
 					}
 				}
-				
-				
+
 			}
-    	}
-    	
-		if(block == 0 && secondBlock != 0) {
-			if(empty == -1 && secondEmpty == -1) {
-				if(count == 1 && secondCount == 0) {
+		}
+
+		if (block == 0 && secondBlock != 0) {
+			if (empty == -1 && secondEmpty == -1) {
+				if (count == 1 && secondCount == 0) {
 					scoreWindows[1][0][count]++;
 					return;
 				}
-				if(count != 1 && secondCount == 0) {
+				if (count != 1 && secondCount == 0) {
 					scoreWindows[1][0][count]++;
 					scoreWindows[0][0][count - 1]--;
 					return;
 				}
-				if(count == 1 && secondCount != 0) {
+				if (count == 1 && secondCount != 0) {
 					scoreWindows[1][0][secondCount + count]++;
 					scoreWindows[1][0][secondCount]--;
 					return;
 				}
-				if(count != 1 && secondCount != 0) {
-					scoreWindows[1][0][secondCount + count]++;
+				if (count != 1 && secondCount != 0) {
+					if (count + secondCount > AIM_LENGTH) {
+						scoreWindows[1][0][AIM_LENGTH]++;
+					} else {
+						scoreWindows[1][0][count + secondCount]++;
+					}
 					scoreWindows[1][1][secondCount + count - 1]--;
 					return;
 				}
-				
-				
-    		}
-			if(empty != -1 && secondEmpty == -1) {
-				if(empty == 1) {
-					if(secondCount == 0) {
+
+			}
+			if (empty != -1 && secondEmpty == -1) {
+				if (empty == 1) {
+					if (secondCount == 0) {
 						scoreWindows[1][1][count]++;
 						scoreWindows[0][0][count - 1]--;
 						return;
-					}else {
+					} else {
 						scoreWindows[1][1][count + secondCount]++;
 						scoreWindows[1][0][secondCount]--;
 						scoreWindows[0][0][count - 1]--;
 						return;
 					}
-				}else {
-					if(secondCount == 0) {
+				} else {
+					if (secondCount == 0) {
 						scoreWindows[1][1][count]++;
 						scoreWindows[0][1][count - 1]--;
 						return;
-					}else {
+					} else {
 						scoreWindows[1][1][count + secondCount]++;
 						scoreWindows[1][0][secondCount + empty - 1]--;
 						scoreWindows[0][1][count - 1]--;
 						return;
 					}
 				}
-    		}
-			if(empty == -1 && secondEmpty != -1) {
-				if(secondEmpty == 0) {
-					if(count == 1) {
+			}
+			if (empty == -1 && secondEmpty != -1) {
+				if (secondEmpty == 0) {
+					if (count == 1) {
 						scoreWindows[1][1][secondCount + count]++;
 						scoreWindows[1][0][secondCount]--;
 						return;
-					}else {
+					} else {
 						scoreWindows[1][1][secondCount + count]++;
 						scoreWindows[0][0][count - 1]--;
 						scoreWindows[1][0][secondCount]--;
 						return;
 					}
-				}else {
-					if(count == 1) {
+				} else {
+					if (count == 1) {
 						scoreWindows[1][1][secondCount + count]++;
 						scoreWindows[1][1][secondCount]--;
 						return;
-					}else {
+					} else {
 						scoreWindows[1][1][secondCount + count]++;
 						scoreWindows[1][1][secondCount]--;
 						scoreWindows[0][1][count - 1 + secondEmpty]--;
 						return;
 					}
 				}
-				
-				
-    		}
-			if(empty != -1 && secondEmpty != -1) {
-				if(secondEmpty == 0) {
-					if(empty == 1) {
+
+			}
+			if (empty != -1 && secondEmpty != -1) {
+				if (secondEmpty == 0) {
+					if (empty == 1) {
 						scoreWindows[1][1][secondCount + empty]++;
 						scoreWindows[0][1][count]++;
 						scoreWindows[1][0][secondCount]--;
 						scoreWindows[0][0][count - 1]--;
 						return;
-					}else {
+					} else {
 						scoreWindows[1][1][secondCount + empty]++;
 						scoreWindows[0][1][count]++;
 						scoreWindows[1][0][secondCount]--;
 						scoreWindows[0][1][count - 1]--;
 						return;
 					}
-				}else {
-					if(empty == 1) {
+				} else {
+					if (empty == 1) {
 						scoreWindows[1][1][secondCount + empty]++;
 						scoreWindows[0][1][count + secondEmpty]++;
 						scoreWindows[1][1][secondCount]--;
 						scoreWindows[0][0][count - 1]--;
 						return;
-					}else {
+					} else {
 						scoreWindows[1][1][secondCount + empty]++;
 						scoreWindows[0][1][count + secondEmpty]++;
 						scoreWindows[1][1][secondCount]--;
@@ -1152,201 +1481,227 @@ public class Board {
 						return;
 					}
 				}
-				
-				
+
 			}
-    	}
-		
-		if(block != 0 && secondBlock != 0) {
-			if(empty == -1 && secondEmpty == -1) {
+		}
+
+		if (block != 0 && secondBlock != 0) {
+			if (empty == -1 && secondEmpty == -1) {
 				return;
-				
-    		}
-			if(empty != -1 && secondEmpty == -1 || empty == -1 && secondEmpty != -1) {
-				if(count + secondCount - 1 > AIM_LENGTH) {
-					if(player == State.O) {
-						this.twoBlockO[1 - 1] ++;
-					}else {
-						this.twoBlockX[1 - 1] ++;
+
+			}
+			if (empty != -1 && secondEmpty == -1 || empty == -1 && secondEmpty != -1) {
+				if (count + secondCount - 1 > AIM_LENGTH) {
+					if (player == State.O) {
+						this.twoBlockO[1 - 1]++;
+					} else {
+						this.twoBlockX[1 - 1]++;
 					}
 				}
 				return;
-				
-    		}
-			
-			if(empty != -1 && secondEmpty != -1) {
-				if(count + secondCount - 2 > AIM_LENGTH) {
-					if(player == State.O) {
-						this.twoBlockO[2 - 1] ++;
-					}else {
-						this.twoBlockX[2 - 1] ++;
+
+			}
+
+			if (empty != -1 && secondEmpty != -1) {
+				if (count + secondCount - 2 > AIM_LENGTH) {
+					if (player == State.O) {
+						this.twoBlockO[2 - 1]++;
+					} else {
+						this.twoBlockX[2 - 1]++;
 					}
 				}
 				return;
 			}
-    	}
-    }
-    
-    
-    public int getScoreX() {
+		}
+	}
+
+	public int getScoreX() {
 		int result = 0;
-		for(int i = 0; i < 2; i++) {
-			for(int j = 0; j < 5; j++) {
-//				result += this.winningWindowsX[i][j] * SCORE[i][j];
+		int aim = AIM_LENGTH;
+		int[][][] aimScore;
+		if (aim == 6) {
+			aimScore = SCORE_SIX;
+			for (int i = 0; i < 2; i++) {
+				result += this.twoBlockX[i] * SCORE_SIX_TWO[i];
+			}
+		} else {
+			aimScore = SCORE_EIGHT;
+			for (int i = 0; i < 2; i++) {
+				result += this.twoBlockX[i] * SCORE_EIGHT_TWO[i];
+			}
+		}
+		for (int i = 0; i < 2; i++) {
+			for (int j = 0; j < 2; j++) {
+				for (int k = 1; k <= AIM_LENGTH; k++) {
+					result += this.winningWindowsX[i][j][k] * aimScore[i][j][k];
+				}
 			}
 		}
 		return result;
 	}
-    
+
 	public int getScoreO() {
 		int result = 0;
-		for(int i = 0; i < 2; i++) {
-			for(int j = 0; j < 5; j++) {
-//				result += this.winningWindowsO[i][j] * SCORE[i][j];
+		int aim = AIM_LENGTH;
+		int[][][] aimScore;
+		if (aim == 6) {
+			aimScore = SCORE_SIX;
+			for (int i = 0; i < 2; i++) {
+				result += this.twoBlockX[i] * SCORE_SIX_TWO[i];
+			}
+		} else {
+			aimScore = SCORE_EIGHT;
+			for (int i = 0; i < 2; i++) {
+				result += this.twoBlockX[i] * SCORE_EIGHT_TWO[i];
+			}
+		}
+		for (int i = 0; i < 2; i++) {
+			for (int j = 0; j < 2; j++) {
+				for (int k = 0; k <= aim; k++) {
+					result += this.winningWindowsO[i][j][k] * aimScore[i][j][k];
+				}
 			}
 		}
 		return result;
 	}
-    
-    private void checkWin (int col, int row, State player) {
-    	int N = BOARD_WIDTH;
-    	// Check vertical
-    	int count_vertical = 1;
-    	int row_up = row - 1;
-    	while (row_up >= 0 && board[row_up][col] == player) {
-    		count_vertical++;
-    		row_up--;
-    	}
-    	int row_down = row + 1;
-    	while (row_down < N && board[row_down][col] == player) {
-    		count_vertical++;
-    		row_down++;
-    	}
-    	
-    	if(count_vertical >= AIM_LENGTH ) {
-    		winner = playersTurn;
-            gameOver = true;
-            return;
-    	}
-    	
-    	
-    	// Check horizontal
-    	int count_horizontal = 1;
-    	int col_left = col - 1;
-    	while (col_left >= 0 && board[row][col_left] == player) {
-    		count_horizontal++;
-    		col_left--;
-    	}
-    	int col_right = col + 1;
-    	while (col_right < N && board[row][col_right] == player) {
-    		count_horizontal++;
-    		col_right++;
-    	}
-    	
-    	if(count_horizontal >= AIM_LENGTH) {
-    		winner = playersTurn;
-            gameOver = true;
-            return;
-    	}
-    	
-    	// Check diagonal
-    	int count_diagonal_left = 1;
-    	int row_left_up = row - 1, col_left_up = col - 1;
-    	while (row_left_up >= 0 && col_left_up >= 0 && board[row_left_up][col_left_up] == player) {
-    		count_diagonal_left++;
-    		row_left_up--;
-    		col_left_up--;
-    	}
-    	int row_right_down = row + 1, col_right_down = col + 1;
-    	while (row_right_down < N && col_right_down < N && board[row_right_down][col_right_down] == player) {
-    		count_diagonal_left++;
-    		row_right_down++;
-    		col_right_down++;
-    	}
 
-    	int count_diagonal_right = 1;
-    	int row_left_down = row + 1, col_left_down = col - 1;
-    	while (row_left_down < N && col_left_down >= 0 && board[row_left_down][col_left_down] == player) {
-    		count_diagonal_right++;
-    		row_left_down++;
-    		col_left_down--;
-    	}
-    	int row_right_up = row - 1, col_right_up = col + 1;
-    	while (row_right_up >= 0 && col_right_up < N && board[row_right_up][col_right_up] == player) {
-    		count_diagonal_right++;
-    		row_right_up--;
-    		col_right_up++;
-    	}
-    	
-    	if(count_diagonal_left >= AIM_LENGTH || count_diagonal_right >= AIM_LENGTH) {
-    		winner = playersTurn;
-            gameOver = true;
-            return;
-    	}
-    }
+	private boolean checkWin(int col, int row, State player) {
+		int N = BOARD_WIDTH;
+		// Check vertical
+		int count_vertical = 1;
+		int row_up = row - 1;
+		while (row_up >= 0 && board[row_up][col] == player) {
+			count_vertical++;
+			row_up--;
+		}
+		int row_down = row + 1;
+		while (row_down < N && board[row_down][col] == player) {
+			count_vertical++;
+			row_down++;
+		}
 
+		if (count_vertical >= AIM_LENGTH) {
+			winner = playersTurn;
+			gameOver = true;
+			return true;
+		}
 
-    public Board getDeepCopy () {
-        Board board             = new Board();
+		// Check horizontal
+		int count_horizontal = 1;
+		int col_left = col - 1;
+		while (col_left >= 0 && board[row][col_left] == player) {
+			count_horizontal++;
+			col_left--;
+		}
+		int col_right = col + 1;
+		while (col_right < N && board[row][col_right] == player) {
+			count_horizontal++;
+			col_right++;
+		}
 
-        for (int i = 0; i < board.board.length; i++) {
-            board.board[i] = this.board[i].clone();
-        }
-        
-        for(int i = 0; i < 2; i++) {
-        	for(int j = 0; i < 2; i++) {
-	        	board.winningWindowsX[i][j] = this.winningWindowsX[i][j].clone();
-	        	board.winningWindowsO[i][j] = this.winningWindowsO[i][j].clone();
-        	}
-        }
-        
-        board.twoBlockO 		= this.twoBlockO.clone();
-        board.twoBlockX 		= this.twoBlockX.clone();
-        board.playersTurn       = this.playersTurn;
-        board.oppnent	        = this.oppnent;
-        board.winner            = this.winner;
-        board.movesAvailable    = new HashSet<>();
-        board.movesAvailable.addAll(this.movesAvailable);
-        board.moveCount         = this.moveCount;
-        board.gameOver          = this.gameOver;
-        board.preMoveY        = this.preMoveY;
-        board.preMoveX        = this.preMoveX;
-        
-        
-        return board;
-    }
+		if (count_horizontal >= AIM_LENGTH) {
+			winner = playersTurn;
+			gameOver = true;
+			return true;
+		}
 
-    @Override
-    public String toString () {
-        StringBuilder sb = new StringBuilder();
+		// Check diagonal
+		int count_diagonal_left = 1;
+		int row_left_up = row - 1, col_left_up = col - 1;
+		while (row_left_up >= 0 && col_left_up >= 0 && board[row_left_up][col_left_up] == player) {
+			count_diagonal_left++;
+			row_left_up--;
+			col_left_up--;
+		}
+		int row_right_down = row + 1, col_right_down = col + 1;
+		while (row_right_down < N && col_right_down < N && board[row_right_down][col_right_down] == player) {
+			count_diagonal_left++;
+			row_right_down++;
+			col_right_down++;
+		}
 
-        for (int y = 0; y < BOARD_WIDTH; y++) {
-        	if(y == 0) {
-        		sb.append("  ");
-        		for(int i = 0; i < BOARD_WIDTH; i++) {
-        			sb.append(i < 10 ? " " + i : i);
-        		}
-        		sb.append("\n");
-        	}
-            for (int x = 0; x < BOARD_WIDTH; x++) {
-            	if(x == 0) {
-            		sb.append(y < 10 ? " " + y : y);
-            		sb.append(" ");
-            	}
-                if (board[y][x] == State.Blank) {
-                    sb.append("-");
-                } else {
-                    sb.append(board[y][x].name());
-                }
-                sb.append(" ");
+		int count_diagonal_right = 1;
+		int row_left_down = row + 1, col_left_down = col - 1;
+		while (row_left_down < N && col_left_down >= 0 && board[row_left_down][col_left_down] == player) {
+			count_diagonal_right++;
+			row_left_down++;
+			col_left_down--;
+		}
+		int row_right_up = row - 1, col_right_up = col + 1;
+		while (row_right_up >= 0 && col_right_up < N && board[row_right_up][col_right_up] == player) {
+			count_diagonal_right++;
+			row_right_up--;
+			col_right_up++;
+		}
 
-            }
-            if (y != BOARD_WIDTH -1) {
-                sb.append("\n");
-            }
-        }
+		if (count_diagonal_left >= AIM_LENGTH || count_diagonal_right >= AIM_LENGTH) {
+			winner = playersTurn;
+			gameOver = true;
+			return true;
+		}
+		return false;
+	}
 
-        return new String(sb);
-    }
+	public Board getDeepCopy() {
+		Board board = new Board();
+
+		for (int i = 0; i < board.board.length; i++) {
+			board.board[i] = this.board[i].clone();
+		}
+
+		for (int i = 0; i < 2; i++) {
+			for (int j = 0; i < 2; i++) {
+				board.winningWindowsX[i][j] = this.winningWindowsX[i][j].clone();
+				board.winningWindowsO[i][j] = this.winningWindowsO[i][j].clone();
+			}
+		}
+
+		board.twoBlockO = this.twoBlockO.clone();
+		board.twoBlockX = this.twoBlockX.clone();
+		board.playersTurn = this.playersTurn;
+		board.oppnent = this.oppnent;
+		board.winner = this.winner;
+		board.movesAvailable = new HashSet<>();
+		board.movesAvailable.addAll(this.movesAvailable);
+		board.moveCount = this.moveCount;
+		board.gameOver = this.gameOver;
+		board.preMoveY = this.preMoveY;
+		board.preMoveX = this.preMoveX;
+
+		return board;
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+
+		for (int y = 0; y < BOARD_WIDTH; y++) {
+			if (y == 0) {
+				sb.append("  ");
+				for (int i = 0; i < BOARD_WIDTH; i++) {
+					sb.append(i < 10 ? " " + i : i);
+				}
+				sb.append("\n");
+			}
+			for (int x = 0; x < BOARD_WIDTH; x++) {
+				if (x == 0) {
+					sb.append(y < 10 ? " " + y : y);
+					sb.append(" ");
+				}
+				if (board[y][x] == State.Blank) {
+					sb.append("-");
+				} else {
+					sb.append(board[y][x].name());
+				}
+				sb.append(" ");
+
+			}
+			if (y != BOARD_WIDTH - 1) {
+				sb.append("\n");
+			}
+		}
+
+		return new String(sb);
+	}
 
 }

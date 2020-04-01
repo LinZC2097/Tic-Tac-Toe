@@ -4,15 +4,15 @@ package TicTacToe;
 import TicTacToe.Board.State;;
 
 class AlphaBetaAdvanced {
-
-    private static int maxPly = 4;
+	private static int maxPlay = 6;
+    private static int play = 4;
     private static int deepening = 0;
 
     private AlphaBetaAdvanced() {}
 
     static void run (Board.State player, Board board) {
 
-        if (maxPly < 1) {
+        if (play < 1) {
             throw new IllegalArgumentException("Maximum depth must be greater than 0.");
         }
 
@@ -50,7 +50,7 @@ class AlphaBetaAdvanced {
 
     private static int alphaBetaPruning (Board.State player, Board board, double alpha, double beta, int currentPly) {
     	
-        if (currentPly++ == maxPly || board.isGameOver()) {
+        if (currentPly++ == play || board.isGameOver()) {
         	return evaluate(player, board, currentPly);
         }
         
@@ -86,6 +86,10 @@ class AlphaBetaAdvanced {
         
         if (indexOfBestMove != -1) {
             board.move(indexOfBestMove);
+            
+//             !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+//            board.clearWinningWindows();
+            
             if(currentPly == 1) {
             	System.out.println("Player O moves at (" + indexOfBestMove / board.getBoardWidth() + "," + indexOfBestMove % board.getBoardWidth() + "), alpha = " + alpha + ",beta = " + beta);
 //            	board.setPreMove(indexOfBestMove);
@@ -122,6 +126,10 @@ class AlphaBetaAdvanced {
 
         if (indexOfBestMove != -1) {
             board.move(indexOfBestMove);
+
+//             !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+//            board.clearWinningWindows();
+            
             if(currentPly == 1) {
             	System.out.println("Player X moves at (" + indexOfBestMove / board.getBoardWidth() + "," + indexOfBestMove % board.getBoardWidth() + "), alpha = " + alpha + ",beta = " + beta);
 //            	board.setPreMove(indexOfBestMove);
@@ -139,10 +147,10 @@ class AlphaBetaAdvanced {
 
         Board.State opponent = (player == Board.State.X) ?  Board.State.O : Board.State.X;
         
-        if (board.isGameOver() && board.getWinner() == Board.State.O) {
-            return Integer.MAX_VALUE - currentPly;
-        } else if (board.isGameOver() && board.getWinner() == Board.State.X) {
-            return Integer.MIN_VALUE + currentPly;
+        if (board.isGameOver() && board.getWinner() != player) {
+            return -Integer.MAX_VALUE ;
+        } else if (board.isGameOver() && board.getWinner() == player) {
+            return Integer.MIN_VALUE;
         } else if(player == State.O) {
         	return board.getScoreO() - board.getScoreX();
         }
