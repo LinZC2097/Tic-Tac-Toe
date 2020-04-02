@@ -4,8 +4,9 @@ package TicTacToe;
 import TicTacToe.Board.State;;
 
 class AlphaBetaAdvanced {
-	private static int maxPlay = 6;
-    private static int play = 4;
+	private static int maxPlay = 10;
+    private static int play = 2;
+    private static int defaultPlay = 2;
     private static int deepening = 2;
 
     private AlphaBetaAdvanced() {}
@@ -49,13 +50,16 @@ class AlphaBetaAdvanced {
     }
 
     private static int alphaBetaPruning (Board.State player, Board board, double alpha, double beta, int currentPly) {
-//    	if(board.getMoveCount() > 10) {
-//	    	if(play < maxPlay && (board.getFour(player) > 2 || board.getFive(player) > 1)) {
-//	    		play += deepening;
-//	    	}
-//    	}
+    	if(board.getMoveCount() > 10) {
+	    	if(play < maxPlay && (board.getFour(player) > 2 || (board.getFive(player) > 1 && board.getFive(player) > 1)) 
+	    			|| board.getBlockFour(player) > 2 || board.getThree(player) > 2) {
+	    		play += deepening;
+	    	}else {
+	    		play = defaultPlay;
+	    	}
+    	}
     	
-        if (currentPly++ == play || board.isGameOver()) {
+        if (currentPly++ >= play || board.isGameOver()) {
         	return evaluate(player, board, currentPly);
         }
         
@@ -95,7 +99,7 @@ class AlphaBetaAdvanced {
 //            board.clearWinningWindows();
             
             if(currentPly == 1) {
-            	System.out.println("Player O moves at (" + indexOfBestMove / board.getBoardWidth() + "," + indexOfBestMove % board.getBoardWidth() + "), alpha = " + alpha + ",beta = " + beta);
+            	System.out.println("Player O moves at (" + indexOfBestMove % board.getBoardWidth() + "," + indexOfBestMove / board.getBoardWidth() + "), alpha = " + alpha + ",beta = " + beta);
 //            	board.setPreMove(indexOfBestMove);
             }
         }
@@ -134,7 +138,7 @@ class AlphaBetaAdvanced {
 //            board.clearWinningWindows();
             
             if(currentPly == 1) {
-            	System.out.println("Player X moves at (" + indexOfBestMove / board.getBoardWidth() + "," + indexOfBestMove % board.getBoardWidth() + "), alpha = " + alpha + ",beta = " + beta);
+            	System.out.println("Player X moves at (" + indexOfBestMove % board.getBoardWidth() + "," + indexOfBestMove / board.getBoardWidth() + "), alpha = " + alpha + ",beta = " + beta);
 //            	board.setPreMove(indexOfBestMove);
             }
         }

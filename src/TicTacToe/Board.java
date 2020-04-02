@@ -1928,6 +1928,24 @@ public class Board {
 //		}
 		
 	}
+	
+	public int getBlockFour(State player) {
+		int[][][] scoreWindow = new int[2][2][AIM_LENGTH + 1]; 
+		if(player == State.O) {
+			scoreWindow = this.winningWindowsO;
+		}else {
+			scoreWindow = this.winningWindowsX;
+		}
+			
+		int fourNum = 0;
+		for(int j = 0; j < 2; j++) {
+			if(scoreWindow[1][j][4] != 0) {
+				fourNum ++;
+			}
+		}
+		return fourNum;
+	}
+	
 	public int getFour(State player) {
 		int[][][] scoreWindow = new int[2][2][AIM_LENGTH + 1]; 
 		if(player == State.O) {
@@ -1939,6 +1957,24 @@ public class Board {
 		int fourNum = 0;
 		for(int j = 0; j < 2; j++) {
 			if(scoreWindow[0][j][4] != 0) {
+				fourNum ++;
+			}
+		}
+		return fourNum;
+	}
+	
+	
+	public int getThree(State player) {
+		int[][][] scoreWindow = new int[2][2][AIM_LENGTH + 1]; 
+		if(player == State.O) {
+			scoreWindow = this.winningWindowsO;
+		}else {
+			scoreWindow = this.winningWindowsX;
+		}
+			
+		int fourNum = 0;
+		for(int j = 0; j < 2; j++) {
+			if(scoreWindow[0][j][3] != 0) {
 				fourNum ++;
 			}
 		}
