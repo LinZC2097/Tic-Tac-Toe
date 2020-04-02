@@ -275,7 +275,9 @@ public class Board {
 		for (int i = 0; i < 2; i++) {
 			for (int j = 0; j < 2; j++) {
 				for (int k = 0; k < AIM_LENGTH; k++) {
-					System.out.printf("block:%d empty:%d lenth:%d number:%d\n", i, j, k, this.winningWindowsO[i][j][k]);
+					if(this.winningWindowsO[i][j][k] != 0) {
+						System.out.printf("block:%d empty:%d lenth:%d number:%d\n", i, j, k, this.winningWindowsO[i][j][k]);
+					}
 				}
 			}
 		}
@@ -283,7 +285,9 @@ public class Board {
 		for (int i = 0; i < 2; i++) {
 			for (int j = 0; j < 2; j++) {
 				for (int k = 0; k < AIM_LENGTH; k++) {
-					System.out.printf("block:%d empty:%d lenth:%d number:%d\n", i, j, k, this.winningWindowsX[i][j][k]);
+					if(this.winningWindowsO[i][j][k] != 0) {
+						System.out.printf("block:%d empty:%d lenth:%d number:%d\n", i, j, k, this.winningWindowsX[i][j][k]);
+					}
 				}
 			}
 		}
@@ -291,7 +295,9 @@ public class Board {
 	}
 
 	public void updateScoreWindow(int x, int y, State player) {
+		System.out.println("update Player");
 		updateScoreWindowPlayer(x, y, player);
+		System.out.println("update oppnent");
 		updateScoreWindowOppnent(x, y, player);
 
 	}
@@ -304,7 +310,7 @@ public class Board {
 		int secondBlock = 0;
 		int empty = -1;
 		int secondEmpty = -1;
-
+		
 		// count col
 		for (int i = y + 1; true; i++) {
 			if (i >= BOARD_WIDTH) {
@@ -356,6 +362,8 @@ public class Board {
 //      count += secondCount;
 		updateScoreArrayOppnent(count, secondCount, block, secondBlock, empty, secondEmpty, player);
 
+		
+		System.out.printf("count: %d, secondCount: %d, empty: %d, secondEmpty: %d, block: %d, secondBlock: %d\n", count, secondCount, empty, secondEmpty, block, secondBlock);
 		// count row
 		count = 0;
 		secondCount = 0;
@@ -414,6 +422,7 @@ public class Board {
 //      count += secondCount;
 		updateScoreArrayOppnent(count, secondCount, block, secondBlock, empty, secondEmpty, player);
 
+		System.out.printf("count: %d, secondCount: %d, empty: %d, secondEmpty: %d, block: %d, secondBlock: %d\n", count, secondCount, empty, secondEmpty, block, secondBlock);
 		// count diagonal \
 		count = 0;
 		secondCount = 0;
@@ -477,6 +486,7 @@ public class Board {
 //      count += secondCount;
 		updateScoreArrayOppnent(count, secondCount, block, secondBlock, empty, secondEmpty, player);
 
+		System.out.printf("count: %d, secondCount: %d, empty: %d, secondEmpty: %d, block: %d, secondBlock: %d\n", count, secondCount, empty, secondEmpty, block, secondBlock);
 		// count diagonal /
 		count = 0;
 		secondCount = 0;
@@ -549,6 +559,7 @@ public class Board {
 		}
 //      count += secondCount;
 		updateScoreArrayOppnent(count, secondCount, block, secondBlock, empty, secondEmpty, player);
+		System.out.printf("count: %d, secondCount: %d, empty: %d, secondEmpty: %d, block: %d, secondBlock: %d\n", count, secondCount, empty, secondEmpty, block, secondBlock);
 	}
 
 	public void updateScoreArrayOppnent(int count, int secondCount, int block, int secondBlock, int empty,
@@ -1038,7 +1049,7 @@ public class Board {
 				break;
 			}
 			if (this.board[i][x] == State.Blank) {
-				if (secondEmpty == -1 && i > 0 && board[i + 1][x] == player) {
+				if (secondEmpty == -1 && i > 0 && board[i - 1][x] == player) {
 					secondEmpty = secondCount;
 					continue;
 				} else {
@@ -1059,7 +1070,8 @@ public class Board {
 		}
 //		count += secondCount;
 		this.updateScoreArrayPlayer(count, secondCount, block, secondBlock, empty, secondEmpty, player);
-
+		
+		System.out.printf("count: %d, secondCount: %d, empty: %d, secondEmpty: %d, block: %d, secondBlock: %d\n", count, secondCount, empty, secondEmpty, block, secondBlock);
 		// count row
 		count = 1;
 		secondCount = 0;
@@ -1118,6 +1130,7 @@ public class Board {
 //		count += secondCount;
 		this.updateScoreArrayPlayer(count, secondCount, block, secondBlock, empty, secondEmpty, player);
 
+		System.out.printf("count: %d, secondCount: %d, empty: %d, secondEmpty: %d, block: %d, secondBlock: %d\n", count, secondCount, empty, secondEmpty, block, secondBlock);
 		// count diagonal \
 		count = 1;
 		secondCount = 0;
@@ -1181,6 +1194,7 @@ public class Board {
 //		count += secondCount;
 		this.updateScoreArrayPlayer(count, secondCount, block, secondBlock, empty, secondEmpty, player);
 
+		System.out.printf("count: %d, secondCount: %d, empty: %d, secondEmpty: %d, block: %d, secondBlock: %d\n", count, secondCount, empty, secondEmpty, block, secondBlock);
 		// count diagonal /
 		count = 1;
 		secondCount = 0;
@@ -1253,6 +1267,7 @@ public class Board {
 		}
 //        count += secondCount;
 		this.updateScoreArrayPlayer(count, secondCount, block, secondBlock, empty, secondEmpty, player);
+		System.out.printf("count: %d, secondCount: %d, empty: %d, secondEmpty: %d, block: %d, secondBlock: %d\n", count, secondCount, empty, secondEmpty, block, secondBlock);
 	}
 
 	public void updateScoreArrayPlayer(int count, int secondCount, int block, int secondBlock, int empty,
@@ -1265,522 +1280,586 @@ public class Board {
 		} else {
 			scoreWindows = this.winningWindowsX;
 		}
-//
-		if (block == 0 && secondBlock == 0) {
-			if (empty == -1 && secondEmpty == -1) {
-				if (count == 1 && secondCount == 0) {
-					scoreWindows[0][0][count]++;
-					return;
-				}
-				if (count != 1 && secondCount == 0) {
-					scoreWindows[0][0][count]++;
-					scoreWindows[0][0][count - 1]--;
-					return;
-				}
-				if (count == 1 && secondCount != 0) {
-					scoreWindows[0][0][secondCount + 1]++;
-					scoreWindows[0][0][secondCount]--;
-					return;
-				}
-				if (count != 1 && secondCount != 0) {
-					if (count + secondCount > AIM_LENGTH) {
-						scoreWindows[0][0][AIM_LENGTH]++;
-					} else {
-						scoreWindows[0][0][count + secondCount]++;
+		try {
+			if (block == 0 && secondBlock == 0) {
+				if (empty == -1 && secondEmpty == -1) {
+					if (count == 1 && secondCount == 0) {
+						scoreWindows[0][0][count]++;
+						return;
 					}
-					if (count + secondCount - 1 > AIM_LENGTH) {
-						scoreWindows[0][1][AIM_LENGTH]--;
-					} else {
-						scoreWindows[0][1][count + secondCount - 1]--;
-					}
-					return;
-				}
-			}
-			if (empty != -1 && secondEmpty == -1) {
-				if (empty == 1) {
-					if (secondCount == 0) {
-						scoreWindows[0][1][count]++;
+					if (count != 1 && secondCount == 0) {
+						scoreWindows[0][0][count]++;
 						scoreWindows[0][0][count - 1]--;
 						return;
 					}
-
-					if (secondCount != 0) {
+					if (count == 1 && secondCount != 0) {
+						if(secondCount + 1 > AIM_LENGTH) {
+							scoreWindows[0][0][AIM_LENGTH]++;
+						}else {
+							scoreWindows[0][0][secondCount + 1]++;
+						}
+						scoreWindows[0][0][secondCount]--;
+						return;
+					}
+					if (count != 1 && secondCount != 0) {
 						if (count + secondCount > AIM_LENGTH) {
-							scoreWindows[0][1][AIM_LENGTH]++;
+							scoreWindows[0][0][AIM_LENGTH]++;
 						} else {
-							scoreWindows[0][1][count + secondCount]++;
+							scoreWindows[0][0][count + secondCount]++;
 						}
-						scoreWindows[0][0][secondCount]--;
-						scoreWindows[0][0][count - 1]--;
-						return;
-					}
-				} else {
-					if (secondCount == 0) {
-						scoreWindows[0][1][count]++;
-						scoreWindows[0][1][count - 1]--;
-						return;
-					}
-
-					if (secondCount != 0) {
-						if(count + secondCount > AIM_LENGTH) {
-							scoreWindows[0][1][AIM_LENGTH]++;
-						}else {
-							scoreWindows[0][1][count + secondCount]++;
-						}
-						if(empty - 1 + secondCount > AIM_LENGTH) {
+						if (count + secondCount - 1 > AIM_LENGTH) {
 							scoreWindows[0][1][AIM_LENGTH]--;
-						}else {
-							scoreWindows[0][1][secondCount + empty - 1]--;
+						} else {
+							scoreWindows[0][1][count + secondCount - 1]--;
 						}
-						scoreWindows[0][1][count - 1]--;
 						return;
 					}
 				}
-			}
-			if (empty == -1 && secondEmpty != -1) {
-				if (secondEmpty == 0) {
-					if (count == 1) {
-						scoreWindows[0][1][secondCount + 1]++;
-						scoreWindows[0][0][secondCount]--;
-						return;
-					}
-					if (count != 1) {
-						if(count + secondCount > AIM_LENGTH) {
-							scoreWindows[0][1][AIM_LENGTH]++;
-						}else {
-							scoreWindows[0][1][count + secondCount]++;
+				if (empty != -1 && secondEmpty == -1) {
+					if (empty == 1) {
+						if (secondCount == 0) {
+							scoreWindows[0][1][count]++;
+							scoreWindows[0][0][count - 1]--;
+							return;
 						}
-						scoreWindows[0][0][secondCount]--;
-						scoreWindows[0][0][count - 1]--;
-						return;
-					}
-				} else {
-					if (count == 1) {
-						scoreWindows[0][1][secondCount + 1]++;
-						scoreWindows[0][1][secondCount]--;
-						return;
-					}
-					if (count != 1) {
-						if(count + secondCount > AIM_LENGTH) {
-							scoreWindows[0][1][AIM_LENGTH]++;
-						}else {
-							scoreWindows[0][1][count + secondCount]++;
+	
+						if (secondCount != 0) {
+							if (count + secondCount > AIM_LENGTH) {
+								scoreWindows[0][1][AIM_LENGTH]++;
+							} else {
+								scoreWindows[0][1][count + secondCount]++;
+							}
+							scoreWindows[0][0][secondCount]--;
+							scoreWindows[0][0][count - 1]--;
+							return;
 						}
-						if(count - 1 + secondEmpty > AIM_LENGTH) {
-							scoreWindows[0][1][AIM_LENGTH]--;
-						}else {
-							scoreWindows[0][1][count - 1 + secondEmpty]--;
-						}
-						scoreWindows[0][1][secondCount]--;
-						return;
-					}
-				}
-			}
-
-			if (empty != -1 && secondEmpty != -1) {
-				if (empty == 1) {
-					if (secondEmpty == 0) {
-						scoreWindows[0][1][secondCount + 1]++;
-						scoreWindows[0][1][count]++;
-						scoreWindows[0][0][count - 1]--;
-						scoreWindows[0][0][secondCount]--;
-						return;
 					} else {
-						scoreWindows[0][1][secondCount + 1]++;
-						if(count + secondEmpty > AIM_LENGTH) {
-							scoreWindows[0][1][AIM_LENGTH]++;
-						}else {
-							scoreWindows[0][1][secondEmpty + count]++;
+						if (secondCount == 0) {
+							scoreWindows[0][1][count]++;
+							scoreWindows[0][1][count - 1]--;
+							return;
 						}
-						scoreWindows[0][1][secondCount]--;
-						scoreWindows[0][0][count - 1]--;
-						return;
+	
+						if (secondCount != 0) {
+							if(count + secondCount > AIM_LENGTH) {
+								scoreWindows[0][1][AIM_LENGTH]++;
+							}else {
+								scoreWindows[0][1][count + secondCount]++;
+							}
+							if(empty - 1 + secondCount > AIM_LENGTH) {
+								scoreWindows[0][1][AIM_LENGTH]--;
+							}else {
+								scoreWindows[0][1][secondCount + empty - 1]--;
+							}
+							scoreWindows[0][1][count - 1]--;
+							return;
+						}
 					}
-				} else {
+				}
+				if (empty == -1 && secondEmpty != -1) {
 					if (secondEmpty == 0) {
-						scoreWindows[0][1][count]++;
-						if(empty + secondCount > AIM_LENGTH) {
-							scoreWindows[0][1][AIM_LENGTH]++;
-						}else {
-							scoreWindows[0][1][secondCount + empty]++;
+						if (count == 1) {
+							if(secondCount + 1 > AIM_LENGTH) {
+								scoreWindows[0][1][AIM_LENGTH]++;
+							}else {
+								scoreWindows[0][1][secondCount + 1]++;
+							}
+							scoreWindows[0][0][secondCount]--;
+							return;
 						}
-						scoreWindows[0][1][count - 1]--;
-						scoreWindows[0][0][secondCount]--;
-						return;
+						if (count != 1) {
+							if(count + secondCount > AIM_LENGTH) {
+								scoreWindows[0][1][AIM_LENGTH]++;
+							}else {
+								scoreWindows[0][1][count + secondCount]++;
+							}
+							scoreWindows[0][0][secondCount]--;
+							scoreWindows[0][0][count - 1]--;
+							return;
+						}
 					} else {
-						if(count + secondEmpty > AIM_LENGTH) {
-							scoreWindows[0][1][AIM_LENGTH]++;
-						}else {
-							scoreWindows[0][1][count + secondEmpty]++;
+						if (count == 1) {
+							if(secondCount + 1 > AIM_LENGTH) {
+								scoreWindows[0][1][AIM_LENGTH]++;
+							}else {
+								scoreWindows[0][1][secondCount + 1]++;
+							}
+							scoreWindows[0][1][secondCount]--;
+							return;
 						}
-						if(secondCount + empty > AIM_LENGTH) {
-							scoreWindows[0][1][AIM_LENGTH]++;
-						}else {
-							scoreWindows[0][1][secondCount + empty]++;
+						if (count != 1) {
+							if(count + secondCount > AIM_LENGTH) {
+								scoreWindows[0][1][AIM_LENGTH]++;
+							}else {
+								scoreWindows[0][1][count + secondCount]++;
+							}
+							if(count - 1 + secondEmpty > AIM_LENGTH) {
+								scoreWindows[0][1][AIM_LENGTH]--;
+							}else {
+								scoreWindows[0][1][count - 1 + secondEmpty]--;
+							}
+							scoreWindows[0][1][secondCount]--;
+							return;
 						}
-						if(empty + secondEmpty > AIM_LENGTH) {
-							scoreWindows[0][1][AIM_LENGTH]--;
-						}else {
-							scoreWindows[0][1][empty + secondEmpty]--;
+					}
+				}
+	
+				if (empty != -1 && secondEmpty != -1) {
+					if (empty == 1) {
+						if (secondEmpty == 0) {
+							if(secondCount + 1 > AIM_LENGTH) {
+								scoreWindows[0][1][AIM_LENGTH]++;
+							}else {
+								scoreWindows[0][1][secondCount + 1]++;
+							}
+							scoreWindows[0][1][count]++;
+							scoreWindows[0][0][count - 1]--;
+							scoreWindows[0][0][secondCount]--;
+							return;
+						} else {
+							if(secondCount + 1 > AIM_LENGTH) {
+								scoreWindows[0][1][AIM_LENGTH]++;
+							}else {
+								scoreWindows[0][1][secondCount + 1]++;
+							}
+							if(count + secondEmpty > AIM_LENGTH) {
+								scoreWindows[0][1][AIM_LENGTH]++;
+							}else {
+								scoreWindows[0][1][secondEmpty + count]++;
+							}
+							scoreWindows[0][1][secondCount]--;
+							scoreWindows[0][0][count - 1]--;
+							return;
 						}
-						scoreWindows[0][1][count - 1]--;
-						scoreWindows[0][1][secondCount]--;
-						return;
+					} else {
+						if (secondEmpty == 0) {
+							scoreWindows[0][1][count]++;
+							if(empty + secondCount > AIM_LENGTH) {
+								scoreWindows[0][1][AIM_LENGTH]++;
+							}else {
+								scoreWindows[0][1][secondCount + empty]++;
+							}
+							scoreWindows[0][1][count - 1]--;
+							scoreWindows[0][0][secondCount]--;
+							return;
+						} else {
+							if(count + secondEmpty > AIM_LENGTH) {
+								scoreWindows[0][1][AIM_LENGTH]++;
+							}else {
+								scoreWindows[0][1][count + secondEmpty]++;
+							}
+							if(secondCount + empty > AIM_LENGTH) {
+								scoreWindows[0][1][AIM_LENGTH]++;
+							}else {
+								scoreWindows[0][1][secondCount + empty]++;
+							}
+							if(empty + secondEmpty > AIM_LENGTH) {
+								scoreWindows[0][1][AIM_LENGTH]--;
+							}else {
+								scoreWindows[0][1][empty + secondEmpty]--;
+							}
+							scoreWindows[0][1][count - 1]--;
+							scoreWindows[0][1][secondCount]--;
+							return;
+						}
 					}
 				}
 			}
-		}
-//
-		if (block != 0 && secondBlock == 0) {
-			if (empty == -1 && secondEmpty == -1) {
-				if (count == 1 && secondCount == 0) {
-					scoreWindows[1][0][count]++;
-					return;
-				}
-				if (count != 1 && secondCount == 0) {
-					scoreWindows[1][0][count]++;
-					scoreWindows[1][0][count - 1]--;
-					return;
-				}
-				if (count == 1 && secondCount != 0) {
-					scoreWindows[1][0][secondCount + 1]++;
-					scoreWindows[0][0][secondCount]--;
-					return;
-				}
-				if (count != 1 && secondCount != 0) {
-					if(count + secondCount > AIM_LENGTH) {
-						scoreWindows[1][0][AIM_LENGTH]++;
-					}else {
-						scoreWindows[1][0][count + secondCount]++;
+	//
+			if (block != 0 && secondBlock == 0) {
+				if (empty == -1 && secondEmpty == -1) {
+					if (count == 1 && secondCount == 0) {
+						scoreWindows[1][0][count]++;
+						return;
 					}
-					if(count + secondCount - 1> AIM_LENGTH) {
-						scoreWindows[1][1][AIM_LENGTH]--;
-					}else {
-						scoreWindows[1][1][count + secondCount - 1]--;
-					}
-					return;
-				}
-			}
-
-			if (empty != -1 && secondEmpty == -1) {
-				if (empty == 1) {
-					if (secondCount == 0) {
-						scoreWindows[1][1][count]++;
+					if (count != 1 && secondCount == 0) {
+						scoreWindows[1][0][count]++;
 						scoreWindows[1][0][count - 1]--;
 						return;
 					}
-					if (secondCount != 0) {
-						if(count + secondCount > AIM_LENGTH) {
-							scoreWindows[1][1][AIM_LENGTH]++;
+					if (count == 1 && secondCount != 0) {
+						if(secondCount + 1 > AIM_LENGTH) {
+							scoreWindows[1][0][AIM_LENGTH]++;
 						}else {
-							scoreWindows[1][1][count + secondCount]++;
-						}
-						scoreWindows[1][0][count - 1]--;
-						scoreWindows[0][0][secondCount]--;
-						return;
-					}
-				} else {
-					if (secondCount == 0) {
-						scoreWindows[1][1][count]++;
-						scoreWindows[1][1][count - 1]--;
-						return;
-					}
-					if (secondCount != 0) {
-						if(count + secondCount > AIM_LENGTH) {
-							scoreWindows[1][1][AIM_LENGTH]++;
-						}else {
-							scoreWindows[1][1][count + secondCount]++;
-						}
-						if(empty - 1 + secondCount > AIM_LENGTH) {
-							scoreWindows[0][1][AIM_LENGTH]--;
-						}else {
-							scoreWindows[0][1][secondCount + empty - 1]--;
-						}
-						scoreWindows[1][1][count - 1]--;
-						return;
-					}
-				}
-			}
-			
-			if (empty == -1 && secondEmpty != -1) {
-				if(secondEmpty == 0) {
-					if(count == 1) {
-						scoreWindows[1][1][secondCount + 1]++;
-						scoreWindows[0][0][secondCount]--;
-						return;
-					}else {
-						if(count + secondCount > AIM_LENGTH) {
-							scoreWindows[1][1][AIM_LENGTH]++;
-						}else {
-							scoreWindows[1][1][count + secondCount]++;
+							scoreWindows[1][0][secondCount + 1]++;
 						}
 						scoreWindows[0][0][secondCount]--;
-						scoreWindows[1][0][count - 1]--;
 						return;
 					}
-						
-				}else {
-					if(count == 1) {
-						scoreWindows[1][1][secondCount + 1]++;
-						scoreWindows[0][1][secondCount]--;
-						return;
-					}else {
+					if (count != 1 && secondCount != 0) {
 						if(count + secondCount > AIM_LENGTH) {
-							scoreWindows[1][1][AIM_LENGTH]++;
+							scoreWindows[1][0][AIM_LENGTH]++;
 						}else {
-							scoreWindows[1][1][count + secondCount]++;
+							scoreWindows[1][0][count + secondCount]++;
 						}
-						if(count + secondEmpty - 1> AIM_LENGTH) {
+						if(count + secondCount - 1> AIM_LENGTH) {
 							scoreWindows[1][1][AIM_LENGTH]--;
 						}else {
-							scoreWindows[1][1][secondEmpty + count - 1]--;
+							scoreWindows[1][1][count + secondCount - 1]--;
 						}
-						scoreWindows[0][1][secondCount]--;
 						return;
 					}
-						
 				}
-
+	
+				if (empty != -1 && secondEmpty == -1) {
+					if (empty == 1) {
+						if (secondCount == 0) {
+							scoreWindows[1][1][count]++;
+							scoreWindows[1][0][count - 1]--;
+							return;
+						}
+						if (secondCount != 0) {
+							if(count + secondCount > AIM_LENGTH) {
+								scoreWindows[1][1][AIM_LENGTH]++;
+							}else {
+								scoreWindows[1][1][count + secondCount]++;
+							}
+							scoreWindows[1][0][count - 1]--;
+							scoreWindows[0][0][secondCount]--;
+							return;
+						}
+					} else {
+						if (secondCount == 0) {
+							scoreWindows[1][1][count]++;
+							scoreWindows[1][1][count - 1]--;
+							return;
+						}
+						if (secondCount != 0) {
+							if(count + secondCount > AIM_LENGTH) {
+								scoreWindows[1][1][AIM_LENGTH]++;
+							}else {
+								scoreWindows[1][1][count + secondCount]++;
+							}
+							if(empty - 1 + secondCount > AIM_LENGTH) {
+								scoreWindows[0][1][AIM_LENGTH]--;
+							}else {
+								scoreWindows[0][1][secondCount + empty - 1]--;
+							}
+							scoreWindows[1][1][count - 1]--;
+							return;
+						}
+					}
+				}
+				
+				if (empty == -1 && secondEmpty != -1) {
+					if(secondEmpty == 0) {
+						if(count == 1) {
+							if(secondCount + 1 > AIM_LENGTH) {
+								scoreWindows[1][1][AIM_LENGTH]++;
+							}else {
+								scoreWindows[1][1][secondCount + 1]++;
+							}
+							scoreWindows[0][0][secondCount]--;
+							return;
+						}else {
+							if(count + secondCount > AIM_LENGTH) {
+								scoreWindows[1][1][AIM_LENGTH]++;
+							}else {
+								scoreWindows[1][1][count + secondCount]++;
+							}
+							scoreWindows[0][0][secondCount]--;
+							scoreWindows[1][0][count - 1]--;
+							return;
+						}
+							
+					}else {
+						if(count == 1) {
+							if(secondCount + 1 > AIM_LENGTH) {
+								scoreWindows[1][1][AIM_LENGTH]++;
+							}else {
+								scoreWindows[1][1][secondCount + 1]++;
+							}
+							scoreWindows[0][1][secondCount]--;
+							return;
+						}else {
+							if(count + secondCount > AIM_LENGTH) {
+								scoreWindows[1][1][AIM_LENGTH]++;
+							}else {
+								scoreWindows[1][1][count + secondCount]++;
+							}
+							if(count + secondEmpty - 1> AIM_LENGTH) {
+								scoreWindows[1][1][AIM_LENGTH]--;
+							}else {
+								scoreWindows[1][1][secondEmpty + count - 1]--;
+							}
+							scoreWindows[0][1][secondCount]--;
+							return;
+						}
+							
+					}
+	
+				}
+				if (empty != -1 && secondEmpty != -1) {
+					if (empty == 1) {
+						if (secondEmpty == 0) {
+							scoreWindows[1][1][count]++;
+							if(secondCount + 1 > AIM_LENGTH) {
+								scoreWindows[0][1][AIM_LENGTH]++;
+							}else {
+								scoreWindows[0][1][secondCount + 1]++;
+							}
+							scoreWindows[0][0][secondCount]--;
+							scoreWindows[1][0][count - 1]--;
+							return;
+						} else {
+							if(secondCount + 1 > AIM_LENGTH) {
+								scoreWindows[0][1][AIM_LENGTH]++;
+							}else {
+								scoreWindows[0][1][secondCount + 1]++;
+							}
+							if(count + secondEmpty > AIM_LENGTH) {
+								scoreWindows[1][1][AIM_LENGTH]++;
+							}else {
+								scoreWindows[1][1][count + secondEmpty]++;
+							}
+							scoreWindows[0][1][secondCount]--;
+							scoreWindows[1][0][count - 1]--;
+							return;
+						}
+					} else {
+						if (secondEmpty == 0) {
+							if(empty + secondCount > AIM_LENGTH) {
+								scoreWindows[0][1][AIM_LENGTH]++;
+							}else {
+								scoreWindows[0][1][secondCount + empty]++;
+							}
+							scoreWindows[1][1][count]++;
+							scoreWindows[0][0][secondCount]--;
+							scoreWindows[1][1][count - 1]--;
+							return;
+						} else {
+							if(empty + secondCount > AIM_LENGTH) {
+								scoreWindows[0][1][AIM_LENGTH]++;
+							}else {
+								scoreWindows[0][1][secondCount + empty]++;
+							}
+							if(count + secondEmpty > AIM_LENGTH) {
+								scoreWindows[1][1][AIM_LENGTH]++;
+							}else {
+								scoreWindows[1][1][count + secondEmpty]++;
+							}
+							scoreWindows[0][1][secondCount]--;
+							scoreWindows[1][1][count - 1]--;
+							return;
+						}
+					}
+	
+				}
+				
 			}
-			if (empty != -1 && secondEmpty != -1) {
-				if (empty == 1) {
-					if (secondEmpty == 0) {
-						scoreWindows[1][1][count]++;
-						scoreWindows[0][1][secondCount + 1]++;
-						scoreWindows[0][0][secondCount]--;
-						scoreWindows[1][0][count - 1]--;
-						return;
-					} else {
-						scoreWindows[0][1][secondCount + 1]++;
-						if(count + secondEmpty > AIM_LENGTH) {
-							scoreWindows[1][1][AIM_LENGTH]++;
-						}else {
-							scoreWindows[1][1][count + secondEmpty]++;
-						}
-						scoreWindows[0][1][secondCount]--;
-						scoreWindows[1][0][count - 1]--;
+	//
+			if (block == 0 && secondBlock != 0) {
+				if (empty == -1 && secondEmpty == -1) {
+					if (count == 1 && secondCount == 0) {
+						scoreWindows[1][0][count]++;
 						return;
 					}
-				} else {
-					if (secondEmpty == 0) {
-						if(empty + secondCount > AIM_LENGTH) {
-							scoreWindows[0][1][AIM_LENGTH]++;
-						}else {
-							scoreWindows[0][1][secondCount + empty]++;
-						}
-						scoreWindows[1][1][count]++;
-						scoreWindows[0][0][secondCount]--;
-						scoreWindows[1][1][count - 1]--;
-						return;
-					} else {
-						if(empty + secondCount > AIM_LENGTH) {
-							scoreWindows[0][1][AIM_LENGTH]++;
-						}else {
-							scoreWindows[0][1][secondCount + empty]++;
-						}
-						if(count + secondEmpty > AIM_LENGTH) {
-							scoreWindows[1][1][AIM_LENGTH]++;
-						}else {
-							scoreWindows[1][1][count + secondEmpty]++;
-						}
-						scoreWindows[0][1][secondCount]--;
-						scoreWindows[1][1][count - 1]--;
-						return;
-					}
-				}
-
-			}
-		}
-//
-		if (block == 0 && secondBlock != 0) {
-			if (empty == -1 && secondEmpty == -1) {
-				if (count == 1 && secondCount == 0) {
-					scoreWindows[1][0][count]++;
-					return;
-				}
-				if (count != 1 && secondCount == 0) {
-					scoreWindows[1][0][count]++;
-					scoreWindows[0][0][count - 1]--;
-					return;
-				}
-				if (count == 1 && secondCount != 0) {
-					
-					scoreWindows[1][0][secondCount + 1]++;
-					scoreWindows[1][0][secondCount]--;
-					return;
-				}
-				if (count != 1 && secondCount != 0) {
-					if (count + secondCount > AIM_LENGTH) {
-						scoreWindows[1][0][AIM_LENGTH]++;
-					} else {
-						scoreWindows[1][0][count + secondCount]++;
-					}
-					if (count - 1 + secondCount > AIM_LENGTH) {
-						scoreWindows[1][1][AIM_LENGTH]--;
-					} else {
-						scoreWindows[1][1][secondCount + count - 1]--;
-					}
-					return;
-				}
-
-			}
-			if (empty != -1 && secondEmpty == -1) {
-				if (empty == 1) {
-					if (secondCount == 0) {
-						scoreWindows[1][1][count]++;
+					if (count != 1 && secondCount == 0) {
+						scoreWindows[1][0][count]++;
 						scoreWindows[0][0][count - 1]--;
 						return;
-					} else {
-						if(count + secondCount > AIM_LENGTH) {
-							scoreWindows[1][1][AIM_LENGTH]++;
+					}
+					if (count == 1 && secondCount != 0) {
+						if(secondCount + 1 > AIM_LENGTH) {
+							scoreWindows[1][0][AIM_LENGTH]++;
 						}else {
-							scoreWindows[1][1][count + secondCount]++;
+							scoreWindows[1][0][secondCount + 1]++;
 						}
 						scoreWindows[1][0][secondCount]--;
-						scoreWindows[0][0][count - 1]--;
 						return;
 					}
-				} else {
-					if (secondCount == 0) {
-						scoreWindows[1][1][count]++;
-						scoreWindows[0][1][count - 1]--;
-						return;
-					} else {
-						if(count + secondCount > AIM_LENGTH) {
-							scoreWindows[1][1][AIM_LENGTH]++;
-						}else {
-							scoreWindows[1][1][count + secondCount]++;
+					if (count != 1 && secondCount != 0) {
+						if (count + secondCount > AIM_LENGTH) {
+							scoreWindows[1][0][AIM_LENGTH]++;
+						} else {
+							scoreWindows[1][0][count + secondCount]++;
 						}
-						if(empty - 1 + secondCount > AIM_LENGTH) {
+						if (count - 1 + secondCount > AIM_LENGTH) {
 							scoreWindows[1][1][AIM_LENGTH]--;
-						}else {
-							scoreWindows[1][1][secondCount + empty - 1]--;
+						} else {
+							scoreWindows[1][1][secondCount + count - 1]--;
 						}
-						scoreWindows[0][1][count - 1]--;
 						return;
 					}
+	
 				}
-			}
-			if (empty == -1 && secondEmpty != -1) {
-				if (secondEmpty == 0) {
-					if (count == 1) {
-						scoreWindows[1][1][secondCount + 1]++;
-						scoreWindows[1][0][secondCount]--;
-						return;
-					} else {
-						if(count + secondCount > AIM_LENGTH) {
-							scoreWindows[1][1][AIM_LENGTH]++;
-						}else {
-							scoreWindows[1][1][secondCount + count]++;
-						}
-						scoreWindows[0][0][count - 1]--;
-						scoreWindows[1][0][secondCount]--;
-						return;
-					}
-				} else {
-					if (count == 1) {
-						scoreWindows[1][1][secondCount + 1]++;
-						scoreWindows[1][1][secondCount]--;
-						return;
-					} else {
-						if(count + secondCount > AIM_LENGTH) {
-							scoreWindows[1][1][AIM_LENGTH]++;
-						}else {
-							scoreWindows[1][1][secondCount + count]++;
-						}
-						scoreWindows[1][1][secondCount]--;
-						if(count - 1 + secondEmpty > AIM_LENGTH) {
-							scoreWindows[0][1][AIM_LENGTH]--;
-						}else {
-							scoreWindows[0][1][count - 1 + secondEmpty]--;
-						}
-						return;
-					}
-				}
-
-			}
-			if (empty != -1 && secondEmpty != -1) {
-				if (secondEmpty == 0) {
+				if (empty != -1 && secondEmpty == -1) {
 					if (empty == 1) {
-						scoreWindows[1][1][secondCount + 1]++;
-						scoreWindows[0][1][count]++;
-						scoreWindows[1][0][secondCount]--;
-						scoreWindows[0][0][count - 1]--;
-						return;
+						if (secondCount == 0) {
+							scoreWindows[1][1][count]++;
+							scoreWindows[0][0][count - 1]--;
+							return;
+						} else {
+							if(count + secondCount > AIM_LENGTH) {
+								scoreWindows[1][1][AIM_LENGTH]++;
+							}else {
+								scoreWindows[1][1][count + secondCount]++;
+							}
+							scoreWindows[1][0][secondCount]--;
+							scoreWindows[0][0][count - 1]--;
+							return;
+						}
 					} else {
-						if(empty + secondCount > AIM_LENGTH) {
-							scoreWindows[1][1][AIM_LENGTH]++;
-						}else {
-							scoreWindows[1][1][secondCount + empty]++;
+						if (secondCount == 0) {
+							scoreWindows[1][1][count]++;
+							scoreWindows[0][1][count - 1]--;
+							return;
+						} else {
+							if(count + secondCount > AIM_LENGTH) {
+								scoreWindows[1][1][AIM_LENGTH]++;
+							}else {
+								scoreWindows[1][1][count + secondCount]++;
+							}
+							if(empty - 1 + secondCount > AIM_LENGTH) {
+								scoreWindows[1][1][AIM_LENGTH]--;
+							}else {
+								scoreWindows[1][1][secondCount + empty - 1]--;
+							}
+							scoreWindows[0][1][count - 1]--;
+							return;
 						}
-						scoreWindows[0][1][count]++;
-						scoreWindows[1][0][secondCount]--;
-						scoreWindows[0][1][count - 1]--;
-						return;
-					}
-				} else {
-					if (empty == 1) {
-						scoreWindows[1][1][secondCount + 1]++;
-						if(count + secondEmpty > AIM_LENGTH) {
-							scoreWindows[0][1][AIM_LENGTH]++;
-						}else {
-							scoreWindows[0][1][count + secondEmpty]++;
-						}
-						scoreWindows[1][1][secondCount]--;
-						scoreWindows[0][0][count - 1]--;
-						return;
-					} else {
-						if(empty + secondCount > AIM_LENGTH) {
-							scoreWindows[1][1][AIM_LENGTH]++;
-						}else {
-							scoreWindows[1][1][secondCount + empty]++;
-						}
-						if(count + secondEmpty > AIM_LENGTH) {
-							scoreWindows[0][1][AIM_LENGTH]++;
-						}else {
-							scoreWindows[0][1][count + secondEmpty]++;
-						}
-						scoreWindows[1][1][secondCount]--;
-						if(empty + secondEmpty - 1> AIM_LENGTH) {
-							scoreWindows[0][1][AIM_LENGTH]--;
-						}else {
-							scoreWindows[0][1][secondEmpty + empty - 1]--;
-						}
-						scoreWindows[0][1][count - 1]--;
-						return;
 					}
 				}
-
-			}
-		}
-//
-		if (block != 0 && secondBlock != 0) {
-			if (empty == -1 && secondEmpty == -1) {
-				return;
-
-			}
-			if (empty != -1 && secondEmpty == -1 || empty == -1 && secondEmpty != -1) {
-				if (count + secondCount - 1 > AIM_LENGTH) {
-					if (player == State.O) {
-						this.twoBlockO[1 - 1]++;
+				if (empty == -1 && secondEmpty != -1) {
+					if (secondEmpty == 0) {
+						if (count == 1) {
+							if(secondCount + 1 > AIM_LENGTH) {
+								scoreWindows[1][1][AIM_LENGTH]++;
+							}else {
+								scoreWindows[1][1][secondCount + 1]++;
+							}
+							scoreWindows[1][0][secondCount]--;
+							return;
+						} else {
+							if(count + secondCount > AIM_LENGTH) {
+								scoreWindows[1][1][AIM_LENGTH]++;
+							}else {
+								scoreWindows[1][1][secondCount + count]++;
+							}
+							scoreWindows[0][0][count - 1]--;
+							scoreWindows[1][0][secondCount]--;
+							return;
+						}
 					} else {
-						this.twoBlockX[1 - 1]++;
+						if (count == 1) {
+							if(secondCount + 1 > AIM_LENGTH) {
+								scoreWindows[1][1][AIM_LENGTH]++;
+							}else {
+								scoreWindows[1][1][secondCount + 1]++;
+							}
+							scoreWindows[1][1][secondCount]--;
+							return;
+						} else {
+							if(count + secondCount > AIM_LENGTH) {
+								scoreWindows[1][1][AIM_LENGTH]++;
+							}else {
+								scoreWindows[1][1][secondCount + count]++;
+							}
+							scoreWindows[1][1][secondCount]--;
+							if(count - 1 + secondEmpty > AIM_LENGTH) {
+								scoreWindows[0][1][AIM_LENGTH]--;
+							}else {
+								scoreWindows[0][1][count - 1 + secondEmpty]--;
+							}
+							return;
+						}
 					}
+	
 				}
-				return;
-
-			}
-
-			if (empty != -1 && secondEmpty != -1) {
-				if (count + secondCount - 2 > AIM_LENGTH) {
-					if (player == State.O) {
-						this.twoBlockO[2 - 1]++;
+				if (empty != -1 && secondEmpty != -1) {
+					if (secondEmpty == 0) {
+						if (empty == 1) {
+							if(secondCount + 1 > AIM_LENGTH) {
+								scoreWindows[1][1][AIM_LENGTH]++;
+							}else {
+								scoreWindows[1][1][secondCount + 1]++;
+							}
+							scoreWindows[0][1][count]++;
+							scoreWindows[1][0][secondCount]--;
+							scoreWindows[0][0][count - 1]--;
+							return;
+						} else {
+							if(empty + secondCount > AIM_LENGTH) {
+								scoreWindows[1][1][AIM_LENGTH]++;
+							}else {
+								scoreWindows[1][1][secondCount + empty]++;
+							}
+							scoreWindows[0][1][count]++;
+							scoreWindows[1][0][secondCount]--;
+							scoreWindows[0][1][count - 1]--;
+							return;
+						}
 					} else {
-						this.twoBlockX[2 - 1]++;
+						if (empty == 1) {
+							if(secondCount + 1 > AIM_LENGTH) {
+								scoreWindows[1][1][AIM_LENGTH]++;
+							}else {
+								scoreWindows[1][1][secondCount + 1]++;
+							}
+							if(count + secondEmpty > AIM_LENGTH) {
+								scoreWindows[0][1][AIM_LENGTH]++;
+							}else {
+								scoreWindows[0][1][count + secondEmpty]++;
+							}
+							scoreWindows[1][1][secondCount]--;
+							scoreWindows[0][0][count - 1]--;
+							return;
+						} else {
+							if(empty + secondCount > AIM_LENGTH) {
+								scoreWindows[1][1][AIM_LENGTH]++;
+							}else {
+								scoreWindows[1][1][secondCount + empty]++;
+							}
+							if(count + secondEmpty > AIM_LENGTH) {
+								scoreWindows[0][1][AIM_LENGTH]++;
+							}else {
+								scoreWindows[0][1][count + secondEmpty]++;
+							}
+							scoreWindows[1][1][secondCount]--;
+							if(empty + secondEmpty - 1> AIM_LENGTH) {
+								scoreWindows[0][1][AIM_LENGTH]--;
+							}else {
+								scoreWindows[0][1][secondEmpty + empty - 1]--;
+							}
+							scoreWindows[0][1][count - 1]--;
+							return;
+						}
 					}
+	
 				}
-				return;
 			}
+	//
+			if (block != 0 && secondBlock != 0) {
+				if (empty == -1 && secondEmpty == -1) {
+					return;
+	
+				}
+				if (empty != -1 && secondEmpty == -1 || empty == -1 && secondEmpty != -1) {
+					if (count + secondCount - 1 > AIM_LENGTH) {
+						if (player == State.O) {
+							this.twoBlockO[1 - 1]++;
+						} else {
+							this.twoBlockX[1 - 1]++;
+						}
+					}
+					return;
+	
+				}
+	
+				if (empty != -1 && secondEmpty != -1) {
+					if (count + secondCount - 2 > AIM_LENGTH) {
+						if (player == State.O) {
+							this.twoBlockO[2 - 1]++;
+						} else {
+							this.twoBlockX[2 - 1]++;
+						}
+					}
+					return;
+				}
+			}
+		}catch(Exception e) {
+			System.out.println(this.toString());
+			System.out.printf("count: %d, secondCount: %d, empty: %d, secondEmpty: %d, block: %d, secondBlock: %d\n", count, secondCount, empty, secondEmpty, block, secondBlock);
 		}
 	}
 
@@ -1920,8 +1999,10 @@ public class Board {
 
 		for (int i = 0; i < 2; i++) {
 			for (int j = 0; i < 2; i++) {
-				board.winningWindowsX[i][j] = this.winningWindowsX[i][j].clone();
-				board.winningWindowsO[i][j] = this.winningWindowsO[i][j].clone();
+				for(int k = 0; k <= AIM_LENGTH; k++) {
+					board.winningWindowsX[i][j][k] = this.winningWindowsX[i][j][k];
+					board.winningWindowsO[i][j][k] = this.winningWindowsO[i][j][k];
+				}
 			}
 		}
 

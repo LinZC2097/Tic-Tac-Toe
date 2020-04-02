@@ -86,7 +86,6 @@ class AlphaBetaAdvanced {
         
         if (indexOfBestMove != -1) {
             board.move(indexOfBestMove);
-            
 //             !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 //            board.clearWinningWindows();
             
@@ -126,7 +125,6 @@ class AlphaBetaAdvanced {
 
         if (indexOfBestMove != -1) {
             board.move(indexOfBestMove);
-
 //             !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 //            board.clearWinningWindows();
             
@@ -153,8 +151,7 @@ class AlphaBetaAdvanced {
             return Integer.MIN_VALUE;
         } else if(player == State.O) {
         	return board.getScoreO() - board.getScoreX();
-        }
-        else {
+        }else {
         	return board.getScoreX() - board.getScoreO();
         }
     }

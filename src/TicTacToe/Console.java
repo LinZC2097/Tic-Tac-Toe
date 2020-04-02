@@ -160,6 +160,7 @@ public class Console {
     	
         if (board.getTurn() == Board.State.X) {
         	long bt = System.currentTimeMillis();  
+//        	getPlayerMove();
         	Algorithms.alphaBetaAdvanced(Board.State.X, board);
         	int[] move = board.getPreMove();
         	System.out.printf("x:%d, y:%d", move[0], move[1]);
@@ -184,19 +185,16 @@ public class Console {
     private void playManual() {
     	getPlayerMove();
     	printGameStatus();
-
-    	int[] move = board.getPreMove();
-    	if(board.isMoreTwo(move[0], move[1])){
-    		System.out.println("is more than 2");
-    	}else {
-    		System.out.println("!!!!!!!< 2");
-    	}
+    	
+    	
+    	
     	
     }
 
     private void printGameStatus () {
         System.out.println("\n" + board + "\n");
         System.out.println(board.getTurn().name() + "'s turn.");
+        board.printScoreWindow();
     }
 
     private void getPlayerMove () {
@@ -254,28 +252,28 @@ public class Console {
     }
 
     public static void main(String[] args) {
-    	System.out.println("Input the game Id: ");
-    	Scanner sc = new Scanner(System.in);
-        Console ticTacToe = new Console(sc.nextInt());
-        
-        System.out.println("input your order:(first: 1, second 2): ");
-        int i = sc.nextInt();
-        while(true) {
-        	if(i == 1 || i == 2) {
-        		break;
-        	}
-        	else {
-        		i = sc.nextInt();
-        	}
-        }
-        
-        if(i == 1) {
-        	ticTacToe.firstPlay();
-        }else {
-        	ticTacToe.secondPlay();
-        }
-//    	Console ticTacToe = new Console(1);
-//        ticTacToe.play();
+//    	System.out.println("Input the game Id: ");
+//    	Scanner sc = new Scanner(System.in);
+//        Console ticTacToe = new Console(sc.nextInt());
+//        
+//        System.out.println("input your order:(first: 1, second 2): ");
+//        int i = sc.nextInt();
+//        while(true) {
+//        	if(i == 1 || i == 2) {
+//        		break;
+//        	}
+//        	else {
+//        		i = sc.nextInt();
+//        	}
+//        }
+//        
+//        if(i == 1) {
+//        	ticTacToe.firstPlay();
+//        }else {
+//        	ticTacToe.secondPlay();
+//        }
+    	Console ticTacToe = new Console(1);
+        ticTacToe.play();
     }
 
 }
