@@ -6,7 +6,7 @@ import TicTacToe.Board.State;;
 class AlphaBetaAdvanced {
 	private static int maxPlay = 6;
     private static int play = 4;
-    private static int deepening = 0;
+    private static int deepening = 2;
 
     private AlphaBetaAdvanced() {}
 
@@ -49,6 +49,11 @@ class AlphaBetaAdvanced {
     }
 
     private static int alphaBetaPruning (Board.State player, Board board, double alpha, double beta, int currentPly) {
+//    	if(board.getMoveCount() > 10) {
+//	    	if(play < maxPlay && (board.getFour(player) > 2 || board.getFive(player) > 1)) {
+//	    		play += deepening;
+//	    	}
+//    	}
     	
         if (currentPly++ == play || board.isGameOver()) {
         	return evaluate(player, board, currentPly);

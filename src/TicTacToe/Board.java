@@ -1928,6 +1928,41 @@ public class Board {
 //		}
 		
 	}
+	public int getFour(State player) {
+		int[][][] scoreWindow = new int[2][2][AIM_LENGTH + 1]; 
+		if(player == State.O) {
+			scoreWindow = this.winningWindowsO;
+		}else {
+			scoreWindow = this.winningWindowsX;
+		}
+			
+		int fourNum = 0;
+		for(int j = 0; j < 2; j++) {
+			if(scoreWindow[0][j][4] != 0) {
+				fourNum ++;
+			}
+		}
+		return fourNum;
+	}
+	
+	public int getFive(State player) {
+		int[][][] scoreWindow = new int[2][2][AIM_LENGTH + 1]; 
+		if(player == State.O) {
+			scoreWindow = this.winningWindowsO;
+		}else {
+			scoreWindow = this.winningWindowsX;
+		}
+			
+		int fiveNum = 0;
+		for(int i = 0; i < 2; i++) {
+			for(int j = 0; j < 2; j++) {
+				if(scoreWindow[i][j][5] != 0) {
+					fiveNum ++;
+				}
+			}
+		}
+		return fiveNum;
+	}
 
 	public int getScoreX() {
 		int result = 0;
