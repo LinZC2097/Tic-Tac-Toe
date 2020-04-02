@@ -2,5 +2,13 @@
 <classpath>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.launching.macosx.MacOSXType/Java SE 8 [1.8.0_231]"/>
 	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="lib" path="/Users/marsscho/JavaProjects/Tic-Tac-Toe/lib/annotations-13.0.jar"/>
+	<classpathentry kind="lib" path="/Users/marsscho/JavaProjects/Tic-Tac-Toe/lib/gson-2.8.5.jar"/>
+	<classpathentry kind="lib" path="/Users/marsscho/JavaProjects/Tic-Tac-Toe/lib/hamcrest-core-1.3.jar"/>
+	<classpathentry kind="lib" path="/Users/marsscho/JavaProjects/Tic-Tac-Toe/lib/junit-4.11.jar"/>
+	<classpathentry kind="lib" path="/Users/marsscho/JavaProjects/Tic-Tac-Toe/lib/kotlin-stdlib-1.3.50.jar"/>
+	<classpathentry kind="lib" path="/Users/marsscho/JavaProjects/Tic-Tac-Toe/lib/kotlin-stdlib-common-1.3.50.jar"/>
+	<classpathentry kind="lib" path="/Users/marsscho/JavaProjects/Tic-Tac-Toe/lib/okhttp-4.2.2.jar"/>
+	<classpathentry kind="lib" path="/Users/marsscho/JavaProjects/Tic-Tac-Toe/lib/okio-2.2.2.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

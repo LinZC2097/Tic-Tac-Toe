@@ -577,16 +577,30 @@ public class Board {
 				} else if (secondEmpty == 0) {
 					return;
 				} else {
-					scoreWindows[0][1][secondCount]--;
-					scoreWindows[1][1][secondCount]++;
-					return;
+					if(secondCount > AIM_LENGTH) {
+						scoreWindows[0][1][AIM_LENGTH]--;
+						scoreWindows[1][1][AIM_LENGTH]++;
+						return;
+					}else {
+						scoreWindows[0][1][secondCount]--;
+						scoreWindows[1][1][secondCount]++;
+						return;
+					}
 				}
 			} else {
 				if (secondEmpty == -1) {
 					scoreWindows[1][0][secondCount]--;
 					return;
 				} else {
-					scoreWindows[1][1][secondCount]--;
+					if(secondEmpty == 0) {
+						scoreWindows[1][0][secondCount]--;
+					}else {
+						if(secondCount > AIM_LENGTH) {
+							scoreWindows[1][1][AIM_LENGTH]--;
+						}else {
+							scoreWindows[1][1][secondCount]--;
+						}
+					}
 					if (secondCount + 1 >= AIM_LENGTH) {
 						twoBlock[1 - 1]++;
 					}
@@ -604,16 +618,30 @@ public class Board {
 				} else if (empty == 0) {
 					return;
 				} else {
-					scoreWindows[0][1][count]--;
-					scoreWindows[1][1][count]++;
-					return;
+					if(count > AIM_LENGTH) {
+						scoreWindows[0][1][AIM_LENGTH]--;
+						scoreWindows[1][1][AIM_LENGTH]++;
+						return;
+					}else {
+						scoreWindows[0][1][count]--;
+						scoreWindows[1][1][count]++;
+						return;
+					}
 				}
 			} else {
 				if (empty == -1) {
 					scoreWindows[1][0][count]--;
 					return;
 				} else {
-					scoreWindows[1][1][count]--;
+					if(empty == 0) {
+						scoreWindows[1][0][count]--;
+					}else {
+						if(count > AIM_LENGTH) {
+							scoreWindows[1][1][AIM_LENGTH]--;
+						}else {
+							scoreWindows[1][1][count]--;
+						}
+					}
 					if (count + 1 >= AIM_LENGTH) {
 						twoBlock[1 - 1]++;
 					}
@@ -626,7 +654,11 @@ public class Board {
 		if (block == 0 && secondBlock == 0) {
 			if (empty == -1) {
 				if (secondEmpty == -1) {
-					scoreWindows[0][1][count + secondCount]--;
+					if(count + secondCount > AIM_LENGTH) {
+						scoreWindows[0][1][AIM_LENGTH]--;
+					}else {
+						scoreWindows[0][1][count + secondCount]--;
+					}
 					scoreWindows[1][0][count]++;
 					scoreWindows[1][0][secondCount]++;
 					return;
@@ -635,9 +667,19 @@ public class Board {
 					scoreWindows[1][0][count]++;
 					return;
 				} else {
-					scoreWindows[0][1][secondCount]--;
-					scoreWindows[0][1][count + secondEmpty]--;
-					scoreWindows[1][1][secondCount]++;
+					
+					if(count + secondEmpty > AIM_LENGTH) {
+						scoreWindows[0][1][AIM_LENGTH]--;
+					}else {
+						scoreWindows[0][1][count + secondEmpty]--;
+					}
+					if(secondCount > AIM_LENGTH) {
+						scoreWindows[0][1][AIM_LENGTH]--;
+						scoreWindows[1][1][AIM_LENGTH]++;
+					}else {
+						scoreWindows[0][1][secondCount]--;
+						scoreWindows[1][1][secondCount]++;
+					}
 					scoreWindows[1][0][count]++;
 					return;
 				}
@@ -649,27 +691,60 @@ public class Board {
 				} else if (secondEmpty == 0) {
 					return;
 				} else {
-					scoreWindows[0][1][secondCount]--;
-					scoreWindows[1][1][secondCount]++;
+					if(secondCount > AIM_LENGTH) {
+						scoreWindows[0][1][AIM_LENGTH]--;
+						scoreWindows[1][1][AIM_LENGTH]++;
+					}else {
+						scoreWindows[0][1][secondCount]--;
+						scoreWindows[1][1][secondCount]++;
+					}
 					return;
 				}
 			} else {
 				if (secondEmpty == -1) {
-					scoreWindows[0][1][secondCount + empty]--;
-					scoreWindows[0][1][count]--;
+					if(empty + secondCount > AIM_LENGTH) {
+						scoreWindows[0][1][AIM_LENGTH]--;
+					}else {
+						scoreWindows[0][1][secondCount + empty]--;
+					}
+					if(count > AIM_LENGTH) {
+						scoreWindows[0][1][AIM_LENGTH]--;
+						scoreWindows[1][1][AIM_LENGTH]++;
+					}else {
+						scoreWindows[0][1][count]--;
+						scoreWindows[1][1][count]++;
+					}
 					scoreWindows[1][0][secondCount]++;
-					scoreWindows[1][1][count]++;
 					return;
 				} else if (secondEmpty == 0) {
-					scoreWindows[0][1][count]--;
-					scoreWindows[1][1][count]++;
+					if(count > AIM_LENGTH) {
+						scoreWindows[0][1][AIM_LENGTH]--;
+						scoreWindows[1][1][AIM_LENGTH]++;
+					}else {
+						scoreWindows[0][1][count]--;
+						scoreWindows[1][1][count]++;
+					}
 					return;
 				} else {
-					scoreWindows[0][1][secondCount]--;
-					scoreWindows[0][1][secondEmpty + empty]--;
-					scoreWindows[0][1][count]--;
-					scoreWindows[1][1][secondCount]++;
-					scoreWindows[1][1][count]++;
+					if(empty + secondEmpty > AIM_LENGTH) {
+						scoreWindows[0][1][AIM_LENGTH]--;
+					}else {
+						scoreWindows[0][1][secondEmpty + empty]--;
+					}
+					if(secondCount > AIM_LENGTH) {
+						scoreWindows[0][1][AIM_LENGTH]--;
+						scoreWindows[1][1][AIM_LENGTH]++;
+					}else {
+						scoreWindows[0][1][secondCount]--;
+						scoreWindows[1][1][secondCount]++;
+					}
+					if(count > AIM_LENGTH) {
+						scoreWindows[0][1][AIM_LENGTH]--;
+						scoreWindows[1][1][AIM_LENGTH]++;
+					}else {
+						scoreWindows[0][1][count]--;
+						scoreWindows[1][1][count]++;
+					}					
 					return;
 				}
 			}
@@ -689,9 +764,18 @@ public class Board {
 					scoreWindows[1][0][count]--;
 					return;
 				} else {
-					scoreWindows[1][1][count + secondEmpty]--;
-					scoreWindows[0][1][secondCount]--;
-					scoreWindows[1][1][secondCount]++;
+					if(count + secondEmpty > AIM_LENGTH) {
+						scoreWindows[1][1][AIM_LENGTH]--;
+					}else {
+						scoreWindows[1][1][count + secondEmpty]--;
+					}
+					if(secondCount > AIM_LENGTH) {
+						scoreWindows[0][1][AIM_LENGTH]--;
+						scoreWindows[1][1][AIM_LENGTH]++;
+					}else {
+						scoreWindows[0][1][secondCount]--;
+						scoreWindows[1][1][secondCount]++;
+					}
 					return;
 				}
 			} else if (empty == 0) {
@@ -702,8 +786,13 @@ public class Board {
 				} else if (secondEmpty == 0) {
 //					System.out.println();
 				} else {
-					scoreWindows[0][1][secondCount]--;
-					scoreWindows[1][1][secondCount]++;
+					if(secondCount > AIM_LENGTH) {
+						scoreWindows[0][1][AIM_LENGTH]--;
+						scoreWindows[1][1][AIM_LENGTH]++;
+					}else {
+						scoreWindows[0][1][secondCount]--;
+						scoreWindows[1][1][secondCount]++;
+					}
 				}
 				scoreWindows[1][0][count]--;
 				if (count + 1 >= AIM_LENGTH) {
@@ -712,20 +801,37 @@ public class Board {
 				return;
 			} else {
 				if (secondEmpty == -1) {
-					scoreWindows[1][1][secondCount + empty]--;
+					if(empty + secondCount > AIM_LENGTH) {
+						scoreWindows[0][1][AIM_LENGTH]--;
+					}else {
+						scoreWindows[0][1][secondCount + empty]--;
+					}
 					scoreWindows[1][0][secondCount]++;
 				} else if (secondEmpty == 0) {
 //					System.out.println();
 				} else {
-					scoreWindows[0][1][secondCount]--;
-					scoreWindows[0][1][secondEmpty + empty]--;
-					scoreWindows[1][1][secondCount]++;
+					if(empty + secondEmpty > AIM_LENGTH) {
+						scoreWindows[0][1][AIM_LENGTH]--;
+					}else {
+						scoreWindows[0][1][secondEmpty + empty]--;
+					}
+					if(secondCount > AIM_LENGTH) {
+						scoreWindows[0][1][AIM_LENGTH]--;
+						scoreWindows[1][1][AIM_LENGTH]++;
+					}else {
+						scoreWindows[0][1][secondCount]--;
+						scoreWindows[1][1][secondCount]++;
+					}
 					if (secondCount + 1 >= AIM_LENGTH) {
 						twoBlock[1 - 1]++;
 					}
 				}
-
-				scoreWindows[1][1][count]--;
+				
+				if(count > AIM_LENGTH) {
+					scoreWindows[1][1][AIM_LENGTH]++;
+				}else {
+					scoreWindows[1][1][count]--;
+				}
 				if (count + 1 >= AIM_LENGTH) {
 					twoBlock[1 - 1]++;
 				}
@@ -737,54 +843,83 @@ public class Board {
 		if (block == 0 && secondBlock != 0) {
 			if (secondEmpty == -1) {
 				if (empty == -1) {
-					scoreWindows[1][0][secondCount]--;
+					if(count + secondCount > AIM_LENGTH) {
+						scoreWindows[1][1][AIM_LENGTH]--;
+					}else {
+						scoreWindows[1][1][secondCount + count]--;
+					}
 					scoreWindows[1][0][count]++;
 					return;
 				} else if (empty == 0) {
 					scoreWindows[1][0][secondCount]--;
 					return;
 				} else {
-					scoreWindows[1][1][secondCount + empty]--;
-					scoreWindows[0][1][count]--;
-					scoreWindows[1][1][count]--;
+					if(empty + secondCount > AIM_LENGTH) {
+						scoreWindows[1][1][AIM_LENGTH]--;
+					}else {
+						scoreWindows[1][1][secondCount + empty]--;
+					}
+					if(count > AIM_LENGTH) {
+						scoreWindows[0][1][AIM_LENGTH]--;
+						scoreWindows[1][1][AIM_LENGTH]++;
+					}else {
+						scoreWindows[0][1][count]--;
+						scoreWindows[1][1][count]--;
+					}
 					return;
 				}
 			} else if (secondEmpty == 0) {
 				if (empty == -1) {
-					scoreWindows[1][0][secondCount]--;
+					scoreWindows[0][0][count]--;
+					scoreWindows[1][0][count]++;
 
 				} else if (empty == 0) {
-					scoreWindows[1][0][secondCount]--;
-					if (secondCount + 1 >= AIM_LENGTH) {
-						twoBlock[1 - 1]++;
-					}
+
 				} else {
-					scoreWindows[1][1][secondCount]--;
-					if (secondCount + 1 >= AIM_LENGTH) {
-						twoBlock[1 - 1]++;
+					if(count > AIM_LENGTH) {
+						scoreWindows[0][1][AIM_LENGTH]--;
+					}else {
+						scoreWindows[0][1][count]--;
 					}
 				}
 				scoreWindows[1][0][secondCount]--;
-				if (count + 1 >= AIM_LENGTH) {
+				if (secondCount + 1 >= AIM_LENGTH) {
 					twoBlock[1 - 1]++;
 					return;
 				}
 			} else {
 				if (empty == -1) {
-					scoreWindows[0][1][secondEmpty + count]--;
+					if(count + secondEmpty <= AIM_LENGTH) {
+						scoreWindows[0][1][secondEmpty + count]--;
+					}else {
+						scoreWindows[0][1][AIM_LENGTH]--;
+					}
 					scoreWindows[1][0][count]++;
 				} else if (empty == 0) {
 //					System.out.println();
 				} else {
-					scoreWindows[0][1][secondEmpty + empty]--;
-					scoreWindows[0][1][count]--;
-					scoreWindows[1][1][count]--;
+					if(empty + secondEmpty > AIM_LENGTH) {
+						scoreWindows[0][1][AIM_LENGTH]--;
+					}else {
+						scoreWindows[0][1][secondEmpty + empty]--;
+					}
+					if(count > AIM_LENGTH) {
+						scoreWindows[0][1][AIM_LENGTH]--;
+						scoreWindows[1][1][AIM_LENGTH]++;
+					}else {
+						scoreWindows[0][1][count]--;
+						scoreWindows[1][1][count]++;
+					}
 					if (secondCount + 1 >= AIM_LENGTH) {
 						twoBlock[1 - 1]++;
 					}
 				}
-
-				scoreWindows[1][1][secondCount]--;
+				
+				if(secondCount > AIM_LENGTH) {
+					scoreWindows[1][1][AIM_LENGTH]--;
+				}else {
+					scoreWindows[1][1][secondCount]--;
+				}
 				if (count + 1 >= AIM_LENGTH) {
 					twoBlock[1 - 1]++;
 					return;
@@ -795,28 +930,23 @@ public class Board {
 		if (block != 0 && secondBlock != 0) {
 			if (empty == -1) {
 				if (secondEmpty == -1) {
-					scoreWindows[1][0][secondCount]--;
-					scoreWindows[1][0][count]--;
-					return;
-				} else if (secondEmpty == 0) {
-					scoreWindows[1][0][count]--;
-					if (secondCount + 1 >= AIM_LENGTH) {
-						scoreWindows[1][0][secondCount]--;
-						twoBlock[1 - 1]++;
+					if(secondCount + count + 1 >= AIM_LENGTH) {
+						twoBlock[1 - 1]--;
 					}
 					return;
-				} else {
+				}else if(secondEmpty == 0) {
 					scoreWindows[1][0][count]--;
-					if (secondCount + 1 >= AIM_LENGTH) {
-						scoreWindows[1][1][secondCount]--;
-						twoBlock[1 - 1]++;
+					scoreWindows[1][0][secondCount]--;
+					return;
+				}  else {
+					if(count + secondCount + 2 >= AIM_LENGTH) {
+						twoBlock[2 - 1]--;
 					}
 					return;
 				}
 			} else if (empty == 0) {
 				if (secondEmpty == -1) {
 					scoreWindows[1][0][secondCount]--;
-
 				} else if (secondEmpty == 0) {
 					scoreWindows[1][0][secondCount]--;
 					if (secondCount + 1 >= AIM_LENGTH) {
@@ -835,26 +965,36 @@ public class Board {
 				return;
 			} else {
 				if (secondEmpty == -1) {
-					scoreWindows[1][0][secondCount]--;
-					scoreWindows[1][1][secondCount + empty]--;
+					if(secondCount + count + 2 >= AIM_LENGTH) {
+						twoBlock[2 - 1]--;
+					}
+					return;
 				} else if (secondEmpty == 0) {
 					scoreWindows[1][0][secondCount]--;
 					if (secondCount + 1 >= AIM_LENGTH) {
 						twoBlock[1 - 1]++;
 					}
+					scoreWindows[1][1][count]--;
+					if (count + 1 >= AIM_LENGTH) {
+						twoBlock[1 - 1]++;
+					}
+					return;
 				} else {
 					scoreWindows[1][1][secondCount]--;
-					scoreWindows[0][1][secondEmpty + empty]--;
+					if(empty + secondEmpty <= AIM_LENGTH) {
+						scoreWindows[0][1][AIM_LENGTH]--;
+					}else {
+						scoreWindows[0][1][secondEmpty + empty]--;
+					}
 					if (secondCount + 1 >= AIM_LENGTH) {
 						twoBlock[1 - 1]++;
 					}
+					scoreWindows[1][1][count]--;
+					if (count + 1 >= AIM_LENGTH) {
+						twoBlock[1 - 1]++;
+					}
+					return;
 				}
-
-				scoreWindows[1][1][count]--;
-				if (count + 1 >= AIM_LENGTH) {
-					twoBlock[1 - 1]++;
-				}
-				return;
 			}
 		}
 	}
@@ -1125,7 +1265,7 @@ public class Board {
 		} else {
 			scoreWindows = this.winningWindowsX;
 		}
-
+//
 		if (block == 0 && secondBlock == 0) {
 			if (empty == -1 && secondEmpty == -1) {
 				if (count == 1 && secondCount == 0) {
@@ -1143,25 +1283,16 @@ public class Board {
 					return;
 				}
 				if (count != 1 && secondCount != 0) {
-//					System.out.printf("count:%d, secondcount:%d\n",count,secondCount);
-//					if(count + secondCount > AIM_LENGTH) {
-//						if(player == State.O) {
-//							System.out.println("\nOOOOOO");
-//						}else {
-//							System.out.println("\nXXXXXXXX");
-//						}
-//						
-//						System.out.printf("x: %d, y: %d", this.preMoveX, this.preMoveY);
-//						System.out.println("\n" + this.toString());
-//						scoreWindows[0][0][count + secondCount]++;
-//					}else {
-//					}
 					if (count + secondCount > AIM_LENGTH) {
 						scoreWindows[0][0][AIM_LENGTH]++;
 					} else {
 						scoreWindows[0][0][count + secondCount]++;
 					}
-					scoreWindows[0][1][count + secondCount - 1]--;
+					if (count + secondCount - 1 > AIM_LENGTH) {
+						scoreWindows[0][1][AIM_LENGTH]--;
+					} else {
+						scoreWindows[0][1][count + secondCount - 1]--;
+					}
 					return;
 				}
 			}
@@ -1174,7 +1305,11 @@ public class Board {
 					}
 
 					if (secondCount != 0) {
-						scoreWindows[0][1][count + secondCount]++;
+						if (count + secondCount > AIM_LENGTH) {
+							scoreWindows[0][1][AIM_LENGTH]++;
+						} else {
+							scoreWindows[0][1][count + secondCount]++;
+						}
 						scoreWindows[0][0][secondCount]--;
 						scoreWindows[0][0][count - 1]--;
 						return;
@@ -1192,8 +1327,12 @@ public class Board {
 						}else {
 							scoreWindows[0][1][count + secondCount]++;
 						}
-						scoreWindows[0][0][count - 1]--;
-						scoreWindows[0][1][secondCount + empty - 1]--;
+						if(empty - 1 + secondCount > AIM_LENGTH) {
+							scoreWindows[0][1][AIM_LENGTH]--;
+						}else {
+							scoreWindows[0][1][secondCount + empty - 1]--;
+						}
+						scoreWindows[0][1][count - 1]--;
 						return;
 					}
 				}
@@ -1206,7 +1345,11 @@ public class Board {
 						return;
 					}
 					if (count != 1) {
-						scoreWindows[0][1][secondCount + count]++;
+						if(count + secondCount > AIM_LENGTH) {
+							scoreWindows[0][1][AIM_LENGTH]++;
+						}else {
+							scoreWindows[0][1][count + secondCount]++;
+						}
 						scoreWindows[0][0][secondCount]--;
 						scoreWindows[0][0][count - 1]--;
 						return;
@@ -1218,9 +1361,17 @@ public class Board {
 						return;
 					}
 					if (count != 1) {
-						scoreWindows[0][1][secondCount + count]++;
+						if(count + secondCount > AIM_LENGTH) {
+							scoreWindows[0][1][AIM_LENGTH]++;
+						}else {
+							scoreWindows[0][1][count + secondCount]++;
+						}
+						if(count - 1 + secondEmpty > AIM_LENGTH) {
+							scoreWindows[0][1][AIM_LENGTH]--;
+						}else {
+							scoreWindows[0][1][count - 1 + secondEmpty]--;
+						}
 						scoreWindows[0][1][secondCount]--;
-						scoreWindows[0][0][count - 1 + secondEmpty]--;
 						return;
 					}
 				}
@@ -1236,30 +1387,50 @@ public class Board {
 						return;
 					} else {
 						scoreWindows[0][1][secondCount + 1]++;
-						scoreWindows[0][1][secondEmpty + count]++;
-						scoreWindows[0][1][secondEmpty]--;
+						if(count + secondEmpty > AIM_LENGTH) {
+							scoreWindows[0][1][AIM_LENGTH]++;
+						}else {
+							scoreWindows[0][1][secondEmpty + count]++;
+						}
+						scoreWindows[0][1][secondCount]--;
 						scoreWindows[0][0][count - 1]--;
 						return;
 					}
 				} else {
 					if (secondEmpty == 0) {
 						scoreWindows[0][1][count]++;
-						scoreWindows[0][1][secondCount + empty]++;
+						if(empty + secondCount > AIM_LENGTH) {
+							scoreWindows[0][1][AIM_LENGTH]++;
+						}else {
+							scoreWindows[0][1][secondCount + empty]++;
+						}
 						scoreWindows[0][1][count - 1]--;
 						scoreWindows[0][0][secondCount]--;
 						return;
 					} else {
-						scoreWindows[0][1][count + secondEmpty]++;
-						scoreWindows[0][1][secondCount + empty]++;
+						if(count + secondEmpty > AIM_LENGTH) {
+							scoreWindows[0][1][AIM_LENGTH]++;
+						}else {
+							scoreWindows[0][1][count + secondEmpty]++;
+						}
+						if(secondCount + empty > AIM_LENGTH) {
+							scoreWindows[0][1][AIM_LENGTH]++;
+						}else {
+							scoreWindows[0][1][secondCount + empty]++;
+						}
+						if(empty + secondEmpty > AIM_LENGTH) {
+							scoreWindows[0][1][AIM_LENGTH]--;
+						}else {
+							scoreWindows[0][1][empty + secondEmpty]--;
+						}
 						scoreWindows[0][1][count - 1]--;
-						scoreWindows[0][1][empty + secondEmpty]--;
 						scoreWindows[0][1][secondCount]--;
 						return;
 					}
 				}
 			}
 		}
-
+//
 		if (block != 0 && secondBlock == 0) {
 			if (empty == -1 && secondEmpty == -1) {
 				if (count == 1 && secondCount == 0) {
@@ -1277,11 +1448,18 @@ public class Board {
 					return;
 				}
 				if (count != 1 && secondCount != 0) {
-					scoreWindows[1][0][count + secondCount]++;
-					scoreWindows[1][1][count + secondCount - 1]--;
+					if(count + secondCount > AIM_LENGTH) {
+						scoreWindows[1][0][AIM_LENGTH]++;
+					}else {
+						scoreWindows[1][0][count + secondCount]++;
+					}
+					if(count + secondCount - 1> AIM_LENGTH) {
+						scoreWindows[1][1][AIM_LENGTH]--;
+					}else {
+						scoreWindows[1][1][count + secondCount - 1]--;
+					}
 					return;
 				}
-
 			}
 
 			if (empty != -1 && secondEmpty == -1) {
@@ -1292,7 +1470,11 @@ public class Board {
 						return;
 					}
 					if (secondCount != 0) {
-						scoreWindows[1][1][count + secondCount]++;
+						if(count + secondCount > AIM_LENGTH) {
+							scoreWindows[1][1][AIM_LENGTH]++;
+						}else {
+							scoreWindows[1][1][count + secondCount]++;
+						}
 						scoreWindows[1][0][count - 1]--;
 						scoreWindows[0][0][secondCount]--;
 						return;
@@ -1304,37 +1486,59 @@ public class Board {
 						return;
 					}
 					if (secondCount != 0) {
-						scoreWindows[1][1][count + secondCount]++;
-						scoreWindows[1][0][count - 1]--;
-						scoreWindows[0][0][secondCount + empty - 1]--;
+						if(count + secondCount > AIM_LENGTH) {
+							scoreWindows[1][1][AIM_LENGTH]++;
+						}else {
+							scoreWindows[1][1][count + secondCount]++;
+						}
+						if(empty - 1 + secondCount > AIM_LENGTH) {
+							scoreWindows[0][1][AIM_LENGTH]--;
+						}else {
+							scoreWindows[0][1][secondCount + empty - 1]--;
+						}
+						scoreWindows[1][1][count - 1]--;
 						return;
 					}
 				}
 			}
-//			
+			
 			if (empty == -1 && secondEmpty != -1) {
-				if (count == 1) {
-					if (secondEmpty == 0) {
-						scoreWindows[1][1][count + secondCount]++;
+				if(secondEmpty == 0) {
+					if(count == 1) {
+						scoreWindows[1][1][secondCount + 1]++;
 						scoreWindows[0][0][secondCount]--;
 						return;
-					} else {
-						scoreWindows[1][1][count + secondCount]++;
-						scoreWindows[0][1][secondCount]--;
-						return;
-					}
-				} else {
-					if (secondEmpty == 0) {
-						scoreWindows[1][1][count + secondCount]++;
+					}else {
+						if(count + secondCount > AIM_LENGTH) {
+							scoreWindows[1][1][AIM_LENGTH]++;
+						}else {
+							scoreWindows[1][1][count + secondCount]++;
+						}
+						scoreWindows[0][0][secondCount]--;
 						scoreWindows[1][0][count - 1]--;
-						scoreWindows[0][0][secondCount]--;
 						return;
-					} else {
-						scoreWindows[1][1][count + secondCount]++;
-						scoreWindows[1][1][count - 1 + secondEmpty]--;
+					}
+						
+				}else {
+					if(count == 1) {
+						scoreWindows[1][1][secondCount + 1]++;
+						scoreWindows[0][1][secondCount]--;
+						return;
+					}else {
+						if(count + secondCount > AIM_LENGTH) {
+							scoreWindows[1][1][AIM_LENGTH]++;
+						}else {
+							scoreWindows[1][1][count + secondCount]++;
+						}
+						if(count + secondEmpty - 1> AIM_LENGTH) {
+							scoreWindows[1][1][AIM_LENGTH]--;
+						}else {
+							scoreWindows[1][1][secondEmpty + count - 1]--;
+						}
 						scoreWindows[0][1][secondCount]--;
 						return;
 					}
+						
 				}
 
 			}
@@ -1342,27 +1546,43 @@ public class Board {
 				if (empty == 1) {
 					if (secondEmpty == 0) {
 						scoreWindows[1][1][count]++;
-						scoreWindows[0][1][secondCount + empty]++;
+						scoreWindows[0][1][secondCount + 1]++;
 						scoreWindows[0][0][secondCount]--;
-						scoreWindows[1][0][count - empty]--;
+						scoreWindows[1][0][count - 1]--;
 						return;
 					} else {
-						scoreWindows[0][1][secondCount + empty]++;
-						scoreWindows[1][1][count + secondEmpty]++;
+						scoreWindows[0][1][secondCount + 1]++;
+						if(count + secondEmpty > AIM_LENGTH) {
+							scoreWindows[1][1][AIM_LENGTH]++;
+						}else {
+							scoreWindows[1][1][count + secondEmpty]++;
+						}
 						scoreWindows[0][1][secondCount]--;
-						scoreWindows[1][0][count - empty]--;
+						scoreWindows[1][0][count - 1]--;
 						return;
 					}
 				} else {
 					if (secondEmpty == 0) {
-						scoreWindows[0][1][secondCount + empty]++;
+						if(empty + secondCount > AIM_LENGTH) {
+							scoreWindows[0][1][AIM_LENGTH]++;
+						}else {
+							scoreWindows[0][1][secondCount + empty]++;
+						}
 						scoreWindows[1][1][count]++;
 						scoreWindows[0][0][secondCount]--;
-						scoreWindows[1][1][count - 1]++;
+						scoreWindows[1][1][count - 1]--;
 						return;
 					} else {
-						scoreWindows[0][1][secondCount + empty]++;
-						scoreWindows[1][1][count + secondEmpty]++;
+						if(empty + secondCount > AIM_LENGTH) {
+							scoreWindows[0][1][AIM_LENGTH]++;
+						}else {
+							scoreWindows[0][1][secondCount + empty]++;
+						}
+						if(count + secondEmpty > AIM_LENGTH) {
+							scoreWindows[1][1][AIM_LENGTH]++;
+						}else {
+							scoreWindows[1][1][count + secondEmpty]++;
+						}
 						scoreWindows[0][1][secondCount]--;
 						scoreWindows[1][1][count - 1]--;
 						return;
@@ -1371,7 +1591,7 @@ public class Board {
 
 			}
 		}
-
+//
 		if (block == 0 && secondBlock != 0) {
 			if (empty == -1 && secondEmpty == -1) {
 				if (count == 1 && secondCount == 0) {
@@ -1384,7 +1604,8 @@ public class Board {
 					return;
 				}
 				if (count == 1 && secondCount != 0) {
-					scoreWindows[1][0][secondCount + count]++;
+					
+					scoreWindows[1][0][secondCount + 1]++;
 					scoreWindows[1][0][secondCount]--;
 					return;
 				}
@@ -1394,7 +1615,11 @@ public class Board {
 					} else {
 						scoreWindows[1][0][count + secondCount]++;
 					}
-					scoreWindows[1][1][secondCount + count - 1]--;
+					if (count - 1 + secondCount > AIM_LENGTH) {
+						scoreWindows[1][1][AIM_LENGTH]--;
+					} else {
+						scoreWindows[1][1][secondCount + count - 1]--;
+					}
 					return;
 				}
 
@@ -1406,7 +1631,11 @@ public class Board {
 						scoreWindows[0][0][count - 1]--;
 						return;
 					} else {
-						scoreWindows[1][1][count + secondCount]++;
+						if(count + secondCount > AIM_LENGTH) {
+							scoreWindows[1][1][AIM_LENGTH]++;
+						}else {
+							scoreWindows[1][1][count + secondCount]++;
+						}
 						scoreWindows[1][0][secondCount]--;
 						scoreWindows[0][0][count - 1]--;
 						return;
@@ -1417,8 +1646,16 @@ public class Board {
 						scoreWindows[0][1][count - 1]--;
 						return;
 					} else {
-						scoreWindows[1][1][count + secondCount]++;
-						scoreWindows[1][0][secondCount + empty - 1]--;
+						if(count + secondCount > AIM_LENGTH) {
+							scoreWindows[1][1][AIM_LENGTH]++;
+						}else {
+							scoreWindows[1][1][count + secondCount]++;
+						}
+						if(empty - 1 + secondCount > AIM_LENGTH) {
+							scoreWindows[1][1][AIM_LENGTH]--;
+						}else {
+							scoreWindows[1][1][secondCount + empty - 1]--;
+						}
 						scoreWindows[0][1][count - 1]--;
 						return;
 					}
@@ -1427,24 +1664,36 @@ public class Board {
 			if (empty == -1 && secondEmpty != -1) {
 				if (secondEmpty == 0) {
 					if (count == 1) {
-						scoreWindows[1][1][secondCount + count]++;
+						scoreWindows[1][1][secondCount + 1]++;
 						scoreWindows[1][0][secondCount]--;
 						return;
 					} else {
-						scoreWindows[1][1][secondCount + count]++;
+						if(count + secondCount > AIM_LENGTH) {
+							scoreWindows[1][1][AIM_LENGTH]++;
+						}else {
+							scoreWindows[1][1][secondCount + count]++;
+						}
 						scoreWindows[0][0][count - 1]--;
 						scoreWindows[1][0][secondCount]--;
 						return;
 					}
 				} else {
 					if (count == 1) {
-						scoreWindows[1][1][secondCount + count]++;
+						scoreWindows[1][1][secondCount + 1]++;
 						scoreWindows[1][1][secondCount]--;
 						return;
 					} else {
-						scoreWindows[1][1][secondCount + count]++;
+						if(count + secondCount > AIM_LENGTH) {
+							scoreWindows[1][1][AIM_LENGTH]++;
+						}else {
+							scoreWindows[1][1][secondCount + count]++;
+						}
 						scoreWindows[1][1][secondCount]--;
-						scoreWindows[0][1][count - 1 + secondEmpty]--;
+						if(count - 1 + secondEmpty > AIM_LENGTH) {
+							scoreWindows[0][1][AIM_LENGTH]--;
+						}else {
+							scoreWindows[0][1][count - 1 + secondEmpty]--;
+						}
 						return;
 					}
 				}
@@ -1453,13 +1702,17 @@ public class Board {
 			if (empty != -1 && secondEmpty != -1) {
 				if (secondEmpty == 0) {
 					if (empty == 1) {
-						scoreWindows[1][1][secondCount + empty]++;
+						scoreWindows[1][1][secondCount + 1]++;
 						scoreWindows[0][1][count]++;
 						scoreWindows[1][0][secondCount]--;
 						scoreWindows[0][0][count - 1]--;
 						return;
 					} else {
-						scoreWindows[1][1][secondCount + empty]++;
+						if(empty + secondCount > AIM_LENGTH) {
+							scoreWindows[1][1][AIM_LENGTH]++;
+						}else {
+							scoreWindows[1][1][secondCount + empty]++;
+						}
 						scoreWindows[0][1][count]++;
 						scoreWindows[1][0][secondCount]--;
 						scoreWindows[0][1][count - 1]--;
@@ -1467,16 +1720,32 @@ public class Board {
 					}
 				} else {
 					if (empty == 1) {
-						scoreWindows[1][1][secondCount + empty]++;
-						scoreWindows[0][1][count + secondEmpty]++;
+						scoreWindows[1][1][secondCount + 1]++;
+						if(count + secondEmpty > AIM_LENGTH) {
+							scoreWindows[0][1][AIM_LENGTH]++;
+						}else {
+							scoreWindows[0][1][count + secondEmpty]++;
+						}
 						scoreWindows[1][1][secondCount]--;
 						scoreWindows[0][0][count - 1]--;
 						return;
 					} else {
-						scoreWindows[1][1][secondCount + empty]++;
-						scoreWindows[0][1][count + secondEmpty]++;
+						if(empty + secondCount > AIM_LENGTH) {
+							scoreWindows[1][1][AIM_LENGTH]++;
+						}else {
+							scoreWindows[1][1][secondCount + empty]++;
+						}
+						if(count + secondEmpty > AIM_LENGTH) {
+							scoreWindows[0][1][AIM_LENGTH]++;
+						}else {
+							scoreWindows[0][1][count + secondEmpty]++;
+						}
 						scoreWindows[1][1][secondCount]--;
-						scoreWindows[0][1][secondEmpty + empty - 1]--;
+						if(empty + secondEmpty - 1> AIM_LENGTH) {
+							scoreWindows[0][1][AIM_LENGTH]--;
+						}else {
+							scoreWindows[0][1][secondEmpty + empty - 1]--;
+						}
 						scoreWindows[0][1][count - 1]--;
 						return;
 					}
@@ -1484,7 +1753,7 @@ public class Board {
 
 			}
 		}
-
+//
 		if (block != 0 && secondBlock != 0) {
 			if (empty == -1 && secondEmpty == -1) {
 				return;
