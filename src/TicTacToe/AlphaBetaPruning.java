@@ -146,9 +146,13 @@ class AlphaBetaAdvanced {
         Board.State opponent = (player == Board.State.X) ?  Board.State.O : Board.State.X;
         
         if (board.isGameOver() && board.getWinner() != player) {
-            return -Integer.MAX_VALUE ;
-        } else if (board.isGameOver() && board.getWinner() == player) {
+//        	System.out.println(board.toString());
+//        	System.out.println(currentPly);
             return Integer.MIN_VALUE;
+        } else if (board.isGameOver() && board.getWinner() == player) {
+//        	System.out.println(board.toString());
+//        	System.out.println(currentPly);
+        	return Integer.MAX_VALUE ;
         } else if(player == State.O) {
         	return board.getScoreO() - board.getScoreX();
         }else {

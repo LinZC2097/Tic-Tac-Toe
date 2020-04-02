@@ -160,8 +160,8 @@ public class Console {
     	
         if (board.getTurn() == Board.State.X) {
         	long bt = System.currentTimeMillis();  
-//        	getPlayerMove();
-        	Algorithms.alphaBetaAdvanced(Board.State.X, board);
+        	getPlayerMove();
+//        	Algorithms.alphaBetaAdvanced(Board.State.X, board);
         	int[] move = board.getPreMove();
         	System.out.printf("x:%d, y:%d", move[0], move[1]);
         	System.out.printf("\nmoveNum:%d", board.getMoveCount());
@@ -170,8 +170,8 @@ public class Console {
         	
         } else {
         	long bt = System.currentTimeMillis();  
-//        	Algorithms.alphaBetaAdvanced(Board.State.O, board);
-        	getPlayerMove();
+        	Algorithms.alphaBetaAdvanced(Board.State.O, board);
+//        	getPlayerMove();
         	int[] move = board.getPreMove();
         	System.out.printf("x:%d, y:%d", move[0], move[1]);
         	System.out.printf("\nmoveNum:%d", board.getMoveCount());
@@ -200,9 +200,9 @@ public class Console {
     private void getPlayerMove () {
         System.out.print("Index of move: ");
 
-        int move_row = sc.nextInt();
-        int move_col = sc.nextInt();
-        int move = move_row * Board.BOARD_WIDTH + move_col;
+        int x = sc.nextInt();
+        int y = sc.nextInt();
+        int move = y * Board.BOARD_WIDTH + x;
         
 
         if (move < 0 || move >= Board.BOARD_WIDTH* Board.BOARD_WIDTH) {
