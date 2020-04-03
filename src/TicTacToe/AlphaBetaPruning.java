@@ -4,10 +4,10 @@ package TicTacToe;
 import TicTacToe.Board.State;;
 
 class AlphaBetaAdvanced {
-	private static int maxPlay = 10;
+	private static int maxPlay = 14;
     private static int play = 2;
     private static int defaultPlay = 2;
-    private static int deepening = 2;
+    private static int deepening = 6;
 
     private AlphaBetaAdvanced() {}
 
@@ -50,12 +50,18 @@ class AlphaBetaAdvanced {
     }
 
     private static int alphaBetaPruning (Board.State player, Board board, double alpha, double beta, int currentPly) {
+    	
+    	
     	if(board.getMoveCount() > 10) {
 	    	if(play < maxPlay && (board.getFour(player) > 2 || (board.getFive(player) > 1 && board.getFive(player) > 1)) 
 	    			|| board.getBlockFour(player) > 2 || board.getThree(player) > 2) {
 	    		play += deepening;
+	    		System.out.println("deepening play:" + play);
 	    	}else {
-	    		play = defaultPlay;
+	    		if(currentPly >= play) {
+	    			System.out.println("currentply: " + currentPly + " play:" + play);
+	    			play = defaultPlay;
+	    		}
 	    	}
     	}
     	
