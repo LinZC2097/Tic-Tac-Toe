@@ -4,10 +4,10 @@ package TicTacToe;
 import TicTacToe.Board.State;;
 
 class AlphaBetaAdvanced {
-	private static int maxPlay = 14;
+	private static int maxPlay = 4;
     private static int play = 2;
     private static int defaultPlay = 2;
-    private static int deepening = 6;
+    private static int deepening = 2;
 
     private AlphaBetaAdvanced() {}
 
@@ -51,19 +51,24 @@ class AlphaBetaAdvanced {
 
     private static int alphaBetaPruning (Board.State player, Board board, double alpha, double beta, int currentPly) {
     	
-    	
+    	Board.State oppnent = player == State.O? State.X: State.O;
     	if(board.getMoveCount() > 10) {
-	    	if(play < maxPlay && (board.getFour(player) > 2 || (board.getFive(player) > 1 && board.getFive(player) > 1)) 
-	    			|| board.getBlockFour(player) > 2 || board.getThree(player) > 2) {
+	    	if(play <= maxPlay && ((board.getFour(player) >= 2 || (board.getFive(player) > 1 && board.getFour(player) > 1)) 
+	    			|| board.getBlockFour(player) >= 2 || board.getThree(player) > 2)) {
 	    		play += deepening;
-	    		System.out.println("deepening play:" + play);
+//	    		System.out.println("deepening play:" + play);
+	    	}else if(play <= maxPlay && ((board.getFour(oppnent) >= 2 || (board.getFive(oppnent) > 1 && board.getFour(oppnent) > 1)) 
+	    			|| board.getBlockFour(oppnent) >= 2 || board.getThree(oppnent) > 2)) {
+	    		play += deepening;
+//	    		System.out.println("deepening play:" + play);
 	    	}else {
-	    		if(currentPly >= play) {
-	    			System.out.println("currentply: " + currentPly + " play:" + play);
-	    			play = defaultPlay;
-	    		}
+//	    			System.out.println("currentply: " + currentPly + " play:" + play);
+    			play = defaultPlay;
+	    		
 	    	}
-    	}
+    	}	
+//    	System.out.println(play < maxPlay && ((board.getFour(player) > 2 || (board.getFive(player) > 1 && board.getFive(player) > 1)) 
+//    			|| board.getBlockFour(player) > 2 || board.getThree(player) > 2));
     	
         if (currentPly++ >= play || board.isGameOver()) {
         	return evaluate(player, board, currentPly);
@@ -160,11 +165,11 @@ class AlphaBetaAdvanced {
 
         Board.State opponent = (player == Board.State.X) ?  Board.State.O : Board.State.X;
         
-        if (board.isGameOver() && board.getWinner() != player) {
+        if ((board.isGameOver() && board.getWinner() != player )|| board.getFour(opponent) > 2 ||( board.getFive(opponent)> 1 && board.getFour(opponent) > 1))  {
 //        	System.out.println(board.toString());
 //        	System.out.println(currentPly);
             return Integer.MIN_VALUE;
-        } else if (board.isGameOver() && board.getWinner() == player) {
+        } else if ((board.isGameOver() && board.getWinner() == player)|| board.getFour(player) > 2 ||( board.getFive(player)> 1 && board.getFour(player) > 1)) {
 //        	System.out.println(board.toString());
 //        	System.out.println(currentPly);
         	return Integer.MAX_VALUE ;

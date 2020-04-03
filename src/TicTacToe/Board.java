@@ -260,6 +260,10 @@ public class Board {
 	public State getTurn() {
 		return playersTurn;
 	}
+	
+	public State getOppnent() {
+		return oppnent;
+	}
 
 	public State getWinner() {
 		if (!gameOver) {
@@ -1302,7 +1306,7 @@ public class Board {
 //				}
 //			}
 //		}
-//		try {
+		try {
 			if (block == 0 && secondBlock == 0) {
 				if (empty == -1 && secondEmpty == -1) {
 					if (count == 1 && secondCount == 0) {
@@ -1363,6 +1367,7 @@ public class Board {
 								scoreWindows[0][1][count]++;
 							}
 							scoreWindows[0][1][count - 1]--;
+							
 //							return;
 						}
 	
@@ -1920,12 +1925,24 @@ public class Board {
 //				}
 //			}
 //		}
-//		}catch(Exception e) {
-//			System.out.println("error!!!!!!!!");
-//			System.out.println(this.toString());
-//			
-//			System.out.printf("count: %d, secondCount: %d, empty: %d, secondEmpty: %d, block: %d, secondBlock: %d\n", count, secondCount, empty, secondEmpty, block, secondBlock);
-//		}
+		}catch(Exception e) {
+			System.out.println("error!!!!!!!!");
+			System.out.println("error!!!!!!!!");
+			System.out.println("error!!!!!!!!");
+			System.out.println("error!!!!!!!!");
+			System.out.println("error!!!!!!!!");
+			System.out.println("error!!!!!!!!");
+			
+			
+			System.out.println(this.toString());
+			
+			System.out.printf("count: %d, secondCount: %d, empty: %d, secondEmpty: %d, block: %d, secondBlock: %d\n", count, secondCount, empty, secondEmpty, block, secondBlock);
+			System.out.println("error!!!!!!!!");
+			System.out.println("error!!!!!!!!");
+			System.out.println("error!!!!!!!!");
+			System.out.println("error!!!!!!!!");
+			System.out.println("error!!!!!!!!");
+		}
 		
 	}
 	
@@ -1957,7 +1974,7 @@ public class Board {
 		int fourNum = 0;
 		for(int j = 0; j < 2; j++) {
 			if(scoreWindow[0][j][4] != 0) {
-				fourNum ++;
+				fourNum +=scoreWindow[0][j][4];
 			}
 		}
 		return fourNum;
@@ -1975,7 +1992,7 @@ public class Board {
 		int fourNum = 0;
 		for(int j = 0; j < 2; j++) {
 			if(scoreWindow[0][j][3] != 0) {
-				fourNum ++;
+				fourNum += scoreWindow[0][j][3];
 			}
 		}
 		return fourNum;
@@ -1993,7 +2010,7 @@ public class Board {
 		for(int i = 0; i < 2; i++) {
 			for(int j = 0; j < 2; j++) {
 				if(scoreWindow[i][j][5] != 0) {
-					fiveNum ++;
+					fiveNum += scoreWindow[i][j][5];
 				}
 			}
 		}
@@ -2022,6 +2039,12 @@ public class Board {
 				}
 			}
 		}
+		if(this.getFour(State.X) > 2) {
+			result += Integer.MAX_VALUE;
+		}
+		if(this.getFour(State.X) > 1 && this.getFive(State.X) > 1) {
+			result += Integer.MAX_VALUE;
+		}
 		return result;
 	}
 
@@ -2046,6 +2069,12 @@ public class Board {
 					result += this.winningWindowsO[i][j][k] * aimScore[i][j][k];
 				}
 			}
+		}
+		if(this.getFour(State.O) > 2) {
+			result += Integer.MAX_VALUE;
+		}
+		if(this.getFour(State.O) > 1 && this.getFive(State.O) > 1) {
+			result += Integer.MAX_VALUE;
 		}
 		return result;
 	}
