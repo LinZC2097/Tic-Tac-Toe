@@ -4,7 +4,7 @@ package TicTacToe;
 import TicTacToe.Board.State;;
 
 class AlphaBetaAdvanced {
-	private static int maxPlay = 4;
+	private static int maxPlay = 6;
     private static int play = 2;
     private static int defaultPlay = 2;
     private static int deepening = 2;
