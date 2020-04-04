@@ -23,9 +23,9 @@ public class Console {
         System.out.println("Starting a new game.");
 
         while (true) {
-        	printGameStatus();
-            playMove();
-//            playManual();
+//        	printGameStatus();
+//            playMove();
+            playManual();
 
             if (board.isGameOver()) {
                 printWinner();
@@ -49,7 +49,7 @@ public class Console {
         	System.out.printf("x:%d, y:%d", move[0], move[1]);
         	System.out.printf("\nmoveNum:%d", board.getMoveCount());
         	long et2 = System.currentTimeMillis();  
-        	System.out.println("\n[1]耗时:"+(et2 - bt)+ "ms");  
+        	System.out.println("\n[1]Runtime:"+(et2 - bt)+ "ms");  
         	
         	// send to API
         	try {
@@ -131,7 +131,7 @@ public class Console {
         	System.out.printf("x:%d, y:%d", move[0], move[1]);
         	System.out.printf("\nmoveNum:%d", board.getMoveCount());
         	long et2 = System.currentTimeMillis();  
-        	System.out.println("\n[1]耗时:"+(et2 - bt)+ "ms");  
+        	System.out.println("\n[1]Runtime:"+(et2 - bt)+ "ms");  
         	
         	// send to API
         	
@@ -166,7 +166,7 @@ public class Console {
         	System.out.printf("x:%d, y:%d", move[0], move[1]);
         	System.out.printf("\nmoveNum:%d", board.getMoveCount());
         	long et2 = System.currentTimeMillis();  
-        	System.out.println("\n[1]耗时:"+(et2 - bt)+ "ms");  
+        	System.out.println("\n[1]Runtime:"+(et2 - bt)+ "ms");  
         	
         } else {
         	long bt = System.currentTimeMillis();  
@@ -176,7 +176,7 @@ public class Console {
         	System.out.printf("x:%d, y:%d", move[0], move[1]);
         	System.out.printf("\nmoveNum:%d", board.getMoveCount());
         	long et2 = System.currentTimeMillis();  
-        	System.out.println("\n[1]耗时:"+(et2 - bt)+ "ms");
+        	System.out.println("\n[1]Runtime:"+(et2 - bt)+ "ms");
         }
         
     	//Algorithms.alphaBetaAdvanced(board.getTurn(), board);
@@ -195,7 +195,7 @@ public class Console {
     private void printGameStatus () {
         System.out.println("\n" + board + "\n");
         System.out.println(board.getTurn().name() + "'s turn.");
-//        board.printScoreWindow();
+        board.printScoreWindow();
     }
 
     private void getPlayerMove () {

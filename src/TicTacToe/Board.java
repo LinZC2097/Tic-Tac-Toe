@@ -19,12 +19,19 @@ public class Board {
 		
 	static final int[][][] SCORE_EIGHT = new int[][][] {
 		{ { 0, 10, 100, 1000, 10000, 100000, 1000000, 10000000, 100000000 },
-				{ 0, 8, 80, 800, 8000, 80000, 800000, 8000000, 80000000 } },
-		{ { 0, 6, 60, 600, 6000, 60000, 600000, 6000000, 60000000 },
+				{ 0, 5, 50, 500, 5000, 50000, 500000, 5000000, 50000000 } },
+		{ { 0, 2, 20, 200, 2000, 20000, 200000, 2000000, 20000000 },
 				{ 0, 1, 10, 100, 1000, 10000, 100000, 1000000, 10000000 } }, };
+				
+	static final int[][][] SCORE_TEN = new int[][][] {
+		{ { 0, 10, 100, 1000, 10000, 100000, 1000000, 10000000, 100000000,  1000000000, Integer.MAX_VALUE},
+				{ 0, 5, 50, 500, 5000, 50000, 500000, 5000000, 50000000, 500000000, Integer.MAX_VALUE } },
+		{ { 0, 2, 20, 200, 2000, 20000, 200000, 2000000, 20000000, 200000000, Integer.MAX_VALUE },
+				{ 0, 1, 10, 100, 1000, 10000, 100000, 1000000, 10000000, 100000000, Integer.MAX_VALUE } }, };
 	// empty block count
 	static final int[] SCORE_SIX_TWO = new int[] { 1000, 500 };
 	static final int[] SCORE_EIGHT_TWO = new int[] { 1000000, 500000 };
+	static final int[] SCORE_TEN_TWO = new int[] { 100000000, 5000000 };
 
 	public enum State {
 		Blank, X, O
@@ -1954,13 +1961,13 @@ public class Board {
 			scoreWindow = this.winningWindowsX;
 		}
 			
-		int fourNum = 0;
+		int num = 0;
 		for(int j = 0; j < 2; j++) {
 			if(scoreWindow[1][j][4] != 0) {
-				fourNum ++;
+				num ++;
 			}
 		}
-		return fourNum;
+		return num;
 	}
 	
 	public int getFour(State player) {
@@ -1971,13 +1978,13 @@ public class Board {
 			scoreWindow = this.winningWindowsX;
 		}
 			
-		int fourNum = 0;
+		int num = 0;
 		for(int j = 0; j < 2; j++) {
 			if(scoreWindow[0][j][4] != 0) {
-				fourNum +=scoreWindow[0][j][4];
+				num +=scoreWindow[0][j][4];
 			}
 		}
-		return fourNum;
+		return num;
 	}
 	
 	
@@ -1989,13 +1996,13 @@ public class Board {
 			scoreWindow = this.winningWindowsX;
 		}
 			
-		int fourNum = 0;
+		int num = 0;
 		for(int j = 0; j < 2; j++) {
 			if(scoreWindow[0][j][3] != 0) {
-				fourNum += scoreWindow[0][j][3];
+				num += scoreWindow[0][j][3];
 			}
 		}
-		return fourNum;
+		return num;
 	}
 	
 	public int getFive(State player) {
@@ -2006,15 +2013,68 @@ public class Board {
 			scoreWindow = this.winningWindowsX;
 		}
 			
-		int fiveNum = 0;
+		int num = 0;
 		for(int i = 0; i < 2; i++) {
 			for(int j = 0; j < 2; j++) {
 				if(scoreWindow[i][j][5] != 0) {
-					fiveNum += scoreWindow[i][j][5];
+					num += scoreWindow[i][j][5];
 				}
 			}
 		}
-		return fiveNum;
+		return num;
+	}
+	
+	public int getEight(State player) {
+		int[][][] scoreWindow = new int[2][2][AIM_LENGTH + 1]; 
+		if(player == State.O) {
+			scoreWindow = this.winningWindowsO;
+		}else {
+			scoreWindow = this.winningWindowsX;
+		}
+			
+		int num = 0;
+		for(int j = 0; j < 2; j++) {
+			if(scoreWindow[0][j][8] != 0) {
+				num +=scoreWindow[0][j][8];
+			}
+		}
+		return num;
+	}
+	
+	public int getBlockEight(State player) {
+		int[][][] scoreWindow = new int[2][2][AIM_LENGTH + 1]; 
+		if(player == State.O) {
+			scoreWindow = this.winningWindowsO;
+		}else {
+			scoreWindow = this.winningWindowsX;
+		}
+			
+		int num = 0;
+		for(int j = 0; j < 2; j++) {
+			if(scoreWindow[1][j][8] != 0) {
+				num ++;
+			}
+		}
+		return num;
+	}
+	
+	public int getNine(State player) {
+		int[][][] scoreWindow = new int[2][2][AIM_LENGTH + 1]; 
+		if(player == State.O) {
+			scoreWindow = this.winningWindowsO;
+		}else {
+			scoreWindow = this.winningWindowsX;
+		}
+			
+		int num = 0;
+		for(int i = 0; i < 2; i++) {
+			for(int j = 0; j < 2; j++) {
+				if(scoreWindow[i][j][9] != 0) {
+					num += scoreWindow[i][j][9];
+				}
+			}
+		}
+		return num;
 	}
 
 	public int getScoreX() {
@@ -2026,8 +2086,13 @@ public class Board {
 			for (int i = 0; i < 2; i++) {
 				result += this.twoBlockX[i] * SCORE_SIX_TWO[i];
 			}
-		} else {
+		} else if(aim == 8){
 			aimScore = SCORE_EIGHT;
+			for (int i = 0; i < 2; i++) {
+				result += this.twoBlockX[i] * SCORE_EIGHT_TWO[i];
+			}
+		}else {
+			aimScore = SCORE_TEN;
 			for (int i = 0; i < 2; i++) {
 				result += this.twoBlockX[i] * SCORE_EIGHT_TWO[i];
 			}
@@ -2039,12 +2104,12 @@ public class Board {
 				}
 			}
 		}
-		if(this.getFour(State.X) > 2) {
-			result += Integer.MAX_VALUE;
-		}
-		if(this.getFour(State.X) > 1 && this.getFive(State.X) > 1) {
-			result += Integer.MAX_VALUE;
-		}
+//		if(this.getFour(State.X) > 2) {
+//			result += Integer.MAX_VALUE;
+//		}
+//		if(this.getFour(State.X) > 1 && this.getFive(State.X) > 1) {
+//			result += Integer.MAX_VALUE;
+//		}
 		return result;
 	}
 
@@ -2057,8 +2122,13 @@ public class Board {
 			for (int i = 0; i < 2; i++) {
 				result += this.twoBlockX[i] * SCORE_SIX_TWO[i];
 			}
-		} else {
+		} else if(aim == 8){
 			aimScore = SCORE_EIGHT;
+			for (int i = 0; i < 2; i++) {
+				result += this.twoBlockX[i] * SCORE_EIGHT_TWO[i];
+			}
+		}else {
+			aimScore = SCORE_TEN;
 			for (int i = 0; i < 2; i++) {
 				result += this.twoBlockX[i] * SCORE_EIGHT_TWO[i];
 			}
@@ -2070,12 +2140,12 @@ public class Board {
 				}
 			}
 		}
-		if(this.getFour(State.O) > 2) {
-			result += Integer.MAX_VALUE;
-		}
-		if(this.getFour(State.O) > 1 && this.getFive(State.O) > 1) {
-			result += Integer.MAX_VALUE;
-		}
+//		if(this.getFour(State.O) > 2) {
+//			result += Integer.MAX_VALUE;
+//		}
+//		if(this.getFour(State.O) > 1 && this.getFive(State.O) > 1) {
+//			result += Integer.MAX_VALUE;
+//		}
 		return result;
 	}
 

@@ -4,10 +4,10 @@ package TicTacToe;
 import TicTacToe.Board.State;;
 
 class AlphaBetaAdvanced {
-	private static int maxPlay = 6;
+	private static int maxPlay = 2;
     private static int play = 2;
     private static int defaultPlay = 2;
-    private static int deepening = 2;
+    private static int deepening = 0;
 
     private AlphaBetaAdvanced() {}
 
@@ -51,22 +51,41 @@ class AlphaBetaAdvanced {
 
     private static int alphaBetaPruning (Board.State player, Board board, double alpha, double beta, int currentPly) {
     	
-    	Board.State oppnent = player == State.O? State.X: State.O;
-    	if(board.getMoveCount() > 10) {
-	    	if(play <= maxPlay && ((board.getFour(player) >= 2 || (board.getFive(player) > 1 && board.getFour(player) > 1)) 
-	    			|| board.getBlockFour(player) >= 2 || board.getThree(player) > 2)) {
-	    		play += deepening;
-//	    		System.out.println("deepening play:" + play);
-	    	}else if(play <= maxPlay && ((board.getFour(oppnent) >= 2 || (board.getFive(oppnent) > 1 && board.getFour(oppnent) > 1)) 
-	    			|| board.getBlockFour(oppnent) >= 2 || board.getThree(oppnent) > 2)) {
-	    		play += deepening;
-//	    		System.out.println("deepening play:" + play);
-	    	}else {
-//	    			System.out.println("currentply: " + currentPly + " play:" + play);
-    			play = defaultPlay;
-	    		
-	    	}
-    	}	
+//    	Board.State oppnent = player == State.O? State.X: State.O;
+//    	if(board.getMoveCount() > 10) {
+//	    	if(play <= maxPlay && ((board.getFour(player) >= 2 || (board.getFive(player) > 1 && board.getFour(player) > 1)) 
+//	    			|| board.getBlockFour(player) >= 2 )) {
+//	    		play += deepening;
+////	    		System.out.println("deepening play:" + play);
+//	    	}else if(play <= maxPlay && ((board.getFour(oppnent) >= 2 || (board.getFive(oppnent) > 1 && board.getFour(oppnent) > 1)) 
+//	    			|| board.getBlockFour(oppnent) >= 2)) {
+//	    		play += deepening;
+////	    		System.out.println("deepening play:" + play);
+//	    	}else {
+////	    			System.out.println("currentply: " + currentPly + " play:" + play);
+//    			play = defaultPlay;
+//	    		
+//	    	}
+//    	}	
+//    	System.out.println(play < maxPlay && ((board.getFour(player) > 2 || (board.getFive(player) > 1 && board.getFive(player) > 1)) 
+//    			|| board.getBlockFour(player) > 2 || board.getThree(player) > 2));
+    	
+//    	Board.State oppnent = player == State.O? State.X: State.O;
+//    	if(board.getMoveCount() > 10) {
+//	    	if(play <= maxPlay && ((board.getEight(player) >= 2 || (board.getNine(player) > 1 && board.getEight(player) > 1)) 
+//	    			|| board.getBlockEight(player) >= 2 )) {
+//	    		play += deepening;
+////	    		System.out.println("deepening play:" + play);
+//	    	}else if(play <= maxPlay && ((board.getEight(oppnent) >= 2 || (board.getNine(oppnent) > 1 && board.getEight(oppnent) > 1)) 
+//	    			|| board.getBlockEight(oppnent) >= 2)) {
+//	    		play += deepening;
+////	    		System.out.println("deepening play:" + play);
+//	    	}else {
+////	    			System.out.println("currentply: " + currentPly + " play:" + play);
+//    			play = defaultPlay;
+//	    		
+//	    	}
+//    	}	
 //    	System.out.println(play < maxPlay && ((board.getFour(player) > 2 || (board.getFive(player) > 1 && board.getFive(player) > 1)) 
 //    			|| board.getBlockFour(player) > 2 || board.getThree(player) > 2));
     	
@@ -110,7 +129,7 @@ class AlphaBetaAdvanced {
 //            board.clearWinningWindows();
             
             if(currentPly == 1) {
-            	System.out.println("Player O moves at (" + indexOfBestMove % board.getBoardWidth() + "," + indexOfBestMove / board.getBoardWidth() + "), alpha = " + alpha + ",beta = " + beta);
+            	System.out.println("Player X moves at (" + indexOfBestMove % board.getBoardWidth() + "," + indexOfBestMove / board.getBoardWidth() + "), alpha = " + alpha + ",beta = " + beta);
 //            	board.setPreMove(indexOfBestMove);
             }
         }
